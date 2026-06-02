@@ -1,0 +1,73 @@
+%% Мультиагентная система "Умный помощник по командировкам"
+%% Паттерн: Supervisor (иерархия) + Plan-and-Execute + ReAct у агентов + Human-in-the-loop
+%% Вставьте этот код в https://mermaid.live или в любой редактор с поддержкой Mermaid
+
+flowchart TD
+    Emp([👤 Сотрудник-заказчик<br/>подаёт заявку на командировку]) -->|заявка| TM
+    TM([🧑‍💼 Менеджер отдела деловых поездок<br/>оператор инструмента, запускает процесс]) --> SUP
+
+    subgraph CORE["🧠 Интеллектуальное ядро (LangGraph)"]
+        direction TB
+
+        SUP["🧭 Менеджер / Supervisor<br/><i>Plan-and-Execute</i><br/>строит план и делегирует задачи"]
+
+        subgraph AGENTS["Рабочие агенты (Single Responsibility)"]
+            direction LR
+
+            POL["📜 Агент политики<br/><i>RAG внутри агента</i><br/>что разрешено по регламенту"]
+            SRCH["🔎 Поисковик билетов и отелей<br/><i>ReAct + web search</i><br/>предлагает варианты"]
+            BUD["💰 Аналитик бюджета<br/>сверяет варианты с лимитами"]
+        end
+
+        SUP -->|1. запрос политики| POL
+        SUP -->|2. поиск вариантов| SRCH
+        SUP -->|3. проверка бюджета| BUD
+        POL -.->|лимиты, правила| SUP
+        SRCH -.->|2-3 варианта| SUP
+        BUD -.->|вердикт: в рамках / нет| SUP
+    end
+
+    %% RAG-подсистема, встроенная в агента политики
+    subgraph RAG["📚 RAG-подсистема (внутри Агента политики)"]
+        direction TB
+        KB[("🗂 База знаний<br/>политика командировок<br/>(Markdown/PDF/Confluence)")]
+        CHUNK["✂️ Чанкинг<br/>разбивка по разделам"]
+        EMB["🧬 Эмбеддинг<br/>text-embedding"]
+        VDB[("🧱 Vector DB<br/>FAISS / Chroma / pgvector")]
+        RET["🎯 Retriever<br/>top-k по cosine"]
+        RER["📊 Reranker<br/>cross-encoder, top-n"]
+
+        KB --> CHUNK --> EMB --> VDB
+        VDB --> RET --> RER
+    end
+    POL --> RET
+    RER --> POL
+
+    %% Поиск во внешнем интернете
+    SRCH --> WEB[("🌐 Внешние источники<br/>авиабилеты / отели<br/>(web search API)")]
+    WEB --> SRCH
+
+    %% Человек принимает финальное решение
+    SUP --> HITL{{"🙋 Human-in-the-loop<br/>менеджер деловых поездок<br/>выбирает финальный вариант"}}
+    HITL -->|выбран вариант| NOTIFY
+
+    %% Уведомление (заглушка)
+    NOTIFY["📧 Нотификатор<br/>письмо сотруднику-заказчику<br/><i>(MOCK / заглушка)</i>"] --> MAIL([✅ Письмо с маршрутом<br/>имитация отправки])
+
+    %% Сквозная обсервабилити
+    OBS["🔭 Observability<br/>трассировка шагов, логи,<br/>метрики, LangSmith"]
+    SUP -.-> OBS
+    POL -.-> OBS
+    SRCH -.-> OBS
+    BUD -.-> OBS
+    NOTIFY -.-> OBS
+
+    classDef core fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef rag fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
+    classDef human fill:#fff3e0,stroke:#e65100,color:#bf360c;
+    classDef obs fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
+
+    class SUP,POL,SRCH,BUD core;
+    class KB,CHUNK,EMB,VDB,RET,RER,WEB rag;
+    class HITL,NOTIFY,MAIL human;
+    class OBS obs;

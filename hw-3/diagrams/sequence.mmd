@@ -1,0 +1,36 @@
+%% Последовательность обмена сообщениями между агентами (runtime)
+%% Вставьте в https://mermaid.live
+
+sequenceDiagram
+    autonumber
+    actor E as 👤 Сотрудник-заказчик
+    actor TM as 🧑‍💼 Менеджер деловых поездок
+    participant M as 🧭 Менеджер-агент
+    participant P as 📜 Агент политики (RAG)
+    participant S as 🔎 Поисковик
+    participant B as 💰 Аналитик бюджета
+    participant N as 📧 Нотификатор
+    participant O as 🔭 Observability
+
+    E->>TM: Заявка: "Москва→Берлин, 12–15 июня"
+    TM->>M: Запуск процесса оформления
+    M->>O: trace: PLAN создан
+    M->>P: Какие лимиты и правила?
+    P->>P: RAG: retrieve + rerank по базе знаний
+    P-->>M: Лимит ≤ €250/ночь, эконом-класс, ≤ €600 перелёт
+    M->>O: trace: политика получена
+
+    M->>S: Найди билеты и отели в рамках политики
+    S->>S: web search (ReAct)
+    S-->>M: 3 варианта (рейсы + отели)
+    M->>O: trace: варианты получены
+
+    M->>B: Проверь варианты на соответствие лимитам
+    B-->>M: Варианты A и B — OK, вариант C — превышение
+    M->>O: trace: бюджет проверен
+
+    M-->>TM: Предлагаю варианты A и B (compliant)
+    TM->>M: Выбираю вариант A  (Human-in-the-loop)
+    M->>N: Сформируй и отправь маршрут
+    N-->>E: ✉️ (MOCK) Письмо с маршрутом сотруднику-заказчику
+    N->>O: trace: notify=mock-sent
