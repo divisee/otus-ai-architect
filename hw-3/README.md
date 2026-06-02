@@ -1,5 +1,117 @@
 # ДЗ №3. Проектирование интеллектуального ядра: RAG и мультиагентная система
 
+## 🗺 Диаграммы
+
+Исходники: [`diagrams/architecture.mmd`](diagrams/architecture.mmd) · [`diagrams/sequence.mmd`](diagrams/sequence.mmd)
+(для PNG/PDF — открыть код в [mermaid.live](https://mermaid.live) → Export).
+
+Диаграммы отрисованы ниже прямо в README (GitHub рендерит Mermaid):
+
+<details open>
+<summary>📐 Архитектура мультиагентной системы</summary>
+
+```mermaid
+flowchart TD
+    Emp([👤 Сотрудник-заказчик<br/>подаёт заявку на командировку]) -->|заявка| TM
+    TM([🧑‍💼 Менеджер отдела деловых поездок<br/>оператор инструмента, запускает процесс]) --> SUP
+
+    subgraph CORE["🧠 Интеллектуальное ядро (LangGraph)"]
+        direction TB
+        SUP["🧭 Менеджер / Supervisor<br/>Plan-and-Execute<br/>строит план и делегирует задачи"]
+        subgraph AGENTS["Рабочие агенты (Single Responsibility)"]
+            direction LR
+            POL["📜 Агент политики<br/>RAG внутри агента<br/>что разрешено по регламенту"]
+            SRCH["🔎 Поисковик билетов и отелей<br/>ReAct + web search<br/>предлагает варианты"]
+            BUD["💰 Аналитик бюджета<br/>сверяет варианты с лимитами"]
+        end
+        SUP -->|1. запрос политики| POL
+        SUP -->|2. поиск вариантов| SRCH
+        SUP -->|3. проверка бюджета| BUD
+        POL -.->|лимиты, правила| SUP
+        SRCH -.->|2-3 варианта| SUP
+        BUD -.->|вердикт: в рамках / нет| SUP
+    end
+
+    subgraph RAG["📚 RAG-подсистема (внутри Агента политики)"]
+        direction TB
+        KB[("🗂 База знаний<br/>политика командировок<br/>Markdown/PDF/Confluence")]
+        CHUNK["✂️ Чанкинг<br/>разбивка по разделам"]
+        EMB["🧬 Эмбеддинг<br/>text-embedding"]
+        VDB[("🧱 Vector DB<br/>FAISS / Chroma / pgvector")]
+        RET["🎯 Retriever<br/>top-k по cosine"]
+        RER["📊 Reranker<br/>cross-encoder, top-n"]
+        KB --> CHUNK --> EMB --> VDB
+        VDB --> RET --> RER
+    end
+    POL --> RET
+    RER --> POL
+
+    SRCH --> WEB[("🌐 Внешние источники<br/>авиабилеты / отели<br/>web search API")]
+    WEB --> SRCH
+
+    SUP --> HITL{{"🙋 Human-in-the-loop<br/>менеджер деловых поездок<br/>выбирает финальный вариант"}}
+    HITL -->|выбран вариант| NOTIFY
+    NOTIFY["📧 Нотификатор<br/>письмо сотруднику-заказчику<br/>MOCK / заглушка"] --> MAIL([✅ Письмо с маршрутом<br/>имитация отправки])
+
+    OBS["🔭 Observability<br/>трассировка шагов, логи,<br/>метрики, LangSmith"]
+    SUP -.-> OBS
+    POL -.-> OBS
+    SRCH -.-> OBS
+    BUD -.-> OBS
+    NOTIFY -.-> OBS
+
+    classDef core fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef rag fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
+    classDef human fill:#fff3e0,stroke:#e65100,color:#bf360c;
+    classDef obs fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
+    class SUP,POL,SRCH,BUD core;
+    class KB,CHUNK,EMB,VDB,RET,RER,WEB rag;
+    class HITL,NOTIFY,MAIL human;
+    class OBS obs;
+```
+
+</details>
+
+<details>
+<summary>🔁 Sequence: обмен сообщениями между агентами</summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor E as 👤 Сотрудник-заказчик
+    actor TM as 🧑‍💼 Менеджер деловых поездок
+    participant M as 🧭 Менеджер-агент
+    participant P as 📜 Агент политики (RAG)
+    participant S as 🔎 Поисковик
+    participant B as 💰 Аналитик бюджета
+    participant N as 📧 Нотификатор
+    participant O as 🔭 Observability
+
+    E->>TM: Заявка: "Москва-Берлин, 12-15 июня"
+    TM->>M: Запуск процесса оформления
+    M->>O: trace: PLAN создан
+    M->>P: Какие лимиты и правила?
+    P->>P: RAG: retrieve + rerank по базе знаний
+    P-->>M: Лимит до 250 EUR/ночь, эконом, до 600 EUR перелёт
+    M->>O: trace: политика получена
+    M->>S: Найди билеты и отели в рамках политики
+    S->>S: web search (ReAct)
+    S-->>M: 3 варианта (рейсы + отели)
+    M->>O: trace: варианты получены
+    M->>B: Проверь варианты на соответствие лимитам
+    B-->>M: Варианты A и B — OK, вариант C — превышение
+    M->>O: trace: бюджет проверен
+    M-->>TM: Предлагаю варианты A и B (compliant)
+    TM->>M: Выбираю вариант A (Human-in-the-loop)
+    M->>N: Сформируй и отправь маршрут
+    N-->>E: (MOCK) Письмо с маршрутом сотруднику-заказчику
+    N->>O: trace: notify=mock-sent
+```
+
+</details>
+
+---
+
 **Бизнес-процесс:** автоматизация оформления командировок — подсистема «Умный помощник».
 
 **Цель:** спроектировать мультиагентную систему с RAG-пайплайном, которая помогает оформить
