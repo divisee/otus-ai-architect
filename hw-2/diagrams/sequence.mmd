@@ -15,6 +15,8 @@ sequenceDiagram
     participant RANK as 📊 Ranker
     participant PTF as 🧩 Prompt Factory
     participant LLM as 🧠 LLM Client
+    participant ANON as 🛡 PII Anonymizer
+    participant CLOUD as ☁️ Cloud LLM
     participant ASM as 📦 Response Assembler
     participant LEG as 🛟 Rule-based (legacy)
 
@@ -37,9 +39,13 @@ sequenceDiagram
             OMNI-->>CTRL: Очищенные кандидаты
             CTRL->>RANK: Ранжировать
             RANK-->>CTRL: Топ-N отсортировано
-            CTRL->>PTF: Собрать промпт (с маскированием PII)
-            PTF-->>CTRL: Готовый промпт
+            CTRL->>PTF: Собрать промпт
+            PTF-->>CTRL: Готовый промпт (может содержать PII)
             CTRL->>LLM: Сгенерировать заголовок и описание
+            LLM->>ANON: Анонимизировать PII (ФИО/телефон → токены)
+            ANON->>CLOUD: Промпт БЕЗ PII
+            CLOUD-->>ANON: Текст с токенами
+            ANON-->>LLM: Текст с восстановленными PII
             LLM-->>CTRL: Тексты (или шаблон-фолбэк)
             CTRL->>ASM: Собрать ответ (товары + тексты + meta)
             CTRL->>CACHE: Сохранить подборку (TTL)

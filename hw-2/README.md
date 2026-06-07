@@ -6,30 +6,27 @@
 **Sequence Diagram** для ключевого сценария и **OpenAPI**-спецификацией API для согласования
 интеграции Backend ↔ AI Service.
 
-## 🗺 Диаграммы
+## Файлы
 
-Исходники Mermaid (для [mermaid.live](https://mermaid.live) / GitHub / draw.io):
-[`diagrams/c1-context.mmd`](diagrams/c1-context.mmd) ·
-[`diagrams/c2-container.mmd`](diagrams/c2-container.mmd) ·
-[`diagrams/c3-component.mmd`](diagrams/c3-component.mmd) ·
-[`diagrams/sequence.mmd`](diagrams/sequence.mmd)
+| Файл | Что это |
+|------|---------|
+| `diagrams/c1-context.mmd` | C1 — контекст: система и окружение |
+| `diagrams/c2-container.mmd` | C2 — контейнеры всей системы |
+| `diagrams/c3-component.mmd` | C3 — компоненты внутри AI Service |
+| `diagrams/sequence.mmd` | Sequence — «запрос рекомендации» |
+| `diagrams/workspace.dsl` | Тот же C1+C2+C3 в Structurizr DSL ([playground](https://playground.structurizr.com/)) |
+| `api/openapi.yaml` | OpenAPI 3.0.3 для `/get_recommendation` (валиден) |
 
-Тот же C4-набор в **Structurizr DSL** (C1 + C2 + C3 в одном файле):
-[`diagrams/workspace.dsl`](diagrams/workspace.dsl) — скопируйте содержимое в
-[Structurizr Playground](https://playground.structurizr.com/), вид переключается списком
-`C1_Context / C2_Containers / C3_Components`.
+PNG/PDF: открыть `.mmd` в [mermaid.live](https://mermaid.live) → Export. API — в [Swagger Editor](https://editor.swagger.io).
 
-Спецификация API: [`api/openapi.yaml`](api/openapi.yaml) (валидна по OpenAPI 3.0.3).
-
-Диаграммы отрисованы ниже прямо в README (GitHub рендерит Mermaid):
+## Диаграммы
 
 <details open>
-<summary>🌍 C1 — System Context (система и окружение)</summary>
+<summary>🌍 C1 — System Context</summary>
 
 ```mermaid
 flowchart TB
     customer([👤 Покупатель<br/>веб + мобильное приложение<br/>аноним по cookie или залогинен])
-    marketer([📣 Маркетолог<br/>настраивает ежедневные<br/>AI-пуш-кампании])
 
     SYS["🟦 Система умных рекомендаций TechnoMart<br/>персональная «Умная лента»<br/>+ генеративные описания товаров"]
 
@@ -38,25 +35,23 @@ flowchart TB
 
     customer -->|"смотрит рекомендации на сайте/в приложении"| SYS
     SYS -.->|"персональные пуши с рекомендациями"| customer
-    marketer -->|"настраивает кампании пушей"| SYS
     onec -->|"заказы для омниканальности, синк 15 мин"| SYS
     xml -->|"каталог товаров, раз в сутки"| SYS
 
     classDef person fill:#08427b,stroke:#052c54,color:#ffffff;
     classDef sys fill:#1565c0,stroke:#0d47a1,color:#ffffff;
     classDef ext fill:#8d99ae,stroke:#5c6b7a,color:#ffffff;
-    class customer,marketer person;
+    class customer person;
     class SYS sys;
     class onec,xml ext;
 ```
 
-> На C1 показаны только те, кто **взаимодействует** с системой и внешние
-> системы (1С, каталог-фид). CEO/CTO/команда клиента — это **стейкхолдеры и драйверы**, см. раздел ниже
+Кто пользуется системой (Покупатель) и внешние источники данных (1С, каталог-фид).
 
 </details>
 
 <details>
-<summary>📦 C2 — Container Diagram (вся система)</summary>
+<summary>📦 C2 — Container Diagram</summary>
 
 ```mermaid
 flowchart TB
@@ -77,12 +72,14 @@ flowchart TB
             CACHE[("⚡ Cache<br/>Redis<br/>предрассчитанные подборки, TTL")]
             ETL["🔄 Data Ingestion / ETL<br/>Python, Airflow<br/>каталог, заказы, клики → фичи и эмбеддинги"]
             EVT["📡 Event Collector<br/>Kafka / HTTP<br/>клики и просмотры в реальном времени"]
-            LLM["🧠 Private LLM Service<br/>приватный эндпоинт<br/>генерация заголовков и описаний"]
+            ANON["🛡 PII Anonymizer / Rehydrator<br/>Python<br/>маскирует PII перед облаком,<br/>восстанавливает в ответе"]
+            VAULT[("🔐 Token Vault<br/>Redis, короткий TTL<br/>карта токен ↔ значение")]
         end
     end
 
     ONEC[("🧾 1С<br/>чеки и заказы<br/>онлайн + офлайн")]
     XML[("📦 Каталог-фид<br/>XML, раз в сутки")]
+    CLOUD["☁️ Cloud LLM Provider<br/>внешний managed-сервис<br/>генерация текстов"]
 
     User -->|"HTTPS: открывает страницу"| FE
     FE -->|"HTTPS/JSON: запрос блока"| BE
@@ -96,7 +93,11 @@ flowchart TB
     AISVC -->|"чтение профиля/фич"| FS
     AISVC -->|"поиск кандидатов top-k"| VDB
     AISVC -->|"чтение/запись кэша"| CACHE
-    AISVC -->|"генерация текста без PII"| LLM
+    AISVC -->|"промпт (может содержать PII)"| ANON
+    ANON -->|"карта токенов"| VAULT
+    ANON -->|"анонимизированный промпт БЕЗ PII"| CLOUD
+    CLOUD -.->|"текст с токенами"| ANON
+    ANON -.->|"текст с восстановленными PII"| AISVC
 
     ONEC -->|"заказы, синк 15 мин"| ETL
     XML -->|"каталог, раз в сутки"| ETL
@@ -110,16 +111,19 @@ flowchart TB
     classDef be fill:#fff3e0,stroke:#e65100,color:#bf360c;
     classDef ai fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
     classDef data fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
-    class User,ONEC,XML ext;
+    class User,ONEC,XML,CLOUD ext;
     class FE,BE,LEGACY be;
-    class AISVC,ETL,EVT,LLM ai;
-    class MYSQL,FS,VDB,CACHE data;
+    class AISVC,ETL,EVT,ANON ai;
+    class MYSQL,FS,VDB,CACHE,VAULT data;
 ```
+
+Контейнеры системы: Frontend, Backend (BFF), AI Service, Vector DB, SQL DB, кэш, ETL.
+Особенности: **облачная LLM + анонимизация PII** (наружу уходит промпт без персональных данных) и **fallback** на старый rule-based блок при сбое/таймауте AI (≤200 мс).
 
 </details>
 
 <details>
-<summary>🔬 C3 — Component Diagram (внутри AI Recommendation Service)</summary>
+<summary>🔬 C3 — Component Diagram (внутри AI Service)</summary>
 
 ```mermaid
 flowchart TB
@@ -133,8 +137,8 @@ flowchart TB
         RAG["📚 RAG Manager<br/>кандидаты: история + семантика,<br/>запрос к Vector DB"]
         OMNI["🔁 Omnichannel Filter<br/>убирает уже купленное"]
         RANK["📊 Ranker / Scorer<br/>ML-ранжирование"]
-        PTF["🧩 Prompt Template Factory<br/>шаблоны промптов, маскирование PII"]
-        LLMC["🧠 LLM Client<br/>вызов Private LLM, ретраи, фолбэк"]
+        PTF["🧩 Prompt Template Factory<br/>шаблоны промптов под тип подборки"]
+        LLMC["🧠 LLM Client<br/>вызов облачной LLM через анонимизатор,<br/>ретраи, фолбэк"]
         ASM["📦 Response Assembler<br/>финальный DTO: товары + тексты + meta"]
         OBS["🔭 Observability<br/>логи, трассировка, метрики latency"]
     end
@@ -142,7 +146,8 @@ flowchart TB
     CACHE[("⚡ Redis")]
     FS[("🧮 Feature Store<br/>PostgreSQL")]
     VDB[("🧱 Vector DB")]
-    LLM["🧠 Private LLM Service"]
+    ANON["🛡 PII Anonymizer / Rehydrator"]
+    CLOUD["☁️ Cloud LLM Provider"]
 
     BE -->|"JSON-запрос"| CTRL
     CTRL -->|"1. проверить кэш"| CACHEC
@@ -160,7 +165,10 @@ flowchart TB
     CACHEC --> CACHE
     PROF --> FS
     RAG --> VDB
-    LLMC --> LLM
+    LLMC -->|"7a. анонимизировать + облако"| ANON
+    ANON -->|"7b. промпт БЕЗ PII"| CLOUD
+    CLOUD -.->|"текст с токенами"| ANON
+    ANON -.->|"восстановленный текст"| LLMC
 
     CTRL -.-> OBS
     RAG -.-> OBS
@@ -172,10 +180,12 @@ flowchart TB
     classDef ext fill:#eceff1,stroke:#607d8b,color:#263238;
     classDef obs fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
     class CTRL,CACHEC,PROF,RAG,OMNI,RANK,PTF,LLMC,ASM comp;
-    class CACHE,FS,VDB,LLM data;
-    class BE ext;
+    class CACHE,FS,VDB data;
+    class BE,ANON,CLOUD ext;
     class OBS obs;
 ```
+
+Внутренности AI Service: каждый компонент — одна зона ответственности (Single Responsibility). Пронумерованные шаги совпадают с Sequence-диаграммой.
 
 </details>
 
@@ -196,6 +206,8 @@ sequenceDiagram
     participant RANK as 📊 Ranker
     participant PTF as 🧩 Prompt Factory
     participant LLM as 🧠 LLM Client
+    participant ANON as 🛡 PII Anonymizer
+    participant CLOUD as ☁️ Cloud LLM
     participant ASM as 📦 Response Assembler
     participant LEG as 🛟 Rule-based (legacy)
 
@@ -217,9 +229,13 @@ sequenceDiagram
             OMNI-->>CTRL: Очищенные кандидаты
             CTRL->>RANK: Ранжировать
             RANK-->>CTRL: Топ-N
-            CTRL->>PTF: Собрать промпт (маскирование PII)
-            PTF-->>CTRL: Готовый промпт
+            CTRL->>PTF: Собрать промпт
+            PTF-->>CTRL: Готовый промпт (может содержать PII)
             CTRL->>LLM: Сгенерировать заголовок и описание
+            LLM->>ANON: Анонимизировать PII (ФИО/телефон → токены)
+            ANON->>CLOUD: Промпт БЕЗ PII
+            CLOUD-->>ANON: Текст с токенами
+            ANON-->>LLM: Текст с восстановленными PII
             LLM-->>CTRL: Тексты (или шаблон-фолбэк)
             CTRL->>ASM: Собрать ответ (товары + тексты + meta)
             CTRL->>CACHE: Сохранить подборку (TTL)
@@ -235,181 +251,49 @@ sequenceDiagram
     FE-->>U: Показывает ленту (страница не блокируется)
 ```
 
+Быстрый путь — из кэша (держит SLA 200 мс). При кэш-промахе — полный пайплайн с генерацией через анонимизатор. При сбое/таймауте AI — fallback на старый rule-based блок.
+
 </details>
 
----
+## API Spec — `/get_recommendation`
 
-## 📦 Состав документации
+Полный контракт: [`api/openapi.yaml`](api/openapi.yaml) (OpenAPI 3.0.3, валиден).
 
-| Файл | Что это |
-|------|---------|
-| `README.md` | Конспект C4/LLD, диаграммы, описание компонентов и API (этот файл) |
-| `diagrams/c1-context.mmd` | C4 L1 — контекст: система и окружение (Mermaid) |
-| `diagrams/c2-container.mmd` | C4 L2 — контейнеры всей системы (Mermaid) |
-| `diagrams/c3-component.mmd` | C4 L3 — компоненты внутри AI Service (Mermaid) |
-| `diagrams/sequence.mmd` | Sequence сценария «запрос рекомендации» (Mermaid) |
-| `diagrams/workspace.dsl` | Structurizr DSL: C1 + C2 + C3 для [playground.structurizr.com](https://playground.structurizr.com/) |
-| `api/openapi.yaml` | OpenAPI 3.0.3 для эндпоинта `/get_recommendation` |
+- **Метод/путь:** `POST /v1/get_recommendation` — контракт **Backend → AI Service**.
+- **Аутентификация:** сервис-к-сервису по заголовку `X-Api-Key` (+ рекомендован mTLS во внутренней сети).
+- **Таймаут:** Backend ждёт ≤ 200 мс; при `5xx`/`503`/таймауте — fallback на rule-based блок.
 
-Как получить PNG/PDF: открыть `.mmd` в [mermaid.live](https://mermaid.live) → Export.
-OpenAPI можно открыть в [Swagger Editor](https://editor.swagger.io) (валидация + «Try it out»).
+**Запрос** (`RecommendationRequest`):
 
----
+| Поле | Тип | Обяз. | Описание |
+|------|-----|-------|----------|
+| `session_id` | string (uuid) | да | ID сессии из cookie — нужен даже для анонима |
+| `user_id` | string \| null | нет | ID пользователя, если залогинен |
+| `context.page_type` | enum: `home/product/category/cart/search` | да | Где показывается блок |
+| `context.current_sku` | string \| null | нет | SKU текущего товара (для `product`) |
+| `context.category_id` | string \| null | нет | Категория |
+| `context.device` | enum: `desktop/mobile/app` | нет | Тип устройства |
+| `limit` | integer `1..50` | нет | Сколько товаров вернуть (default 10) |
+| `generate_text` | boolean | нет | Генерировать ли заголовок/описание (default true) |
 
-## 1. Конспект: ключевые идеи занятия
+**Ответ** (`RecommendationResponse`): `request_id`, массив `recommendations` и `meta`.
 
-### C4 Model — уровни детализации
+| Поле item | Тип | Описание |
+|-----------|-----|----------|
+| `sku` | string | Артикул |
+| `title` | string | Название из каталога |
+| `price` / `currency` | number / string | Цена и валюта |
+| `score` | number `0..1` | Скор ранжирования |
+| `reason` | enum | Причина: `complementary_to_viewed`, `frequently_bought_together`, `personalized`, `popular_in_segment` |
+| `generated_title` / `generated_description` | string \| null | Генеративные тексты (null при фолбэке) |
+| `image_url` | string (uri) | Картинка |
 
-- **C1 Context** — система целиком и её внешнее окружение (пользователи, внешние системы).
-- **C2 Container** — крупные исполняемые единицы (приложения, сервисы, БД) и протоколы между ними.
-- **C3 Component** — «проваливаемся» внутрь одного контейнера: его внутренние компоненты и связи.
-- **C4 Code** — классы/код (обычно не рисуют вручную).
+`meta`: `model_version`, `llm_model`, `cache_hit`, `latency_ms`, `generated`.
 
-В этом ДЗ делаем **C2** (вся система) и **C3** (внутренности AI Service) — это и есть LLD контейнера.
+**Коды ответов:** `200` OK · `400` битый запрос · `401` нет/неверный ключ · `422` ошибка валидации ·
+`429` rate limit (`Retry-After`) · `500` внутренняя · `503` зависимость недоступна → fallback.
 
-### Sequence Diagram
-
-Показывает **порядок взаимодействий во времени** для конкретного сценария. Важное правило связности:
-участники Sequence-диаграммы = компоненты с C3, а шаги = вызовы между ними. Так LLD остаётся
-непротиворечивым.
-
-### OpenAPI (Swagger)
-
-Машиночитаемый **контракт API**: пути, методы, схемы запросов/ответов с типами, примеры и коды
-ошибок. Позволяет командам (PHP-бэкенд и AI-сервис) договориться об интеграции до написания кода,
-сгенерировать клиентов/моки и валидировать запросы.
-
----
-
-## 2. Стейкхолдеры и архитектурные драйверы
-
-Эти роли не взаимодействуют с системой напрямую (поэтому их нет на C1), но их интересы —
-ключевые **драйверы и ограничения** архитектуры.
-
-| Стейкхолдер / фактор | Интерес / боль | Как учтено в архитектуре |
-|---|---|---|
-| 👔 **CEO** | «Магия как у Apple», нетерпелив, первый результат за 3 мес | MVP-first, облако без закупки GPU, быстрый путь через кэш — раннее демо |
-| 👔 **CTO** | Скептик, боится «уронить» монолит, ничего не переписывать в ядре | AI-контур **вынесен** из монолита; Backend лишь проксирует вызов; ядро сайта не трогаем; при сбое AI — **автоматический fallback на старый rule-based блок** (см. §6a), сайт не падает |
-| 📣 **Директор по маркетингу** | Ежедневные пуши с AI-рекомендациями | Маркетолог как потребитель на C1; тот же AI Service питает пуш-кампании |
-| 🧑‍💻 **Команда клиента** | Сильные PHP-разработчики, **нет DS/DE** | Ставка на managed/облачные сервисы и готовые модели; минимум ML-инфры «руками» |
-| 🏗 **Интегратор (мы)** | Спроектировать и внедрить | Авторы архитектуры; на диаграммы как актор не выносимся |
-| 🔒 **Безопасность / ПДн** | Данные клиентов не должны утекать в публичные LLM | Генерация только на **Private LLM**; маскирование PII в Prompt Template Factory |
-
----
-
-## 3. Как архитектура закрывает требования кейса TechnoMart
-
-| «Хотелка» / ограничение | Решение в архитектуре |
-|---|---|
-| **Умная лента даже для анонимов** | Рекомендации по `session_id` из cookie; `Profile Provider` строит профиль по сессии без логина |
-| **Generative Descriptions** | `Prompt Template Factory` + `LLM Client` → `Private LLM Service` генерируют заголовок/описание |
-| **Омниканальность** (не предлагать купленное офлайн) | `Omnichannel Filter` исключает SKU из заказов 1С (онлайн+офлайн), которые ETL подтягивает каждые 15 мин |
-| **Скорость ≤ 200 мс** | `Cache` (Redis) с предрассчитанными подборками + быстрый путь в `Controller`; тяжёлая генерация прогревается заранее/асинхронно |
-| **Старт за 3 месяца, без GPU** | AI-контур в облаке, начинаем с managed-сервисов и небольшой приватной модели; «железо» не блокирует старт |
-| **Безопасность PII** (нельзя в публичные LLM) | Генерация только на **Private LLM**; `Prompt Template Factory` маскирует ПДн (ФИО/телефон) перед отправкой в модель |
-| **Монолит «задыхается»** | AI-контур вынесен из монолита; Backend лишь проксирует вызов, тяжёлые расчёты — в отдельных хранилищах (Vector DB, Feature Store) |
-| **Данные из XML/1С/кликов** | `Data Ingestion / ETL` + `Event Collector` собирают всё в Feature Store и Vector DB |
-
----
-
-## 4. C2 — Container Diagram (описание)
-
-Контейнеры (по заданию выделены **Frontend, Backend, AI Service, Vector DB, SQL DB**, плюс
-обеспечивающие):
-
-- **🖥 Frontend** — сайт и мобильное приложение, рендерит блок рекомендаций; шлёт события кликов.
-- **🧱 Backend-монолит (PHP/Bitrix)** — существующая система; выступает BFF: принимает запрос блока
-  и вызывает AI Service по HTTPS/JSON. Читает каталог/заказы из **MySQL**.
-- **🛟 Rule-based Recommendations (legacy)** — старый модуль рекомендаций в монолите; остаётся как
-  **fallback**: Backend переключается на него при сбое/таймауте AI Service (graceful degradation, см. §6a).
-- **🗃 SQL DB магазина (MySQL)** — текущая операционная БД (каталог, пользователи, заказы).
-- **🤖 AI Recommendation Service (Python/FastAPI)** — новый сервис, ядро ДЗ (детализирован в C3).
-- **🧱 Vector DB (Qdrant/pgvector)** — эмбеддинги товаров и сессий для семантического подбора.
-- **🧮 Feature Store / SQL DB (PostgreSQL)** — профили, фичи и готовые подборки.
-- **⚡ Cache (Redis)** — предрассчитанные рекомендации для SLA 200 мс.
-- **🔄 ETL + 📡 Event Collector** — наполняют данные из каталог-XML (раз в сутки), заказов 1С
-  (15 мин) и потока кликов.
-- **🧠 Private LLM Service** — приватная генеративная модель (PII не уходит наружу).
-
-**Протоколы:** Frontend↔Backend и Backend↔AI Service — HTTPS/JSON (REST);
-Backend↔MySQL — SQL; AI Service↔хранилища — нативные драйверы; события — Kafka/HTTP.
-
----
-
-## 5. C3 — Component Diagram (описание)
-
-«Проваливаемся» внутрь **AI Recommendation Service**. Компоненты (Single Responsibility):
-
-| Компонент | Ответственность |
-|---|---|
-| 🎛 **Recommendation Controller** | Точка входа REST, валидация, оркестрация пайплайна, сборка ответа |
-| ⚡ **Cache Client** | Быстрый путь: вернуть готовую подборку из Redis (<200 мс) |
-| 👤 **Profile Provider** | Профиль и фичи пользователя/сессии из Feature Store |
-| 📚 **RAG Manager** | Сбор кандидатов: история + семантический поиск в Vector DB |
-| 🔁 **Omnichannel Filter** | Исключение уже купленных товаров (онлайн+офлайн) |
-| 📊 **Ranker / Scorer** | ML-ранжирование кандидатов |
-| 🧩 **Prompt Template Factory** | Шаблоны промптов под тип подборки + маскирование PII |
-| 🧠 **LLM Client** | Вызов Private LLM, ретраи, фолбэк на шаблонный текст |
-| 📦 **Response Assembler** | Финальный DTO: товары + сгенерированные тексты + meta |
-| 🔭 **Observability** | Логи, трассировка, метрики (в т.ч. latency) |
-
-> Эти же компоненты выступают участниками Sequence-диаграммы — обеспечивается связность C3 ↔ Sequence.
-
----
-
-## 6. Sequence — «Пользователь запрашивает рекомендацию»
-
-Поток (полный путь при кэш-промахе): `Controller → Cache → Profile Provider → RAG Manager →
-Omnichannel Filter → Ranker → Prompt Template Factory → LLM Client → Response Assembler`.
-При кэш-хите — короткий быстрый путь (Cache → Assembler), что и держит SLA 200 мс.
-Если LLM/Vector DB недоступны или превышен бюджет времени — отдаётся фолбэк (HTTP 503 + rule-based блок),
-страница не блокируется.
-
----
-
-## 6a. Отказоустойчивость и переключение на старую систему (graceful degradation)
-
-Ключевое требование: **AI не должен «уронить» сайт** (страх CTO) и страница не должна тормозить
-(SLA ≤ 200 мс). Поэтому деградация **многоуровневая** — чем серьёзнее сбой, тем проще ответ,
-но витрина работает всегда.
-
-| Уровень | Что сломалось | Поведение системы | Где на схеме |
-|---|---|---|---|
-| L1 | LLM недоступен/медленный | Отдаём товары **без генеративного текста** (шаблон), `meta.generated=false` | `LLM Client` → фолбэк на шаблон (C3) |
-| L2 | Vector DB / Ranker сбоит | Упрощённый подбор: **популярное в сегменте** из Feature Store/кэша | `RAG Manager` / `Ranker` (C3) |
-| L3 | **AI Service целиком down / 5xx / таймаут >200 мс** | Backend (BFF) откатывается на **Rule-based (legacy)** блок в монолите | `Backend → Rule-based (legacy)` (C2, Sequence) |
-
-Как это работает:
-
-- Backend вызывает AI Service с **жёстким таймаутом ~200 мс** и обработкой `5xx/503`.
-- При срабатывании любого из этих условий BFF **синхронно** запрашивает старый rule-based модуль
-  (тот самый «с этим товаром часто покупают») и отдаёт его пользователю — **без перезагрузки и без пустого блока**.
-- Старая система **остаётся в проде** на весь период внедрения → можно катить AI **на часть трафика**
-  (canary / feature-flag) и мгновенно откатываться. Это прямой ответ на условие «3 месяца или закроют».
-
-> Контрактно фолбэк зафиксирован в OpenAPI: ответ **`503 upstream_unavailable`** с пометкой
-> «fallback recommended» — Backend по нему обязан показать legacy-блок.
-
----
-
-## 7. API Spec — `/get_recommendation`
-
-Полный контракт: [`api/openapi.yaml`](api/openapi.yaml). Кратко:
-
-- **Метод/путь:** `POST /v1/get_recommendation`
-- **Назначение:** контракт **Backend → AI Service**.
-- **Аутентификация:** сервис-к-сервису по `X-Api-Key` (+ рекомендован mTLS во внутренней сети).
-- **Запрос** (типы — в схеме `RecommendationRequest`): `session_id` (uuid, обязателен даже для анонима),
-  `user_id` (nullable), `context` (`page_type`, `current_sku`, `category_id`, `device`),
-  `limit` (1..50), `generate_text` (bool).
-- **Ответ** (`RecommendationResponse`): `request_id`, массив `recommendations`
-  (`sku`, `title`, `price`, `currency`, `score`, `reason`, `generated_title`, `generated_description`,
-  `image_url`) и `meta` (`model_version`, `llm_model`, `cache_hit`, `latency_ms`, `generated`).
-- **Примеры:** в спеке есть примеры запроса (аноним / залогинен) и успешного ответа.
-- **Коды ошибок:** `400` (битый запрос), `401` (нет/неверный ключ), `422` (валидация),
-  `429` (rate limit, с `Retry-After`), `500` (внутренняя), `503` (зависимость недоступна → фолбэк).
-
-Пример запроса:
+**Пример запроса:**
 
 ```json
 {
@@ -421,7 +305,7 @@ Omnichannel Filter → Ranker → Prompt Template Factory → LLM Client → Res
 }
 ```
 
-Пример ответа (фрагмент):
+**Пример ответа (фрагмент):**
 
 ```json
 {
@@ -436,18 +320,18 @@ Omnichannel Filter → Ranker → Prompt Template Factory → LLM Client → Res
       "generated_description": "Иван, вы недавно смотрели ноутбуки — эта мышь повысит продуктивность."
     }
   ],
-  "meta": { "model_version": "ranker-2.3.1", "cache_hit": false, "latency_ms": 173, "generated": true }
+  "meta": { "model_version": "ranker-2.3.1", "llm_model": "cloud-llm-gpt", "cache_hit": false, "latency_ms": 173, "generated": true }
 }
 ```
 
----
+**Пример ошибки (`503` → fallback):**
 
-## 8. Соответствие критериям приёмки
-
-- ✅ **Нотация / направления связей** — C2 и C3 в нотации C4, стрелки направлены по потоку вызова;
-  у контейнеров указан технологический стек.
-- ✅ **Связность C3 ↔ Sequence** — участники Sequence-диаграммы дословно совпадают с компонентами C3
-  (Controller, Cache Client, Profile Provider, RAG Manager, Omnichannel Filter, Ranker,
-  Prompt Template Factory, LLM Client, Response Assembler).
-- ✅ **Качество API** — OpenAPI 3.0.3 (валидирован): типы данных, ограничения (`minimum/maximum`,
-  `enum`, `nullable`), примеры запросов/ответов и полный набор кодов ошибок.
+```json
+{
+  "error": {
+    "code": "upstream_unavailable",
+    "message": "LLM timeout, fallback recommended",
+    "request_id": "f17c2b9a-0d3e-4a8b-bb12-91a6f0c7e001"
+  }
+}
+```

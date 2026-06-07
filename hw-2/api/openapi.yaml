@@ -11,8 +11,9 @@ info:
     - работает и для **анонимных** пользователей (по `session_id` из cookie);
     - **омниканальность**: уже купленные товары (онлайн+офлайн из 1С) исключаются;
     - **SLA по скорости**: целевая задержка ответа ≤ 200 мс (быстрый путь — из кэша);
-    - **безопасность**: PII не передаётся в публичные LLM (генерация — на приватной модели,
-      персональные данные маскируются до отправки в модель).
+    - **безопасность**: генерация идёт на **облачной LLM**, но PII туда не попадает —
+      сервис анонимизации заменяет персональные данные (ФИО/телефон) на токены до отправки
+      и восстанавливает их в ответе (PII-rehydration).
   version: 1.0.0
   contact:
     name: AI Platform Team, TechnoMart
@@ -112,7 +113,7 @@ paths:
                         image_url: "https://cdn.technomart.example/p/200455.jpg"
                     meta:
                       model_version: "ranker-2.3.1"
-                      llm_model: "private-llm-7b"
+                      llm_model: "cloud-llm-gpt"
                       cache_hit: false
                       latency_ms: 173
                       generated: true
@@ -320,7 +321,7 @@ components:
           example: "ranker-2.3.1"
         llm_model:
           type: string
-          example: "private-llm-7b"
+          example: "cloud-llm-gpt"
         cache_hit:
           type: boolean
           example: false

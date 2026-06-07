@@ -5,7 +5,6 @@
 
 flowchart TB
     customer([👤 Покупатель<br/>веб + мобильное приложение<br/>аноним по cookie или залогинен])
-    marketer([📣 Маркетолог<br/>настраивает ежедневные<br/>AI-пуш-кампании])
 
     SYS["🟦 Система умных рекомендаций TechnoMart<br/>персональная «Умная лента»<br/>+ генеративные описания товаров"]
 
@@ -14,7 +13,6 @@ flowchart TB
 
     customer -->|"смотрит рекомендации на сайте/в приложении"| SYS
     SYS -.->|"персональные пуши с рекомендациями"| customer
-    marketer -->|"настраивает кампании пушей"| SYS
 
     onec -->|"заказы для омниканальности, синк 15 мин"| SYS
     xml -->|"каталог товаров, раз в сутки"| SYS
@@ -23,6 +21,6 @@ flowchart TB
     classDef sys fill:#1565c0,stroke:#0d47a1,color:#ffffff;
     classDef ext fill:#8d99ae,stroke:#5c6b7a,color:#ffffff;
 
-    class customer,marketer person;
+    class customer person;
     class SYS sys;
     class onec,xml ext;

@@ -20,13 +20,17 @@ flowchart TB
             CACHE[("⚡ Cache<br/>[Redis]<br/>предрассчитанные рекомендации, TTL")]
             ETL["🔄 Data Ingestion / ETL<br/>[Python, Airflow]<br/>каталог, заказы, клики → фичи и эмбеддинги"]
             EVT["📡 Event Collector<br/>[Kafka / HTTP]<br/>клики и просмотры в реальном времени"]
-            LLM["🧠 Private LLM Service<br/>[self-hosted / приватный эндпоинт]<br/>генерация заголовков и описаний"]
+            ANON["🛡 PII Anonymizer / Rehydrator<br/>[Python]<br/>маскирует PII → токены перед облаком,<br/>восстанавливает в ответе"]
+            VAULT[("🔐 Token Vault<br/>[Redis, короткий TTL]<br/>карта токен ↔ реальное значение")]
         end
     end
 
     %% Внешние источники данных (As-Is)
     ONEC[("🧾 1С<br/>чеки и заказы<br/>(онлайн + офлайн)")]
     XML[("📦 Каталог-фид<br/>XML, выгрузка раз в сутки")]
+
+    %% Внешняя облачная генеративная модель (PII в неё не попадает)
+    CLOUD["☁️ Cloud LLM Provider<br/>[внешний managed-сервис]<br/>генерация заголовков и описаний"]
 
     %% Пользовательский трафик
     User -->|"HTTPS: открывает страницу"| FE
@@ -46,7 +50,13 @@ flowchart TB
     AISVC -->|"чтение профиля/фич"| FS
     AISVC -->|"поиск кандидатов (top-k)"| VDB
     AISVC -->|"чтение/запись кэша"| CACHE
-    AISVC -->|"генерация текста (без PII)"| LLM
+
+    %% Генерация через облако с анонимизацией PII
+    AISVC -->|"промпт (может содержать PII)"| ANON
+    ANON -->|"сохранить карту токенов"| VAULT
+    ANON -->|"анонимизированный промпт БЕЗ PII"| CLOUD
+    CLOUD -.->|"текст с токенами"| ANON
+    ANON -.->|"текст с восстановленными PII"| AISVC
 
     %% Наполнение данными
     ONEC -->|"заказы, синк 15 мин"| ETL
@@ -62,7 +72,7 @@ flowchart TB
     classDef ai fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
     classDef data fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
 
-    class User,ONEC,XML ext;
+    class User,ONEC,XML,CLOUD ext;
     class FE,BE,LEGACY be;
-    class AISVC,ETL,EVT,LLM ai;
-    class MYSQL,FS,VDB,CACHE data;
+    class AISVC,ETL,EVT,ANON ai;
+    class MYSQL,FS,VDB,CACHE,VAULT data;

@@ -9,6 +9,9 @@ workspace "TechnoMart Recommendations" "C4-модель системы умны�
         catalogFeed = softwareSystem "Каталог (XML)" "Выгрузка каталога раз в сутки" {
             tags "External"
         }
+        cloudLlm = softwareSystem "Cloud LLM Provider" "Внешняя облачная генеративная модель; получает только анонимизированные промпты без PII" {
+            tags "External"
+        }
 
         technomart = softwareSystem "TechnoMart Recommendations" "Платформа умных рекомендаций TechnoMart" {
 
@@ -34,8 +37,8 @@ workspace "TechnoMart Recommendations" "C4-модель системы умны�
                 ragManager = component "RAG Manager" "Сбор кандидатов: история + семантика, запрос к Vector DB" "Python"
                 omnichannelFilter = component "Omnichannel Filter" "Исключает уже купленное (онлайн + офлайн)" "Python"
                 ranker = component "Ranker / Scorer" "ML-ранжирование кандидатов" "Python, ML"
-                promptFactory = component "Prompt Template Factory" "Шаблоны промптов + маскирование PII" "Python"
-                llmClient = component "LLM Client" "Вызов Private LLM, ретраи, фолбэк на шаблон" "Python"
+                promptFactory = component "Prompt Template Factory" "Шаблоны промптов под тип подборки" "Python"
+                llmClient = component "LLM Client" "Вызов облачной LLM через анонимизатор; ретраи, фолбэк на шаблон" "Python"
                 responseAssembler = component "Response Assembler" "Финальный DTO: товары + тексты + meta" "Python"
                 observability = component "Observability" "Логи, трассировка, метрики latency" "OpenTelemetry"
             }
@@ -55,8 +58,11 @@ workspace "TechnoMart Recommendations" "C4-модель системы умны�
             eventCollector = container "Event Collector" "Клики и просмотры в реальном времени" "Kafka / HTTP" {
                 tags "AI"
             }
-            privateLlm = container "Private LLM Service" "Генерация заголовков и описаний; PII не уходит наружу" "self-hosted LLM" {
+            anonymizer = container "PII Anonymizer / Rehydrator" "Маскирует PII в токены перед вызовом облачной LLM и восстанавливает их в ответе" "Python" {
                 tags "AI"
+            }
+            tokenVault = container "Token Vault" "Короткоживущая карта токен <-> реальное значение PII" "Redis, короткий TTL" {
+                tags "Database"
             }
         }
 
@@ -72,7 +78,9 @@ workspace "TechnoMart Recommendations" "C4-модель системы умны�
         aiService -> featureStore "Чтение профиля/фич"
         aiService -> vectorDb "Поиск кандидатов top-k"
         aiService -> cache "Чтение/запись подборок"
-        aiService -> privateLlm "Генерация текста (без PII)"
+        aiService -> anonymizer "Промпт на генерацию (может содержать PII)"
+        anonymizer -> tokenVault "Сохранить/прочитать карту токенов"
+        anonymizer -> cloudLlm "Анонимизированный промпт БЕЗ PII" "HTTPS"
 
         oneC -> etl "Заказы, синк 15 мин"
         catalogFeed -> etl "Каталог, раз в сутки"
@@ -98,7 +106,7 @@ workspace "TechnoMart Recommendations" "C4-модель системы умны�
         cacheClient -> cache "GET/SET" "Redis"
         profileProvider -> featureStore "SELECT" "SQL"
         ragManager -> vectorDb "top-k поиск"
-        llmClient -> privateLlm "Запрос генерации"
+        llmClient -> anonymizer "Анонимизировать и вызвать облачную LLM"
 
         controller -> observability "trace"
         ragManager -> observability "trace"

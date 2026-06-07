@@ -13,8 +13,8 @@ flowchart TB
         RAG["📚 RAG Manager<br/>сбор кандидатов: история + семантика,<br/>запрос к Vector DB"]
         OMNI["🔁 Omnichannel Filter<br/>убирает уже купленное (онлайн+офлайн)"]
         RANK["📊 Ranker / Scorer<br/>ML-ранжирование кандидатов"]
-        PTF["🧩 Prompt Template Factory<br/>шаблоны промптов под тип подборки,<br/>маскирование PII"]
-        LLMC["🧠 LLM Client<br/>вызов Private LLM, ретраи, фолбэк на шаблон"]
+        PTF["🧩 Prompt Template Factory<br/>шаблоны промптов под тип подборки"]
+        LLMC["🧠 LLM Client<br/>вызов облачной LLM через анонимизатор,<br/>ретраи, фолбэк на шаблон"]
         ASM["📦 Response Assembler<br/>финальный DTO: товары + тексты + meta"]
         OBS["🔭 Observability<br/>логи, трассировка, метрики latency"]
     end
@@ -23,7 +23,8 @@ flowchart TB
     CACHE[("⚡ Redis<br/>Cache")]
     FS[("🧮 Feature Store<br/>PostgreSQL")]
     VDB[("🧱 Vector DB<br/>Qdrant / pgvector")]
-    LLM["🧠 Private LLM Service"]
+    ANON["🛡 PII Anonymizer / Rehydrator<br/>маскирует PII перед облаком,<br/>восстанавливает в ответе"]
+    CLOUD["☁️ Cloud LLM Provider<br/>внешний managed-сервис"]
 
     %% Поток управления
     BE -->|"JSON-запрос"| CTRL
@@ -43,7 +44,12 @@ flowchart TB
     CACHEC --> CACHE
     PROF --> FS
     RAG --> VDB
-    LLMC --> LLM
+
+    %% Генерация: облако через анонимизатор PII
+    LLMC -->|"7a. анонимизировать + вызвать облако"| ANON
+    ANON -->|"7b. промпт БЕЗ PII"| CLOUD
+    CLOUD -.->|"текст с токенами"| ANON
+    ANON -.->|"восстановленный текст"| LLMC
 
     %% Наблюдаемость
     CTRL -.-> OBS
@@ -57,6 +63,6 @@ flowchart TB
     classDef obs fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
 
     class CTRL,CACHEC,PROF,RAG,OMNI,RANK,PTF,LLMC,ASM comp;
-    class CACHE,FS,VDB,LLM data;
-    class BE ext;
+    class CACHE,FS,VDB data;
+    class BE,ANON,CLOUD ext;
     class OBS obs;
