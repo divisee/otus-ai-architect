@@ -10,9 +10,9 @@ sequenceDiagram
     participant CTRL as 🎛 Controller
     participant CACHE as ⚡ Cache Client
     participant PROF as 👤 Profile Provider
-    participant RAG as 📚 RAG Manager
+    participant CG as 🧲 Candidate Generator
     participant OMNI as 🔁 Omnichannel Filter
-    participant RANK as 📊 Ranker
+    participant RANK as 📊 Ranker (ML)
     participant PTF as 🧩 Prompt Factory
     participant LLM as 🧠 LLM Client
     participant ANON as 🛡 PII Anonymizer
@@ -33,11 +33,12 @@ sequenceDiagram
         else Кэш-промах (полный путь)
             CTRL->>PROF: Профиль и фичи (user/session)
             PROF-->>CTRL: Сегмент, история, предпочтения
-            CTRL->>RAG: Подобрать кандидатов (top-k)
-            RAG-->>CTRL: Список SKU-кандидатов
-            CTRL->>OMNI: Убрать уже купленное (онлайн+офлайн из 1С)
-            OMNI-->>CTRL: Очищенные кандидаты
-            CTRL->>RANK: Ранжировать
+            CTRL->>CG: Отобрать кандидатов из 50k SKU (CF + ANN + история)
+            Note over CG: pre-filter в retrieval:<br/>наличие/регион/категория (metadata),<br/>over-fetch ~top-500
+            CG-->>CTRL: ~500 SKU-кандидатов (уже без негодных)
+            CTRL->>OMNI: Вычесть уже купленное (онлайн+офлайн из 1С)
+            OMNI-->>CTRL: Чистые кандидаты (~200)
+            CTRL->>RANK: Ранжировать ML-моделью (только чистых)
             RANK-->>CTRL: Топ-N отсортировано
             CTRL->>PTF: Собрать промпт
             PTF-->>CTRL: Готовый промпт (может содержать PII)

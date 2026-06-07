@@ -35,12 +35,14 @@ flowchart TB
 
     customer -->|"смотрит рекомендации на сайте/в приложении"| SYS
     SYS -.->|"персональные пуши с рекомендациями"| customer
+
     onec -->|"заказы для омниканальности, синк 15 мин"| SYS
     xml -->|"каталог товаров, раз в сутки"| SYS
 
     classDef person fill:#08427b,stroke:#052c54,color:#ffffff;
     classDef sys fill:#1565c0,stroke:#0d47a1,color:#ffffff;
     classDef ext fill:#8d99ae,stroke:#5c6b7a,color:#ffffff;
+
     class customer person;
     class SYS sys;
     class onec,xml ext;
@@ -59,46 +61,59 @@ flowchart TB
 
     subgraph TM["🏢 Платформа TechnoMart"]
         direction TB
-        FE["🖥 Frontend<br/>SPA / Mobile<br/>сайт и приложение, блок рекомендаций"]
-        BE["🧱 Backend-монолит<br/>PHP, Bitrix<br/>каталог, корзина, заказы, BFF"]
-        LEGACY["🛟 Rule-based Recommendations (legacy)<br/>PHP, в монолите<br/>fallback при сбое/таймауте AI"]
-        MYSQL[("🗃 SQL DB магазина<br/>MySQL<br/>каталог, пользователи, заказы")]
 
-        subgraph NEW["☁️ Новый AI-контур (облако, старт без GPU)"]
+        FE["🖥 Frontend<br/>[SPA / Mobile]<br/>сайт и приложение, блок рекомендаций"]
+        BE["🧱 Backend-монолит<br/>[PHP, Bitrix]<br/>каталог, корзина, заказы, BFF для рекомендаций"]
+        LEGACY["🛟 Rule-based Recommendations (legacy)<br/>[PHP, в монолите]<br/>«с этим товаром часто покупают»<br/>fallback при сбое/таймауте AI"]
+        MYSQL[("🗃 SQL DB магазина<br/>[MySQL]<br/>каталог, пользователи, заказы")]
+
+        subgraph NEW["☁️ Новый AI-контур (облако, начинаем без GPU)"]
             direction TB
-            AISVC["🤖 AI Recommendation Service<br/>Python, FastAPI<br/>рекомендации + генеративные тексты"]
-            FS[("🧮 Feature Store / SQL DB<br/>PostgreSQL<br/>профили, фичи, подборки")]
-            VDB[("🧱 Vector DB<br/>Qdrant / pgvector<br/>эмбеддинги товаров и сессий")]
-            CACHE[("⚡ Cache<br/>Redis<br/>предрассчитанные подборки, TTL")]
-            ETL["🔄 Data Ingestion / ETL<br/>Python, Airflow<br/>каталог, заказы, клики → фичи и эмбеддинги"]
-            EVT["📡 Event Collector<br/>Kafka / HTTP<br/>клики и просмотры в реальном времени"]
-            ANON["🛡 PII Anonymizer / Rehydrator<br/>Python<br/>маскирует PII перед облаком,<br/>восстанавливает в ответе"]
-            VAULT[("🔐 Token Vault<br/>Redis, короткий TTL<br/>карта токен ↔ значение")]
+            AISVC["🤖 AI Recommendation Service<br/>[Python, FastAPI]<br/>выдача рекомендаций + генеративные описания"]
+            FS[("🧮 Feature Store / SQL DB<br/>[PostgreSQL]<br/>профили, фичи, готовые подборки")]
+            VDB[("🧱 Vector DB<br/>[Qdrant / pgvector]<br/>эмбеддинги товаров и сессий")]
+            CACHE[("⚡ Cache<br/>[Redis]<br/>предрассчитанные рекомендации, TTL")]
+            ETL["🔄 Data Ingestion / ETL<br/>[Python, Airflow]<br/>каталог, заказы, клики → фичи и эмбеддинги"]
+            EVT["📡 Event Collector<br/>[Kafka / HTTP]<br/>клики и просмотры в реальном времени"]
+            ANON["🛡 PII Anonymizer / Rehydrator<br/>[Python]<br/>маскирует PII → токены перед облаком,<br/>восстанавливает в ответе"]
+            VAULT[("🔐 Token Vault<br/>[Redis, короткий TTL]<br/>карта токен ↔ реальное значение")]
         end
     end
 
-    ONEC[("🧾 1С<br/>чеки и заказы<br/>онлайн + офлайн")]
-    XML[("📦 Каталог-фид<br/>XML, раз в сутки")]
-    CLOUD["☁️ Cloud LLM Provider<br/>внешний managed-сервис<br/>генерация текстов"]
+    %% Внешние источники данных (As-Is)
+    ONEC[("🧾 1С<br/>чеки и заказы<br/>(онлайн + офлайн)")]
+    XML[("📦 Каталог-фид<br/>XML, выгрузка раз в сутки")]
 
+    %% Внешняя облачная генеративная модель (PII в неё не попадает)
+    CLOUD["☁️ Cloud LLM Provider<br/>[внешний managed-сервис]<br/>генерация заголовков и описаний"]
+
+    %% Пользовательский трафик
     User -->|"HTTPS: открывает страницу"| FE
-    FE -->|"HTTPS/JSON: запрос блока"| BE
+    FE -->|"HTTPS/JSON: запрос блока рекомендаций"| BE
     BE -->|"HTTPS/JSON: POST /get_recommendation"| AISVC
     FE -.->|"события клик/просмотр"| EVT
+
+    %% Fallback на старую систему при сбое/таймауте AI Service
     BE -->|"fallback: AI down / timeout / 503"| LEGACY
     AISVC -.->|"5xx / медленнее 200мс"| BE
     LEGACY -->|"SQL"| MYSQL
+
+    %% Чтение данных магазина
     BE -->|"SQL"| MYSQL
 
+    %% Внутри AI-контура
     AISVC -->|"чтение профиля/фич"| FS
-    AISVC -->|"поиск кандидатов top-k"| VDB
+    AISVC -->|"поиск кандидатов (top-k)"| VDB
     AISVC -->|"чтение/запись кэша"| CACHE
+
+    %% Генерация через облако с анонимизацией PII
     AISVC -->|"промпт (может содержать PII)"| ANON
-    ANON -->|"карта токенов"| VAULT
+    ANON -->|"сохранить карту токенов"| VAULT
     ANON -->|"анонимизированный промпт БЕЗ PII"| CLOUD
     CLOUD -.->|"текст с токенами"| ANON
     ANON -.->|"текст с восстановленными PII"| AISVC
 
+    %% Наполнение данными
     ONEC -->|"заказы, синк 15 мин"| ETL
     XML -->|"каталог, раз в сутки"| ETL
     EVT -->|"поток событий"| ETL
@@ -111,6 +126,7 @@ flowchart TB
     classDef be fill:#fff3e0,stroke:#e65100,color:#bf360c;
     classDef ai fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
     classDef data fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
+
     class User,ONEC,XML,CLOUD ext;
     class FE,BE,LEGACY be;
     class AISVC,ETL,EVT,ANON ai;
@@ -127,51 +143,58 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    BE([🧱 Backend-монолит<br/>POST /get_recommendation])
+    BE([🧱 Backend-монолит<br/>вызывает POST /get_recommendation])
 
-    subgraph AISVC["🤖 AI Recommendation Service — Python, FastAPI"]
+    subgraph AISVC["🤖 AI Recommendation Service [Python, FastAPI]"]
         direction TB
-        CTRL["🎛 Recommendation Controller<br/>REST-эндпоинт, валидация,<br/>оркестрация, сборка ответа"]
-        CACHEC["⚡ Cache Client<br/>fast-path: готовая подборка <200мс"]
-        PROF["👤 Profile Provider<br/>профиль и фичи по user/session"]
-        RAG["📚 RAG Manager<br/>кандидаты: история + семантика,<br/>запрос к Vector DB"]
-        OMNI["🔁 Omnichannel Filter<br/>убирает уже купленное"]
-        RANK["📊 Ranker / Scorer<br/>ML-ранжирование"]
+
+        CTRL["🎛 Recommendation Controller<br/>REST-эндпоинт, валидация запроса,<br/>оркестрация пайплайна, сборка ответа"]
+        CACHEC["⚡ Cache Client<br/>fast-path: отдать готовую подборку (<200мс)"]
+        PROF["👤 Profile Provider<br/>профиль и фичи по user_id / session_id"]
+        CG["🧲 Candidate Generator (Retrieval)<br/>кандидаты из 50k SKU: CF + ANN-эмбеддинги + история<br/>pre-filter: наличие/регион/категория (metadata)<br/>over-fetch ~top-500"]
+        OMNI["🔁 Omnichannel Filter<br/>вычитает уже купленное (онлайн+офлайн)<br/>fast set-difference (Redis SET / Bloom)"]
+        RANK["📊 Ranker / Scorer (ML-модель)<br/>ранжирует ТОЛЬКО чистых кандидатов (~top-200)<br/>— ядро recsys вместе с Candidate Generator"]
         PTF["🧩 Prompt Template Factory<br/>шаблоны промптов под тип подборки"]
-        LLMC["🧠 LLM Client<br/>вызов облачной LLM через анонимизатор,<br/>ретраи, фолбэк"]
+        LLMC["🧠 LLM Client<br/>вызов облачной LLM через анонимизатор,<br/>ретраи, фолбэк на шаблон"]
         ASM["📦 Response Assembler<br/>финальный DTO: товары + тексты + meta"]
         OBS["🔭 Observability<br/>логи, трассировка, метрики latency"]
     end
 
-    CACHE[("⚡ Redis")]
+    %% Внешние для контейнера зависимости
+    CACHE[("⚡ Redis<br/>Cache")]
     FS[("🧮 Feature Store<br/>PostgreSQL")]
-    VDB[("🧱 Vector DB")]
-    ANON["🛡 PII Anonymizer / Rehydrator"]
-    CLOUD["☁️ Cloud LLM Provider"]
+    VDB[("🧱 Vector DB<br/>Qdrant / pgvector")]
+    ANON["🛡 PII Anonymizer / Rehydrator<br/>маскирует PII перед облаком,<br/>восстанавливает в ответе"]
+    CLOUD["☁️ Cloud LLM Provider<br/>внешний managed-сервис"]
 
+    %% Поток управления
     BE -->|"JSON-запрос"| CTRL
     CTRL -->|"1. проверить кэш"| CACHEC
-    CACHEC -->|"hit → сразу"| ASM
+    CACHEC -->|"hit → сразу ответ"| ASM
     CTRL -->|"2. профиль/фичи"| PROF
-    CTRL -->|"3. кандидаты"| RAG
-    RAG -->|"4. фильтр купленного"| OMNI
-    OMNI -->|"5. ранжирование"| RANK
-    RANK -->|"6. промпт"| PTF
-    PTF -->|"7. генерация"| LLMC
+    CTRL -->|"3. кандидаты (over-fetch ~500)"| CG
+    CG -->|"4. вычесть купленное"| OMNI
+    OMNI -->|"5. ранжировать ~200"| RANK
+    RANK -->|"6. собрать промпт"| PTF
+    PTF -->|"7. генерация текста"| LLMC
     LLMC -->|"8. товары + тексты"| ASM
     CTRL -->|"9. записать кэш"| CACHEC
     ASM -->|"JSON-ответ"| BE
 
+    %% Доступ к данным
     CACHEC --> CACHE
     PROF --> FS
-    RAG --> VDB
-    LLMC -->|"7a. анонимизировать + облако"| ANON
+    CG -->|"ANN + metadata-фильтр (наличие/регион)"| VDB
+
+    %% Генерация: облако через анонимизатор PII
+    LLMC -->|"7a. анонимизировать + вызвать облако"| ANON
     ANON -->|"7b. промпт БЕЗ PII"| CLOUD
     CLOUD -.->|"текст с токенами"| ANON
     ANON -.->|"восстановленный текст"| LLMC
 
+    %% Наблюдаемость
     CTRL -.-> OBS
-    RAG -.-> OBS
+    CG -.-> OBS
     RANK -.-> OBS
     LLMC -.-> OBS
 
@@ -179,13 +202,14 @@ flowchart TB
     classDef data fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
     classDef ext fill:#eceff1,stroke:#607d8b,color:#263238;
     classDef obs fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
-    class CTRL,CACHEC,PROF,RAG,OMNI,RANK,PTF,LLMC,ASM comp;
+
+    class CTRL,CACHEC,PROF,CG,OMNI,RANK,PTF,LLMC,ASM comp;
     class CACHE,FS,VDB data;
     class BE,ANON,CLOUD ext;
     class OBS obs;
 ```
 
-Внутренности AI Service: каждый компонент — одна зона ответственности (Single Responsibility). Пронумерованные шаги совпадают с Sequence-диаграммой.
+Внутренности AI Service: каждый компонент — одна зона ответственности (Single Responsibility). Пронумерованные шаги совпадают с Sequence-диаграммой. Как именно работает ядро рекомендаций — в разделе [«Как работает RecSys»](#как-работает-recsys-кратко) ниже.
 
 </details>
 
@@ -201,9 +225,9 @@ sequenceDiagram
     participant CTRL as 🎛 Controller
     participant CACHE as ⚡ Cache Client
     participant PROF as 👤 Profile Provider
-    participant RAG as 📚 RAG Manager
+    participant CG as 🧲 Candidate Generator
     participant OMNI as 🔁 Omnichannel Filter
-    participant RANK as 📊 Ranker
+    participant RANK as 📊 Ranker (ML)
     participant PTF as 🧩 Prompt Factory
     participant LLM as 🧠 LLM Client
     participant ANON as 🛡 PII Anonymizer
@@ -214,6 +238,7 @@ sequenceDiagram
     U->>FE: Открывает страницу товара
     FE->>BE: GET блок рекомендаций (session_id, sku)
     BE->>CTRL: POST /get_recommendation (JSON, timeout 200 мс)
+
     alt AI Service ответил вовремя
         CTRL->>CTRL: Валидация запроса
         CTRL->>CACHE: Проверить готовую подборку
@@ -221,14 +246,15 @@ sequenceDiagram
             CACHE-->>CTRL: Готовые рекомендации
             CTRL->>ASM: Собрать ответ из кэша
         else Кэш-промах (полный путь)
-            CTRL->>PROF: Профиль и фичи
+            CTRL->>PROF: Профиль и фичи (user/session)
             PROF-->>CTRL: Сегмент, история, предпочтения
-            CTRL->>RAG: Подобрать кандидатов (top-k)
-            RAG-->>CTRL: SKU-кандидаты
-            CTRL->>OMNI: Убрать купленное (онлайн+офлайн из 1С)
-            OMNI-->>CTRL: Очищенные кандидаты
-            CTRL->>RANK: Ранжировать
-            RANK-->>CTRL: Топ-N
+            CTRL->>CG: Отобрать кандидатов из 50k SKU (CF + ANN + история)
+            Note over CG: pre-filter в retrieval:<br/>наличие/регион/категория (metadata),<br/>over-fetch ~top-500
+            CG-->>CTRL: ~500 SKU-кандидатов (уже без негодных)
+            CTRL->>OMNI: Вычесть уже купленное (онлайн+офлайн из 1С)
+            OMNI-->>CTRL: Чистые кандидаты (~200)
+            CTRL->>RANK: Ранжировать ML-моделью (только чистых)
+            RANK-->>CTRL: Топ-N отсортировано
             CTRL->>PTF: Собрать промпт
             PTF-->>CTRL: Готовый промпт (может содержать PII)
             CTRL->>LLM: Сгенерировать заголовок и описание
@@ -247,6 +273,7 @@ sequenceDiagram
         BE->>LEG: Запросить rule-based блок
         LEG-->>BE: «С этим товаром часто покупают»
     end
+
     BE-->>FE: JSON блока (AI или fallback)
     FE-->>U: Показывает ленту (страница не блокируется)
 ```
@@ -254,6 +281,39 @@ sequenceDiagram
 Быстрый путь — из кэша (держит SLA 200 мс). При кэш-промахе — полный пайплайн с генерацией через анонимизатор. При сбое/таймауте AI — fallback на старый rule-based блок.
 
 </details>
+
+## Как работает RecSys (кратко)
+
+Ядро рекомендаций — **классический двухэтапный RecSys**. LLM в подборе товаров **не участвует** — она только генерирует тексты (заголовок/описание) к уже отобранным товарам.
+
+**Offline (заранее, поток ETL):** каталог (XML) + заказы из 1С + клики/просмотры превращаются в фичи и эмбеддинги товаров/сессий и складываются в **Feature Store** и **Vector DB**; популярные подборки прогреваются в **кэш**.
+
+**Online (на запрос, бюджет ≤ 200 мс):**
+
+1. **Retrieval — `Candidate Generator`:** из 50k SKU быстро отбирает кандидатов — collaborative filtering + ANN-поиск эмбеддингов в Vector DB + история. Жёсткие фильтры (наличие/регион/категория) применяются прямо здесь (pre-filter), берётся с запасом (~top-500).
+2. **Фильтрация — `Omnichannel Filter`:** вычитает уже купленное (онлайн+офлайн из 1С) быстрым set-difference (Redis SET / Bloom) → ~top-200. Всё лишнее отсекается **до** ранжирования.
+3. **Ranking — `Ranker` (ML):** сортирует оставшихся по предсказанной вероятности клика/покупки → top-N.
+4. **Тексты — `LLM Client`:** генерирует заголовок/описание к выбранным товарам через **PII Anonymizer** (в облако уходит промпт без персональных данных).
+5. **Скорость:** готовые подборки отдаются из кэша за <200 мс; при сбое/таймауте — fallback на старый rule-based блок.
+
+**Cold-start:** аноним/новый пользователь — рекомендации по `session_id`/cookie и популярному в категории/сегменте (`reason = popular_in_segment`); новый товар без истории продаж — по контентным эмбеддингам.
+
+## Порядок работы (по Sequence)
+
+| # | Шаг | Кто → Кто | Что происходит |
+|---|-----|-----------|----------------|
+| 1 | Открытие страницы | Покупатель → Frontend → Backend | Frontend запрашивает блок рекомендаций (`session_id`, `sku`) |
+| 2 | Вызов AI | Backend → Controller | `POST /get_recommendation` с таймаутом 200 мс (Backend = BFF) |
+| 3 | Кэш | Controller → Cache Client | Если есть готовая подборка — сразу ответ (**быстрый путь**, <200 мс) |
+| 4 | Профиль | Controller → Profile Provider | (кэш-промах) сегмент, история, предпочтения по user/session |
+| 5 | Кандидаты | Controller → Candidate Generator | Отбор из 50k SKU (CF + ANN + история), pre-filter, over-fetch ~top-500 |
+| 6 | Фильтр | Controller → Omnichannel Filter | Вычесть уже купленное (онлайн+офлайн из 1С) → ~top-200 |
+| 7 | Ранжирование | Controller → Ranker (ML) | Сортировка по вероятности покупки → top-N |
+| 8 | Промпт | Controller → Prompt Factory | Сборка промпта под тип подборки |
+| 9 | Генерация текста | LLM Client → PII Anonymizer → Cloud LLM | PII → токены, облако генерит текст, токены восстанавливаются |
+| 10 | Сборка + кэш | Controller → Response Assembler / Cache | Финальный DTO (товары + тексты + meta), запись в кэш (TTL) |
+| 11 | Ответ | Controller → Backend → Frontend | `200 OK`, Frontend показывает «Умную ленту» |
+| — | **Fallback** | Backend → Rule-based (legacy) | Если AI недоступен / `5xx` / таймаут >200 мс — старый rule-based блок, страница не блокируется |
 
 ## API Spec — `/get_recommendation`
 

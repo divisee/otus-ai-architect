@@ -10,9 +10,9 @@ flowchart TB
         CTRL["🎛 Recommendation Controller<br/>REST-эндпоинт, валидация запроса,<br/>оркестрация пайплайна, сборка ответа"]
         CACHEC["⚡ Cache Client<br/>fast-path: отдать готовую подборку (<200мс)"]
         PROF["👤 Profile Provider<br/>профиль и фичи по user_id / session_id"]
-        RAG["📚 RAG Manager<br/>сбор кандидатов: история + семантика,<br/>запрос к Vector DB"]
-        OMNI["🔁 Omnichannel Filter<br/>убирает уже купленное (онлайн+офлайн)"]
-        RANK["📊 Ranker / Scorer<br/>ML-ранжирование кандидатов"]
+        CG["🧲 Candidate Generator (Retrieval)<br/>кандидаты из 50k SKU: CF + ANN-эмбеддинги + история<br/>pre-filter: наличие/регион/категория (metadata)<br/>over-fetch ~top-500"]
+        OMNI["🔁 Omnichannel Filter<br/>вычитает уже купленное (онлайн+офлайн)<br/>fast set-difference (Redis SET / Bloom)"]
+        RANK["📊 Ranker / Scorer (ML-модель)<br/>ранжирует ТОЛЬКО чистых кандидатов (~top-200)<br/>— ядро recsys вместе с Candidate Generator"]
         PTF["🧩 Prompt Template Factory<br/>шаблоны промптов под тип подборки"]
         LLMC["🧠 LLM Client<br/>вызов облачной LLM через анонимизатор,<br/>ретраи, фолбэк на шаблон"]
         ASM["📦 Response Assembler<br/>финальный DTO: товары + тексты + meta"]
@@ -31,9 +31,9 @@ flowchart TB
     CTRL -->|"1. проверить кэш"| CACHEC
     CACHEC -->|"hit → сразу ответ"| ASM
     CTRL -->|"2. профиль/фичи"| PROF
-    CTRL -->|"3. кандидаты"| RAG
-    RAG -->|"4. фильтр купленного"| OMNI
-    OMNI -->|"5. ранжирование"| RANK
+    CTRL -->|"3. кандидаты (over-fetch ~500)"| CG
+    CG -->|"4. вычесть купленное"| OMNI
+    OMNI -->|"5. ранжировать ~200"| RANK
     RANK -->|"6. собрать промпт"| PTF
     PTF -->|"7. генерация текста"| LLMC
     LLMC -->|"8. товары + тексты"| ASM
@@ -43,7 +43,7 @@ flowchart TB
     %% Доступ к данным
     CACHEC --> CACHE
     PROF --> FS
-    RAG --> VDB
+    CG -->|"ANN + metadata-фильтр (наличие/регион)"| VDB
 
     %% Генерация: облако через анонимизатор PII
     LLMC -->|"7a. анонимизировать + вызвать облако"| ANON
@@ -53,7 +53,7 @@ flowchart TB
 
     %% Наблюдаемость
     CTRL -.-> OBS
-    RAG -.-> OBS
+    CG -.-> OBS
     RANK -.-> OBS
     LLMC -.-> OBS
 
@@ -62,7 +62,7 @@ flowchart TB
     classDef ext fill:#eceff1,stroke:#607d8b,color:#263238;
     classDef obs fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
 
-    class CTRL,CACHEC,PROF,RAG,OMNI,RANK,PTF,LLMC,ASM comp;
+    class CTRL,CACHEC,PROF,CG,OMNI,RANK,PTF,LLMC,ASM comp;
     class CACHE,FS,VDB data;
     class BE,ANON,CLOUD ext;
     class OBS obs;
