@@ -1,0 +1,68 @@
+%% C4 Level 2 — Container Diagram. Система умных рекомендаций TechnoMart
+%% Вставьте код в https://mermaid.live или редактор с поддержкой Mermaid
+
+flowchart TB
+    User([👤 Покупатель<br/>веб + мобильное приложение<br/>залогинен или аноним по cookie])
+
+    subgraph TM["🏢 Платформа TechnoMart"]
+        direction TB
+
+        FE["🖥 Frontend<br/>[SPA / Mobile]<br/>сайт и приложение, блок рекомендаций"]
+        BE["🧱 Backend-монолит<br/>[PHP, Bitrix]<br/>каталог, корзина, заказы, BFF для рекомендаций"]
+        LEGACY["🛟 Rule-based Recommendations (legacy)<br/>[PHP, в монолите]<br/>«с этим товаром часто покупают»<br/>fallback при сбое/таймауте AI"]
+        MYSQL[("🗃 SQL DB магазина<br/>[MySQL]<br/>каталог, пользователи, заказы")]
+
+        subgraph NEW["☁️ Новый AI-контур (облако, начинаем без GPU)"]
+            direction TB
+            AISVC["🤖 AI Recommendation Service<br/>[Python, FastAPI]<br/>выдача рекомендаций + генеративные описания"]
+            FS[("🧮 Feature Store / SQL DB<br/>[PostgreSQL]<br/>профили, фичи, готовые подборки")]
+            VDB[("🧱 Vector DB<br/>[Qdrant / pgvector]<br/>эмбеддинги товаров и сессий")]
+            CACHE[("⚡ Cache<br/>[Redis]<br/>предрассчитанные рекомендации, TTL")]
+            ETL["🔄 Data Ingestion / ETL<br/>[Python, Airflow]<br/>каталог, заказы, клики → фичи и эмбеддинги"]
+            EVT["📡 Event Collector<br/>[Kafka / HTTP]<br/>клики и просмотры в реальном времени"]
+            LLM["🧠 Private LLM Service<br/>[self-hosted / приватный эндпоинт]<br/>генерация заголовков и описаний"]
+        end
+    end
+
+    %% Внешние источники данных (As-Is)
+    ONEC[("🧾 1С<br/>чеки и заказы<br/>(онлайн + офлайн)")]
+    XML[("📦 Каталог-фид<br/>XML, выгрузка раз в сутки")]
+
+    %% Пользовательский трафик
+    User -->|"HTTPS: открывает страницу"| FE
+    FE -->|"HTTPS/JSON: запрос блока рекомендаций"| BE
+    BE -->|"HTTPS/JSON: POST /get_recommendation"| AISVC
+    FE -.->|"события клик/просмотр"| EVT
+
+    %% Fallback на старую систему при сбое/таймауте AI Service
+    BE -->|"fallback: AI down / timeout / 503"| LEGACY
+    AISVC -.->|"5xx / медленнее 200мс"| BE
+    LEGACY -->|"SQL"| MYSQL
+
+    %% Чтение данных магазина
+    BE -->|"SQL"| MYSQL
+
+    %% Внутри AI-контура
+    AISVC -->|"чтение профиля/фич"| FS
+    AISVC -->|"поиск кандидатов (top-k)"| VDB
+    AISVC -->|"чтение/запись кэша"| CACHE
+    AISVC -->|"генерация текста (без PII)"| LLM
+
+    %% Наполнение данными
+    ONEC -->|"заказы, синк 15 мин"| ETL
+    XML -->|"каталог, раз в сутки"| ETL
+    EVT -->|"поток событий"| ETL
+    MYSQL -.->|"справочники"| ETL
+    ETL -->|"фичи, профили"| FS
+    ETL -->|"эмбеддинги товаров"| VDB
+    ETL -->|"прогрев подборок"| CACHE
+
+    classDef ext fill:#eceff1,stroke:#607d8b,color:#263238;
+    classDef be fill:#fff3e0,stroke:#e65100,color:#bf360c;
+    classDef ai fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef data fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
+
+    class User,ONEC,XML ext;
+    class FE,BE,LEGACY be;
+    class AISVC,ETL,EVT,LLM ai;
+    class MYSQL,FS,VDB,CACHE data;

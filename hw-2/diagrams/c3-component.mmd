@@ -1,0 +1,62 @@
+%% C4 Level 3 — Component Diagram. Внутренности контейнера "AI Recommendation Service"
+%% Вставьте код в https://mermaid.live
+
+flowchart TB
+    BE([🧱 Backend-монолит<br/>вызывает POST /get_recommendation])
+
+    subgraph AISVC["🤖 AI Recommendation Service [Python, FastAPI]"]
+        direction TB
+
+        CTRL["🎛 Recommendation Controller<br/>REST-эндпоинт, валидация запроса,<br/>оркестрация пайплайна, сборка ответа"]
+        CACHEC["⚡ Cache Client<br/>fast-path: отдать готовую подборку (<200мс)"]
+        PROF["👤 Profile Provider<br/>профиль и фичи по user_id / session_id"]
+        RAG["📚 RAG Manager<br/>сбор кандидатов: история + семантика,<br/>запрос к Vector DB"]
+        OMNI["🔁 Omnichannel Filter<br/>убирает уже купленное (онлайн+офлайн)"]
+        RANK["📊 Ranker / Scorer<br/>ML-ранжирование кандидатов"]
+        PTF["🧩 Prompt Template Factory<br/>шаблоны промптов под тип подборки,<br/>маскирование PII"]
+        LLMC["🧠 LLM Client<br/>вызов Private LLM, ретраи, фолбэк на шаблон"]
+        ASM["📦 Response Assembler<br/>финальный DTO: товары + тексты + meta"]
+        OBS["🔭 Observability<br/>логи, трассировка, метрики latency"]
+    end
+
+    %% Внешние для контейнера зависимости
+    CACHE[("⚡ Redis<br/>Cache")]
+    FS[("🧮 Feature Store<br/>PostgreSQL")]
+    VDB[("🧱 Vector DB<br/>Qdrant / pgvector")]
+    LLM["🧠 Private LLM Service"]
+
+    %% Поток управления
+    BE -->|"JSON-запрос"| CTRL
+    CTRL -->|"1. проверить кэш"| CACHEC
+    CACHEC -->|"hit → сразу ответ"| ASM
+    CTRL -->|"2. профиль/фичи"| PROF
+    CTRL -->|"3. кандидаты"| RAG
+    RAG -->|"4. фильтр купленного"| OMNI
+    OMNI -->|"5. ранжирование"| RANK
+    RANK -->|"6. собрать промпт"| PTF
+    PTF -->|"7. генерация текста"| LLMC
+    LLMC -->|"8. товары + тексты"| ASM
+    CTRL -->|"9. записать кэш"| CACHEC
+    ASM -->|"JSON-ответ"| BE
+
+    %% Доступ к данным
+    CACHEC --> CACHE
+    PROF --> FS
+    RAG --> VDB
+    LLMC --> LLM
+
+    %% Наблюдаемость
+    CTRL -.-> OBS
+    RAG -.-> OBS
+    RANK -.-> OBS
+    LLMC -.-> OBS
+
+    classDef comp fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef data fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
+    classDef ext fill:#eceff1,stroke:#607d8b,color:#263238;
+    classDef obs fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
+
+    class CTRL,CACHEC,PROF,RAG,OMNI,RANK,PTF,LLMC,ASM comp;
+    class CACHE,FS,VDB,LLM data;
+    class BE ext;
+    class OBS obs;

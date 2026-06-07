@@ -1,0 +1,56 @@
+%% Sequence Diagram — сценарий "Пользователь запрашивает рекомендацию"
+%% Участники = компоненты с C3-диаграммы (для связности C3 <-> Sequence)
+%% Вставьте код в https://mermaid.live
+
+sequenceDiagram
+    autonumber
+    actor U as 👤 Покупатель
+    participant FE as 🖥 Frontend
+    participant BE as 🧱 Backend (PHP)
+    participant CTRL as 🎛 Controller
+    participant CACHE as ⚡ Cache Client
+    participant PROF as 👤 Profile Provider
+    participant RAG as 📚 RAG Manager
+    participant OMNI as 🔁 Omnichannel Filter
+    participant RANK as 📊 Ranker
+    participant PTF as 🧩 Prompt Factory
+    participant LLM as 🧠 LLM Client
+    participant ASM as 📦 Response Assembler
+    participant LEG as 🛟 Rule-based (legacy)
+
+    U->>FE: Открывает страницу товара
+    FE->>BE: GET блок рекомендаций (session_id, sku)
+    BE->>CTRL: POST /get_recommendation (JSON, timeout 200 мс)
+
+    alt AI Service ответил вовремя
+        CTRL->>CTRL: Валидация запроса
+        CTRL->>CACHE: Проверить готовую подборку
+        alt Кэш-хит (быстрый путь, <200 мс)
+            CACHE-->>CTRL: Готовые рекомендации
+            CTRL->>ASM: Собрать ответ из кэша
+        else Кэш-промах (полный путь)
+            CTRL->>PROF: Профиль и фичи (user/session)
+            PROF-->>CTRL: Сегмент, история, предпочтения
+            CTRL->>RAG: Подобрать кандидатов (top-k)
+            RAG-->>CTRL: Список SKU-кандидатов
+            CTRL->>OMNI: Убрать уже купленное (онлайн+офлайн из 1С)
+            OMNI-->>CTRL: Очищенные кандидаты
+            CTRL->>RANK: Ранжировать
+            RANK-->>CTRL: Топ-N отсортировано
+            CTRL->>PTF: Собрать промпт (с маскированием PII)
+            PTF-->>CTRL: Готовый промпт
+            CTRL->>LLM: Сгенерировать заголовок и описание
+            LLM-->>CTRL: Тексты (или шаблон-фолбэк)
+            CTRL->>ASM: Собрать ответ (товары + тексты + meta)
+            CTRL->>CACHE: Сохранить подборку (TTL)
+        end
+        ASM-->>CTRL: Готовый DTO
+        CTRL-->>BE: 200 OK (recommendations, meta)
+    else AI недоступен / 5xx / таймаут >200 мс
+        CTRL-->>BE: 503 upstream_unavailable (или таймаут)
+        BE->>LEG: Запросить rule-based блок
+        LEG-->>BE: «С этим товаром часто покупают»
+    end
+
+    BE-->>FE: JSON блока (AI или fallback)
+    FE-->>U: Показывает ленту (страница не блокируется)

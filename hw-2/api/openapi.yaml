@@ -1,0 +1,361 @@
+openapi: 3.0.3
+info:
+  title: TechnoMart AI Recommendation API
+  description: |
+    Контракт взаимодействия **Backend-монолит (PHP/Bitrix) → AI Recommendation Service**.
+
+    Эндпоинт `/get_recommendation` возвращает персональную подборку товаров
+    («Умная лента») вместе с генеративными заголовком и описанием.
+
+    Особенности домена:
+    - работает и для **анонимных** пользователей (по `session_id` из cookie);
+    - **омниканальность**: уже купленные товары (онлайн+офлайн из 1С) исключаются;
+    - **SLA по скорости**: целевая задержка ответа ≤ 200 мс (быстрый путь — из кэша);
+    - **безопасность**: PII не передаётся в публичные LLM (генерация — на приватной модели,
+      персональные данные маскируются до отправки в модель).
+  version: 1.0.0
+  contact:
+    name: AI Platform Team, TechnoMart
+    email: ai-platform@technomart.example
+
+servers:
+  - url: https://ai.internal.technomart.example/v1
+    description: Внутренний прод (доступен только из сети Backend)
+  - url: https://ai-staging.internal.technomart.example/v1
+    description: Staging
+
+security:
+  - ApiKeyAuth: []
+
+tags:
+  - name: recommendations
+    description: Получение персональных рекомендаций
+
+paths:
+  /get_recommendation:
+    post:
+      tags: [recommendations]
+      summary: Получить персональную подборку рекомендаций
+      description: |
+        Возвращает ранжированный список товаров с генеративными текстами.
+        Backend вызывает синхронно при рендере блока рекомендаций.
+      operationId: getRecommendation
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: X-Request-Id
+          in: header
+          required: false
+          description: Идентификатор запроса для сквозной трассировки (если не задан — сгенерируется).
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecommendationRequest'
+            examples:
+              anonymous_user:
+                summary: Аноним на карточке товара
+                value:
+                  session_id: "a3f1c9e2-7b44-4d2a-9c11-2f0e8d6b1234"
+                  user_id: null
+                  context:
+                    page_type: "product"
+                    current_sku: "SKU-100500"
+                    category_id: "laptops"
+                    device: "mobile"
+                  limit: 6
+                  generate_text: true
+              logged_in_user:
+                summary: Залогиненный пользователь на главной
+                value:
+                  session_id: "a3f1c9e2-7b44-4d2a-9c11-2f0e8d6b1234"
+                  user_id: "user-778899"
+                  context:
+                    page_type: "home"
+                    device: "desktop"
+                  limit: 10
+                  generate_text: true
+      responses:
+        '200':
+          description: Успех. Подборка рекомендаций.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecommendationResponse'
+              examples:
+                success:
+                  summary: Пример успешного ответа
+                  value:
+                    request_id: "f17c2b9a-0d3e-4a8b-bb12-91a6f0c7e001"
+                    recommendations:
+                      - sku: "SKU-200300"
+                        title: "Беспроводная мышь Logitech MX"
+                        price: 4990.00
+                        currency: "RUB"
+                        score: 0.92
+                        reason: "complementary_to_viewed"
+                        generated_title: "Идеальная пара к вашему ноутбуку"
+                        generated_description: "Иван, вы недавно смотрели ноутбуки — эта мышь повысит вашу продуктивность."
+                        image_url: "https://cdn.technomart.example/p/200300.jpg"
+                      - sku: "SKU-200455"
+                        title: "USB-C хаб 7-в-1"
+                        price: 2790.00
+                        currency: "RUB"
+                        score: 0.88
+                        reason: "frequently_bought_together"
+                        generated_title: null
+                        generated_description: null
+                        image_url: "https://cdn.technomart.example/p/200455.jpg"
+                    meta:
+                      model_version: "ranker-2.3.1"
+                      llm_model: "private-llm-7b"
+                      cache_hit: false
+                      latency_ms: 173
+                      generated: true
+        '400':
+          description: Некорректный запрос (битый JSON, отсутствуют обязательные поля).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: "bad_request"
+                  message: "Поле 'session_id' обязательно"
+                  request_id: "f17c2b9a-0d3e-4a8b-bb12-91a6f0c7e001"
+        '401':
+          description: Не передан или неверный API-ключ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: "unauthorized"
+                  message: "Invalid API key"
+                  request_id: "f17c2b9a-0d3e-4a8b-bb12-91a6f0c7e001"
+        '422':
+          description: Семантическая ошибка валидации (например, limit вне диапазона).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: "validation_error"
+                  message: "Поле 'limit' должно быть от 1 до 50"
+                  details:
+                    - field: "limit"
+                      issue: "out_of_range"
+                  request_id: "f17c2b9a-0d3e-4a8b-bb12-91a6f0c7e001"
+        '429':
+          description: Превышен лимит запросов (rate limit).
+          headers:
+            Retry-After:
+              description: Через сколько секунд повторить.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: "rate_limited"
+                  message: "Too many requests"
+                  request_id: "f17c2b9a-0d3e-4a8b-bb12-91a6f0c7e001"
+        '500':
+          description: Внутренняя ошибка сервиса.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: "internal_error"
+                  message: "Unexpected error"
+                  request_id: "f17c2b9a-0d3e-4a8b-bb12-91a6f0c7e001"
+        '503':
+          description: |
+            Зависимость недоступна или превышен бюджет времени (LLM/Vector DB).
+            Backend должен показать фолбэк (rule-based блок) и не блокировать страницу.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: "upstream_unavailable"
+                  message: "LLM timeout, fallback recommended"
+                  request_id: "f17c2b9a-0d3e-4a8b-bb12-91a6f0c7e001"
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+      description: |
+        Сервис-к-сервис аутентификация. Дополнительно во внутренней сети
+        рекомендуется mTLS между Backend и AI Service.
+
+  schemas:
+    RecommendationRequest:
+      type: object
+      required: [session_id, context]
+      properties:
+        session_id:
+          type: string
+          format: uuid
+          description: ID сессии из cookie. Обязателен даже для анонимов.
+          example: "a3f1c9e2-7b44-4d2a-9c11-2f0e8d6b1234"
+        user_id:
+          type: string
+          nullable: true
+          description: ID пользователя, если залогинен (иначе null).
+          example: "user-778899"
+        context:
+          $ref: '#/components/schemas/RequestContext'
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+          description: Сколько товаров вернуть.
+          example: 6
+        generate_text:
+          type: boolean
+          default: true
+          description: Генерировать ли заголовок/описание через LLM.
+
+    RequestContext:
+      type: object
+      required: [page_type]
+      properties:
+        page_type:
+          type: string
+          enum: [home, product, category, cart, search]
+          description: Тип страницы, где показывается блок.
+        current_sku:
+          type: string
+          nullable: true
+          description: SKU текущего товара (для page_type=product).
+          example: "SKU-100500"
+        category_id:
+          type: string
+          nullable: true
+          example: "laptops"
+        device:
+          type: string
+          enum: [desktop, mobile, app]
+          default: desktop
+
+    RecommendationResponse:
+      type: object
+      required: [request_id, recommendations, meta]
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecommendationItem'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    RecommendationItem:
+      type: object
+      required: [sku, title, price, currency, score]
+      properties:
+        sku:
+          type: string
+          example: "SKU-200300"
+        title:
+          type: string
+          description: Исходное название товара из каталога.
+          example: "Беспроводная мышь Logitech MX"
+        price:
+          type: number
+          format: float
+          example: 4990.00
+        currency:
+          type: string
+          example: "RUB"
+        score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Скор ранжирования.
+          example: 0.92
+        reason:
+          type: string
+          description: Причина рекомендации (для аналитики/A-B).
+          enum: [complementary_to_viewed, frequently_bought_together, personalized, popular_in_segment]
+          example: "complementary_to_viewed"
+        generated_title:
+          type: string
+          nullable: true
+          description: Генеративный заголовок (null, если generate_text=false или фолбэк).
+          example: "Идеальная пара к вашему ноутбуку"
+        generated_description:
+          type: string
+          nullable: true
+          example: "Иван, вы недавно смотрели ноутбуки — эта мышь повысит вашу продуктивность."
+        image_url:
+          type: string
+          format: uri
+          example: "https://cdn.technomart.example/p/200300.jpg"
+
+    ResponseMeta:
+      type: object
+      properties:
+        model_version:
+          type: string
+          example: "ranker-2.3.1"
+        llm_model:
+          type: string
+          example: "private-llm-7b"
+        cache_hit:
+          type: boolean
+          example: false
+        latency_ms:
+          type: integer
+          example: 173
+        generated:
+          type: boolean
+          description: Были ли тексты сгенерированы LLM (false — отдан шаблон/фолбэк).
+          example: true
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              example: "validation_error"
+            message:
+              type: string
+              example: "Поле 'limit' должно быть от 1 до 50"
+            details:
+              type: array
+              nullable: true
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                  issue:
+                    type: string
+            request_id:
+              type: string
+              format: uuid

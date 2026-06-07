@@ -1,0 +1,28 @@
+%% C4 Level 1 — System Context. Система умных рекомендаций TechnoMart
+%% На C1 показываем ТОЛЬКО тех, кто взаимодействует с системой, и внешние системы.
+%% Стейкхолдеры (CEO, CTO, команда) — это драйверы/ограничения, см. README, на C1 их не выносим.
+%% Вставьте код в https://mermaid.live
+
+flowchart TB
+    customer([👤 Покупатель<br/>веб + мобильное приложение<br/>аноним по cookie или залогинен])
+    marketer([📣 Маркетолог<br/>настраивает ежедневные<br/>AI-пуш-кампании])
+
+    SYS["🟦 Система умных рекомендаций TechnoMart<br/>персональная «Умная лента»<br/>+ генеративные описания товаров"]
+
+    onec[("🧾 1С<br/>чеки и заказы<br/>онлайн + офлайн")]
+    xml[("📦 Каталог-фид<br/>XML, выгрузка раз в сутки")]
+
+    customer -->|"смотрит рекомендации на сайте/в приложении"| SYS
+    SYS -.->|"персональные пуши с рекомендациями"| customer
+    marketer -->|"настраивает кампании пушей"| SYS
+
+    onec -->|"заказы для омниканальности, синк 15 мин"| SYS
+    xml -->|"каталог товаров, раз в сутки"| SYS
+
+    classDef person fill:#08427b,stroke:#052c54,color:#ffffff;
+    classDef sys fill:#1565c0,stroke:#0d47a1,color:#ffffff;
+    classDef ext fill:#8d99ae,stroke:#5c6b7a,color:#ffffff;
+
+    class customer,marketer person;
+    class SYS sys;
+    class onec,xml ext;
