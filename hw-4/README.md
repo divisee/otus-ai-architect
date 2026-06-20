@@ -5,13 +5,13 @@ SaaS (GPT‑5) vs Self‑hosted Open‑Source (Llama 3).
 
 | Файл | Что это |
 |------|---------|
-| `adr/0001-hosting-llm.md` | Решение о хостинге (SaaS vs Self‑hosted) по шаблону MADR |
-| `adr/0002-vybor-open-modeli-i-inferens.md` | Выбор конкретной open‑модели (+ ссылки на HF) |
-| `adr/0003-vybor-gpu.md` | Выбор GPU и сравнение цен (закупка в Москве) |
-| `adr/0004-vybor-dvizhka-inferensa.md` | Выбор движка инференса (vLLM / SGLang / TGI / TRT‑LLM) |
-| `adr/0005-vybor-embeddingov-rag.md` | Выбор модели эмбеддингов для RAG (+ ссылки на HF) |
-| `diagrams/data-flow-perimeter.mmd` | Схема потоков данных с границей периметра ИБ |
-| `PRD__confluence_bot-601858-a0e400.pdf` | Исходный PRD |
+| [`adr/0001-hosting-llm.md`](adr/0001-hosting-llm.md) | Решение о хостинге (SaaS vs Self‑hosted) по шаблону MADR |
+| [`adr/0002-vybor-open-modeli-i-inferens.md`](adr/0002-vybor-open-modeli-i-inferens.md) | Выбор конкретной open‑модели (+ ссылки на HF) |
+| [`adr/0003-vybor-gpu.md`](adr/0003-vybor-gpu.md) | Выбор GPU и сравнение цен (закупка в Москве) |
+| [`adr/0004-vybor-dvizhka-inferensa.md`](adr/0004-vybor-dvizhka-inferensa.md) | Выбор движка инференса (vLLM / SGLang / TGI / TRT‑LLM) |
+| [`adr/0005-vybor-embeddingov-rag.md`](adr/0005-vybor-embeddingov-rag.md) | Выбор модели эмбеддингов для RAG (+ ссылки на HF) |
+| [`diagrams/data-flow-perimeter.mmd`](diagrams/data-flow-perimeter.mmd) | Схема потоков данных с границей периметра ИБ |
+| [`PRD__confluence_bot-601858-a0e400.pdf`](PRD__confluence_bot-601858-a0e400.pdf) | Исходный PRD |
 
 ## Решение
 
