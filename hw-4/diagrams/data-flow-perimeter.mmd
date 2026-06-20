@@ -1,0 +1,63 @@
+flowchart LR
+    subgraph EXT["🌐 Внешние каналы (вне периметра)"]
+        direction TB
+        WA([💬 WhatsApp<br/>GreenAPI])
+        JV([💬 Jivo-чат<br/>API])
+    end
+
+    subgraph PERIM["🔒 Периметр заказчика (VM, доступ по VPN/SSH)"]
+        direction TB
+        ADAPT["🔌 Канальные адаптеры<br/>вебхуки / API"]
+        ROUTER["🧭 Роутер + Очередь"]
+        ORCH["⚙️ Оркестратор<br/>нормализация / фильтрация шума"]
+
+        subgraph RAGZONE["📚 RAG-подсистема"]
+            direction TB
+            RET["🎯 Ретривер"]
+            VDB[("🧱 Vector DB<br/>+ индексаторы")]
+            RET --- VDB
+        end
+
+        subgraph SRC["🗄 Источники знаний и данных (ПДн)"]
+            direction TB
+            ERP[("📦 ERP/БД заказов<br/>и клиентов · ПДн")]
+            MAT[("🧩 БД материалов")]
+            CONF[("📄 Confluence")]
+        end
+
+        LLM["🧠 LLM — Self-hosted<br/>Open-Source на GPU-VM<br/>(внутри периметра)"]
+        OBS["🔭 Логи / метрики<br/>PII-маскирование"]
+    end
+
+    WA -->|вход| ADAPT
+    JV -->|вход| ADAPT
+    ADAPT --> ROUTER --> ORCH
+    ORCH --> RET
+    RET --> ERP
+    RET --> MAT
+    RET --> CONF
+    ERP -.->|retrieved-контент с ПДн| ORCH
+    MAT -.-> ORCH
+    CONF -.-> ORCH
+    ORCH -->|промпт + контекст с ПДн| LLM
+    LLM -->|ответ| ORCH
+    ORCH -->|ответ| ADAPT
+    ADAPT -->|в исходный канал| WA
+    ADAPT -->|в исходный канал| JV
+    ORCH -.-> OBS
+
+    SAAS["☁️ SaaS LLM (GPT-5)<br/>внешний API провайдера"]
+    ORCH -. "❌ ОТКЛОНЕНО: ПДн уходят за периметр" .-> SAAS
+
+    classDef ext fill:#fff3e0,stroke:#e65100,color:#bf360c;
+    classDef core fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef rag fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
+    classDef data fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
+    classDef llm fill:#e0f7fa,stroke:#00838f,color:#006064;
+    classDef rejected fill:#ffebee,stroke:#c62828,color:#b71c1c,stroke-dasharray: 5 4;
+    class WA,JV ext;
+    class ADAPT,ROUTER,ORCH,OBS core;
+    class RET,VDB rag;
+    class ERP,MAT,CONF data;
+    class LLM llm;
+    class SAAS rejected;
