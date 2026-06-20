@@ -38,9 +38,10 @@ SaaS (GPT‑5) vs Self‑hosted Open‑Source (Llama 3).
    русский + tool-calling под будущих агентов; запасной — Qwen3-32B.
 7. **Железо (ADR-0003).** Prod — **1× H100 80GB** (FP8, ~2.4–2.9 млн ₽, Москва) или
    бюджетно **A100 80GB**; Dev/PoC — **RTX 4090 24GB** или аренда.
-8. **Движок инференса (ADR-0004).** Prod — **SGLang** (RadixAttention под RAG-префиксы
-   + xGrammar под агентный JSON; рекомендован карточкой T-pro), Dev/fallback — **vLLM**;
-   за OpenAI-совместимым роутером — взаимозаменяемы. INT4 (AWQ/GPTQ) / FP8 на 1 GPU.
+8. **Движок инференса (ADR-0004).** **Единый движок во всех средах — vLLM**
+   (операционная простота + зрелая наблюдаемость; при 5–10 RPS лучший TTFT;
+   automatic prefix caching под RAG). Два движка не держим. SGLang — будущая
+   оптимизация за роутером при росте нагрузки. INT4 (AWQ/GPTQ) / FP8 на 1 GPU.
 9. **Эмбеддинги для RAG (ADR-0005).** Рекомендуем **BAAI/bge-m3** — гибрид
    dense+sparse (ловит артикулы/ТТХ), контекст 8192, MIT, лёгкая; в пару —
    реранкер **bge-reranker-v2-m3**. Запасные — deepvk/USER-bge-m3, Qwen3-Embedding-4B.
