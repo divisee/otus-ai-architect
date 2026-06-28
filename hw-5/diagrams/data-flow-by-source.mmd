@@ -1,0 +1,68 @@
+flowchart TB
+    subgraph S1["① Клики · просмотры · показы рекомендаций — STREAMING"]
+        direction LR
+        S1A["🖥 Frontend"] --> S1B["📨 Kafka"]
+        S1B --> S1C["🥉 Lake Bronze"]
+        S1C --> S1D["⚡ Spark Streaming<br/>окно 1–5 мин"]
+        S1D --> S1E["⚡ Redis<br/>online features"]
+        S1D --> S1F["🧱 Qdrant<br/>sessions"]
+        S1D --> S1G["🥇 Gold → FS Offline"]
+    end
+
+    subgraph S2["② Каталог товаров — BATCH (1×/сутки)"]
+        direction LR
+        S2A["📦 XML / ERP"] --> S2B["⏰ Airflow"]
+        S2B --> S2C["🥉 Lake Bronze"]
+        S2C --> S2D["⚡ Spark Batch"]
+        S2D --> S2E["🥈 Silver<br/>каталог"]
+        S2E --> S2F["🧬 Embedding job"]
+        S2F --> S2G["🧱 Qdrant<br/>items"]
+        S2E --> S2H["🥇 Gold / FS"]
+    end
+
+    subgraph S3["③ Заказы и чеки 1С — MICRO-BATCH (≈15 мин)"]
+        direction LR
+        S3A["🧾 1С"] --> S3B["⏰ Airflow"]
+        S3B --> S3C["🥉 Lake Bronze"]
+        S3C --> S3D["⚡ Spark Batch"]
+        S3D --> S3E["🥇 Gold<br/>покупки user×SKU"]
+        S3E --> S3F["🧮 Feature Store<br/>offline + online"]
+        S3E --> S3G["🧱 Qdrant users<br/>nightly"]
+    end
+
+    subgraph S4["④ Остатки и цены — BATCH / MICRO-BATCH"]
+        direction LR
+        S4A["📦 ERP / 1С"] --> S4B["⏰ Airflow"]
+        S4B --> S4C["🥈 Silver<br/>price · stock"]
+        S4C --> S4D["payload Qdrant<br/>in_stock · price"]
+        S4C --> S4E["pre-filter<br/>retrieval"]
+    end
+
+    subgraph S5["⑤ Обучение Ranker — BATCH (nightly)"]
+        direction LR
+        S5A["🧮 FS Offline"] --> S5B["point-in-time<br/>dataset"]
+        S5B --> S5C["📊 Ranker train"]
+        S5C --> S5D["📋 MLflow"]
+    end
+
+    subgraph S6["⑥ Инференс — на каждый запрос"]
+        direction LR
+        S6A["🤖 AI Service"] --> S6B["Redis · Qdrant<br/>items/users/sessions"]
+        S6B --> S6C["Ranker + Cache"]
+        S6C --> S6D["👤 Рекомендации<br/>≤200 мс"]
+    end
+
+    %% невидимые связи между ПОДГРАФАМИ: складывают 6 блоков вертикально,
+    %% при этом внутренний direction LR каждого блока сохраняется
+    S1 ~~~ S2
+    S2 ~~~ S3
+    S3 ~~~ S4
+    S4 ~~~ S5
+    S5 ~~~ S6
+
+    classDef stream fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef batch fill:#fff3e0,stroke:#e65100,color:#bf360c;
+    classDef serve fill:#fce4ec,stroke:#c2185b,color:#880e4f;
+    class S1A,S1B,S1C,S1D,S1E,S1F,S1G stream;
+    class S2A,S2B,S2C,S2D,S2E,S2F,S2G,S2H,S3A,S3B,S3C,S3D,S3E,S3F,S3G,S4A,S4B,S4C,S4D,S4E,S5A,S5B,S5C,S5D batch;
+    class S6A,S6B,S6C,S6D serve;

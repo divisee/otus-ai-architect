@@ -1,0 +1,19 @@
+flowchart LR
+    subgraph LAMBDA["Λ Lambda Architecture"]
+        direction TB
+        SRC1["Sources"] --> BATCH1["Batch Layer<br/>Spark nightly<br/>источник истины"]
+        SRC1 --> SPEED1["Speed Layer<br/>Kafka + Flink<br/>real-time агрегаты"]
+        BATCH1 --> SERV1["Serving Layer<br/>merge batch + speed"]
+        SPEED1 --> SERV1
+        SERV1 --> APP1["Inference / Dashboard"]
+    end
+
+    subgraph KAPPA["κ Kappa Architecture"]
+        direction TB
+        SRC2["Sources"] --> STREAM2["Stream Layer ONLY<br/>Kafka log<br/>Flink / Spark Streaming"]
+        STREAM2 --> APP2["Inference / Dashboard"]
+        STREAM2 -.->|"reprocess history<br/>= replay log"| STREAM2
+    end
+
+    classDef layer fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    class BATCH1,SPEED1,SERV1,STREAM2 layer;

@@ -1,0 +1,98 @@
+flowchart TB
+    subgraph SRC["📥 Data Sources"]
+        direction TB
+        FE["🖥 Frontend / Mobile<br/>клики, просмотры, add-to-cart"]
+        XML[("📦 Каталог-фид XML<br/>ERP, batch раз в сутки")]
+        ONEC[("🧾 1С<br/>заказы онлайн+офлайн<br/>batch / CDC каждые 15 мин")]
+        MYSQL[("🗃 MySQL Bitrix<br/>справочники, пользователи")]
+    end
+
+    subgraph ING["🔌 Ingestion / Integration Gateway"]
+        direction TB
+        EVT["📡 Event Collector<br/>[Kafka REST Proxy / SDK]<br/>валидация схемы, rate limit"]
+        KAFKA[("📨 Apache Kafka<br/>topics: clicks, views, purchases<br/>retention 7–30 дней")]
+        AIR["⏰ Airflow<br/>оркестрация batch"]
+        CDC["🔄 CDC / SFTP Pull<br/>заказы 1С, XML-фид"]
+    end
+
+    subgraph LAKE["🌊 Data Lake — S3 / MinIO (Medallion)"]
+        direction TB
+        BRZ[("🥉 Bronze<br/>raw JSON/Avro/Parquet<br/>immutable, partitioned by date")]
+        SLV[("🥈 Silver<br/>очищено, typed, dedup<br/>единые entity keys")]
+        GLD[("🥇 Gold<br/>агрегаты, training snapshots<br/>point-in-time joins")]
+    end
+
+    subgraph PROC["⚙️ Processing"]
+        direction TB
+        SPB["⚡ Spark Batch<br/>каталог, заказы, история<br/>фичи offline, CF-матрицы"]
+        SPS["⚡ Spark Structured Streaming<br/>окна 1–5 мин<br/>session features, counters"]
+        EMB["🧬 Embedding Job<br/>title+attrs → vectors<br/>batch + incremental"]
+        DQ["✅ Data Quality<br/>Great Expectations<br/>schema, nulls, freshness"]
+    end
+
+    subgraph MLSTORE["🧠 ML Storage"]
+        direction TB
+        FS_OFF[("🧮 Feature Store Offline<br/>PostgreSQL / Parquet<br/>train datasets, backfill")]
+        FS_ON[("⚡ Feature Store Online<br/>Redis<br/>profile, counters, TTL")]
+        VDB[("🧱 Vector DB<br/>Qdrant<br/>items · users · sessions")]
+        REG[("📋 Model Registry<br/>MLflow<br/>модель · датасет · фичи · метрики")]
+    end
+
+    subgraph TRAIN["🎓 Training"]
+        TR["🔬 Training Pipeline<br/>Airflow / Kubeflow<br/>point-in-time features"]
+        RANKM["📊 Ranking Model<br/>CatBoost / LightGBM"]
+    end
+
+    subgraph SERVE["🚀 Online Inference"]
+        AISVC["🤖 AI Recommendation Service<br/>FastAPI"]
+        CACHE[("⚡ Redis Cache<br/>precomputed feeds")]
+    end
+
+    FE -->|"HTTPS events"| EVT
+    EVT --> KAFKA
+    XML --> AIR
+    ONEC --> CDC
+    MYSQL -.-> AIR
+    AIR --> BRZ
+    CDC --> BRZ
+    KAFKA --> SPS
+    KAFKA --> BRZ
+
+    BRZ --> SLV
+    SLV --> GLD
+    SLV --> SPB
+    GLD --> SPB
+    SPB --> DQ
+    SPS --> DQ
+    DQ --> FS_OFF
+    DQ --> FS_ON
+    SPB --> EMB
+    EMB --> VDB
+    SPS -->|"session vectors (near real-time)"| VDB
+
+    FS_OFF --> TR
+    GLD --> TR
+    TR --> RANKM
+    RANKM --> REG
+
+    AISVC --> FS_ON
+    AISVC --> VDB
+    AISVC --> CACHE
+    FS_ON -.->|"sync same logic as offline"| FS_OFF
+    REG -.-> AISVC
+
+    classDef src fill:#eceff1,stroke:#607d8b,color:#263238;
+    classDef ing fill:#fff3e0,stroke:#e65100,color:#bf360c;
+    classDef lake fill:#e0f2f1,stroke:#00695c,color:#004d40;
+    classDef proc fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef ml fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
+    classDef train fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
+    classDef serve fill:#fce4ec,stroke:#c2185b,color:#880e4f;
+
+    class FE,XML,ONEC,MYSQL src;
+    class EVT,KAFKA,AIR,CDC ing;
+    class BRZ,SLV,GLD lake;
+    class SPB,SPS,EMB,DQ proc;
+    class FS_OFF,FS_ON,VDB,REG ml;
+    class TR,RANKM train;
+    class AISVC,CACHE serve;
