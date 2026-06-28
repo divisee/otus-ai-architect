@@ -48,11 +48,9 @@
    - [Схема обучения и инференса](#схема-обучения-и-инференса)
 5. [Как обеспечить консистентность данных](#5-как-обеспечить-консистентность-данных)
    - [Сводная таблица механизмов](#сводная-таблица-механизмов)
-   - [Детализация](#детализация)
    - [Схема синхронизации Feature Store](#схема-синхронизации-feature-store)
    - [SLA обновления данных](#sla-обновления-данных)
 6. [Data Governance](#6-data-governance)
-   - [Роли](#роли-кратко)
 7. [Соответствие требованиям](#7-соответствие-требованиям)
 8. [Связь с предыдущими ДЗ](#связь-с-предыдущими-дз)
 9. [Глоссарий терминов и сокращений](#глоссарий-терминов-и-сокращений)
@@ -572,37 +570,21 @@ Backend → AI Service
 
 ### Сводная таблица механизмов
 
-| Механизм | Что даёт |
-|----------|----------|
-| **Единые определения признаков** | Один и тот же `item_ctr_30d` / `user_clicks_7d` при **training** и **serving** — модуль `feature_defs`, общий для Spark batch и Spark Streaming |
-| **Feature Store** | Offline (PostgreSQL) и online (Redis) считаются **одной логикой**; materialization nightly + stream increment |
-| **Point-in-time join** | Train-датасет без утечки будущего: фичи на момент события, не «на сегодня» |
-| **Schema Registry** | Единый формат событий в Kafka (`click`, `view`, `impression`); валидация на Event Collector, совместимость версий схем |
-| **Data Quality checks** | Great Expectations / Deequ: nulls, дубли, типы, freshness каталога; **DQ gate** блокирует materialization в FS и Qdrant |
-| **Lineage** | Прослеживаемость: `XML → silver.catalog → feature.* → ranker-2.3.1`; OpenLineage / DataHub |
-| **Versioning** | Версии **датасетов** (MLflow), **фич** (`feature_schema_version`), **моделей** (`model_version` в API), **embeddings** (Qdrant collection version) |
-| **Backfill** | Пересчёт фич и embeddings за прошлый период после смены логики или новой фичи — без «дыр» в train |
-| **Reconciliation** | Nightly сверка counts: Kafka events ↔ Silver ↔ Redis counters ↔ FS offline |
-| **Monitoring** | Drift (PSI/KS offline vs online), lag пайплайнов, пропуски событий, latency AI Service ≤200 мс |
-| **PII policies** | ПДн в Bitrix/1С; в Lake/Kafka — `user_id`/token; в Cloud LLM — только через **PII Anonymizer** (ДЗ №2) |
+| Механизм | Что даёт | Как реализуем |
+|----------|----------|---------------|
+| **Единые определения признаков** | Один и тот же `item_ctr_30d` / `user_clicks_7d` при training и serving | Модуль `feature_defs`: batch Spark и stream job импортируют одни SQL/PySpark-выражения |
+| **Feature Store** | Offline и online считаются **одной логикой** | Nightly: Gold → FS Offline (PostgreSQL) → Redis Online; stream-counters каждые 1–5 мин |
+| **Point-in-time join** | Train-датасет без утечки будущего | Join `(user, item, event_time)` с фичами **≤ event_time** |
+| **Schema Registry** | Единый формат событий, совместимость версий | Avro/JSON Schema в Kafka; reject/DLQ при битом событии |
+| **Data Quality (DQ) gates** | Блок materialization при плохих данных | GX (freshness каталога ≤26 ч), Deequ на Silver; block перед upsert в FS/Qdrant |
+| **Lineage** | Прослеживаемость источник → модель | OpenLineage/DataHub: `XML → silver.catalog → feature.* → ranker-2.3.1` |
+| **Versioning** | Воспроизводимость и совместимость | Версии датасетов (MLflow), фич (`feature_schema_version`), моделей (`model_version` в API), embeddings (Qdrant collection) |
+| **Backfill** | Пересчёт за прошлое без «дыр» в train | Spark job по истории Lake → FS Offline; replay embeddings → Qdrant |
+| **Reconciliation** | Сверка согласованности систем | Nightly: counts Kafka ↔ Silver ↔ Redis ↔ FS offline |
+| **Monitoring** | Раннее обнаружение skew/сбоев | PSI/KS offline vs online, lag пайплайнов, пропуски событий, latency ≤200 мс |
+| **PII policies** | ПДн не утекают в модель/LLM | ПДн в Bitrix/1С; в Lake/Kafka — `user_id`/token; в Cloud LLM — через PII Anonymizer (ДЗ №2) |
 
 > **Vector DB vs Feature Store:** табличные фичи — только FS; Qdrant — embeddings. Консистентность: **item/user vectors** пересчитываются после batch-каталога и Gold-истории (те же Silver/Gold, что и для train).
-
-### Детализация
-
-| # | Механизм | Как реализуем |
-|---|----------|---------------|
-| 1 | Единые определения признаков | Модуль `feature_defs`: batch Spark + stream job импортируют одни SQL/PySpark-выражения |
-| 2 | Feature Store + materialization | Nightly: Gold → FS Offline → Redis Online; stream: counters каждые 1–5 мин |
-| 3 | Point-in-time correctness | Join `(user, item, event_time)` с фичами **≤ event_time** |
-| 4 | Schema Registry | Avro/JSON Schema в Kafka; reject/ DLQ при битом событии |
-| 5 | DQ gates | GX: каталог не старше 26 ч; Deequ на Silver; block перед FS/Qdrant upsert |
-| 6 | Lineage | OpenLineage от Airflow/Spark |
-| 7 | Version pinning | `feature_schema_version` + `model_version` в `meta` ответа API (ДЗ №2) |
-| 8 | Backfill | Spark job по истории Lake → FS Offline; replay embeddings → Qdrant |
-| 9 | Reconciliation | Nightly: Kafka vs Silver vs Redis |
-| 10 | Monitoring skew | PSI/KS offline vs online; алерт при drift > порога |
-| 11 | PII / Security | PII Anonymizer перед Cloud LLM; без ФИО/телефона в Qdrant payload |
 
 ### Схема синхронизации Feature Store
 
@@ -652,15 +634,6 @@ Backend → AI Service
 | **Retention (хранение)** | **Kafka** (сырые события): **30 дней** (replay + расследования). **Lake Bronze** events: **12 мес.**, далее архив или delete по политике ИБ. **Silver/Gold / FS offline:** агрегаты и train-snapshots **24 мес.** **Redis online:** TTL counters **7–30 дней**; SET «купленное» — **90 дней**. **Qdrant:** vectors активных SKU/users; неактивные — удаление при purge каталога. **MLflow / логи inference:** **90 дней**, без PII в логах |
 | **Lineage (происхождение)** | Сквозная цепочка в **OpenLineage / DataHub**, пример: `XML@ERP → bronze.catalog → silver.catalog → feature.item_ctr_30d → ranker-2.3.1 → /get_recommendation`. Отдельно: `Kafka.clicks → gold.user_* → redis.online → Ranker features`. Любой инцident «откуда фича» — traceable за ≤1 рабочий день |
 | **Версионирование** | **Датасеты train** — snapshot id в **MLflow** + дата Gold partition. **Признаки** — `feature_schema_version` в реестре FS; breaking change → новая major version + backfill. **Embeddings** — `embedding_model_version` + `qdrant_collection_vN`; upsert только после DQ каталога. **Модели** — `model_version` в API `meta` (ДЗ №2); deploy Ranker только с совместимой парой (features + embeddings) |
-
-### Роли
-
-| Роль | Ответственность |
-|------|-----------------|
-| **Data Owner** | Бизнес-смысл данных, можно ли использовать в ML, SLA источника |
-| **Data Steward** | Качество, метаданные, glossary (`sku`, `session_id`), эскалация при DQ fail |
-| **Data Platform** | Lake, Kafka, Airflow, Spark, backup, retention jobs |
-| **MLOps / RecSys** | FS, Qdrant, MLflow, monitoring drift, version pinning |
 
 ---
 
