@@ -657,8 +657,6 @@ Backend → AI Service
 | ДЗ | Что переиспользуем |
 |----|-------------------|
 | [**ДЗ №2**](../hw-2/README.md) | TechnoMart, контейнеры ETL/Event Collector/FS/Vector DB/Cache, Ranker pipeline, SLA 200 мс |
-| [**ДЗ №3**](../hw-3/README.md) | Паттерн ingestion → embed → vector store (для item embeddings) |
-| [**ДЗ №4**](../hw-4/README.md) | Подход к governance, PII, perimeter (PII Anonymizer для LLM-текстов) |
 
 ---
 
