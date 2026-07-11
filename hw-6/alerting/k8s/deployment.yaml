@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-infer
+  labels: { app: ml-infer }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: ml-infer }
+  template:
+    metadata:
+      labels: { app: ml-infer }
+    spec:
+      containers:
+        - name: app
+          image: ml-infer:0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: ERROR_RATE
+              value: "0.2"     # сделаем 20% чтобы на графиках было видно
+            - name: MAX_DELAY
+              value: "2.0"    # задержка до 2 секунд
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits:   { cpu: "500m", memory: "512Mi" }

@@ -1,0 +1,4 @@
+logs/
+.port_forwards.pid
+.DS_Store
+monitoring/values.yaml

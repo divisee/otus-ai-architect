@@ -2,6 +2,29 @@
 
 ---
 
+## Содержание
+
+1. [Маршрут занятия](#маршрут-занятия)
+2. [Цели занятия (что должны уметь)](#цели-занятия-что-должны-уметь)
+3. [Классическая Big Data](#1-классическая-big-data)
+   - [OLTP и OLAP](#oltp-и-olap)
+   - [ETL (Extract → Transform → Load)](#etl-extract--transform--load)
+   - [DWH (Data Warehouse)](#dwh-data-warehouse)
+   - [ELT (Extract → Load → Transform)](#elt-extract--load--transform)
+   - [ETL vs ELT — сравнение](#etl-vs-elt--сравнение)
+   - [Data Lake](#data-lake)
+   - [Lakehouse](#lakehouse)
+   - [Batch vs Stream](#batch-vs-stream)
+4. [Data Governance и Data Management](#2-data-governance-и-data-management)
+5. [Специфика пайплайнов для AI](#3-специфика-пайплайнов-для-ai)
+6. [Feature Store](#4-feature-store)
+7. [Проектирование end-to-end ML-пайплайна](#5-проектирование-end-to-end-ml-пайплайна)
+8. [Паттерны Lambda и Kappa](#6-паттерны-lambda-и-kappa)
+9. [Шпаргалка определений](#7-шпаргалка-определений)
+10. [Связь с домашним заданием (hw-5)](#8-связь-с-домашним-заданием-hw-5)
+
+---
+
 ## Маршрут занятия
 
 | # | Тема | Суть |

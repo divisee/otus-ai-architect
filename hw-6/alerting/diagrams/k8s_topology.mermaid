@@ -1,0 +1,36 @@
+flowchart LR
+  subgraph ns_app["Namespace: app"]
+    Adep[Deployment ml-infer]
+    Ars[ReplicaSet]
+    Apod1[(Pod ml-infer-xxx)]
+    Apod2[(Pod ml-infer-yyy)]
+    Asvc[Service ml-infer\nClusterIP 8000]
+  end
+
+  subgraph ns_mon["Namespace: monitoring"]
+    SM[ServiceMonitor ml-infer\nselector app=ml-infer]
+    PO[Prometheus Operator]
+    P[(Prometheus)]
+    G[(Grafana)]
+    AM[(Grafana Alerting)]
+  end
+
+  Adep --> Ars --> Apod1
+  Ars --> Apod2
+  Apod1 -- exposes /metrics --> Asvc
+  Apod2 -- exposes /metrics --> Asvc
+
+  SM -- watched by --> PO
+  PO -- configures scrape targets --> P
+
+  Asvc -- scraped via ServiceMonitor --> P
+
+  P -- data source --> G
+  G -- alert queries --> AM
+  AM -- routes alerts --> T[(Telegram Contact Point)]
+
+  classDef k8s fill:#f6fff6,stroke:#8fbf8f,color:#222;
+  classDef mon fill:#f6f9ff,stroke:#88a8ff,color:#222;
+
+  class Adep,Ars,Apod1,Apod2,Asvc k8s
+  class SM,PO,P,G,AM mon

@@ -1,0 +1,6 @@
+graph LR
+    subgraph K8S["K8S Cluster (minikube)"]
+        App["FastAPI<br/>llm-gateway"] -->|/metrics| Prom["Prometheus"]
+        Prom -->|PromQL| Graf["Grafana"]
+    end
+    Graf -->|alerts| TG["Telegram"]

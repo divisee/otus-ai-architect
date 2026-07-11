@@ -1,0 +1,16 @@
+graph TD
+    subgraph appns["Namespace: app"]
+        Dep["Deployment: llm-gateway<br/>(2 реплики)"] --> Pod1["Pod: llm-gateway-1<br/>/metrics :8000"]
+        Dep --> Pod2["Pod: llm-gateway-2<br/>/metrics :8000"]
+        Svc["Service: llm-gateway<br/>ClusterIP :8000"] --> Pod1
+        Svc --> Pod2
+    end
+    subgraph monns["Namespace: monitoring"]
+        SM["ServiceMonitor: llm-gateway<br/>selector app=llm-gateway"]
+        Prom["Prometheus<br/>(Operator)"]
+        Graf["Grafana<br/>+ Unified Alerting"]
+        SM --> Prom
+        Prom --> Graf
+    end
+    Svc -. scrape /metrics .-> Prom
+    Graf -->|Contact Point| TG["Telegram Bot"]

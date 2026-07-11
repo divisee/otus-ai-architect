@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: llm-gateway
+  namespace: monitoring
+  labels:
+    # Метка нужна, чтобы Prometheus (kube-prometheus-stack) подхватил монитор.
+    release: kps
+spec:
+  namespaceSelector:
+    matchNames:
+      - app
+  selector:
+    matchLabels:
+      app: llm-gateway
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s

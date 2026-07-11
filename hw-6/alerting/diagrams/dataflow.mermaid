@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  participant U as User / load_test.sh
+  participant S as Service (ClusterIP)
+  participant P1 as Pod #1 (FastAPI)
+  participant P2 as Pod #2 (FastAPI)
+  participant PM as Prometheus
+  participant GR as Grafana
+  participant AL as Grafana Alerting
+  participant TG as Telegram
+
+  U->>S: POST /predict (HTTP)
+  alt Pod #1 выбран kube-proxy
+    S->>P1: /predict
+    P1-->>P1: бизнес-логика + random delay + possible 500
+    P1->>S: HTTP 200/500 (+ /metrics обновятся)
+  else Pod #2 выбран
+    S->>P2: /predict (аналогично)
+  end
+
+  Note over P1,P2: Экспорт метрик на /metrics
+
+  PM-->>S: scrape /metrics (по ServiceMonitor)
+  S-->>PM: метрики (histogram/counter)
+
+  GR-->>PM: PromQL запросы для дашбордов
+  AL-->>PM: PromQL для правил алертов (p95, error_rate)
+  PM-->>AL: серии с вычисленной агрегацией
+  AL-->>TG: Уведомление (по policy → contact point)

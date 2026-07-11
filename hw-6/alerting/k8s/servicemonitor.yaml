@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ml-infer
+  labels:
+    release: kps   # ВАЖНО: должен совпадать с именем релиза kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: ml-infer
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
