@@ -93,6 +93,8 @@ flowchart TB
     class U user;
 ```
 
+</details>
+
 | # | Компонент | Что делает | Где в потоке | Инструмент |
 |---|-----------|-----------|--------------|------------|
 | 1 | **Input Guardrails** | Детекция Prompt Injection, jailbreak, off‑topic; блок «игнорируй инструкции» | До ретрива | **NeMo Guardrails** / **Llama Guard**; быстрый пред‑фильтр — Semantic Router / regex |
