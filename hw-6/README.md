@@ -40,14 +40,15 @@
 
 ### Компоненты защиты
 
-Каждый узел имеет собственный контур проверок (**Defense‑in‑Depth**). Красным — добавленные элементы.
+Единая точка входа/выхода — **API Gateway**: он принимает запрос клиента (①) и он же возвращает ответ (⑨). Сплошные стрелки — путь запроса (①→⑤) и путь ответа (⑥→⑨); пунктир — вспомогательные потоки (секреты, телеметрия). Каждый узел имеет собственный контур проверок (**Defense‑in‑Depth**), красным — добавленные элементы.
 
 ```mermaid
 flowchart TB
     U([👤 Клиент<br/>WhatsApp / Jivo])
+
     subgraph PERIM["🔒 Периметр заказчика"]
         direction TB
-        GW["🚪 API Gateway / Adapter<br/>AuthN, Rate Limiting"]
+        GW["🚪 API Gateway / Adapter<br/>AuthN, Rate Limiting<br/><i>единое API - вход/выход</i>"]
         IG["🛡 Input Guardrails<br/>Prompt Injection check,<br/>topic/jailbreak фильтр"]
         SAN["🧹 PII Sanitizer<br/>ФИО/телефон/e-mail/№ заказа → токены"]
         subgraph RAG["📚 RAG-подсистема"]
@@ -56,15 +57,22 @@ flowchart TB
             RET --- VDB
         end
         LLM["🧠 Self-hosted LLM<br/>vLLM, в периметре"]
-        OG["🛡 Output Guardrails<br/>валидация ответа,<br/>DLP-проверка утечки PII,<br/>hallucination/grounding check"]
+        OG["🛡 Output Guardrails<br/>валидация ответа,<br/>DLP-проверка утечки PII,<br/>grounding check"]
         REH["🔁 PII Rehydrator<br/>токены → реальные значения"]
         SM["🔐 Secret Manager<br/>Vault, JIT-токены к ERP/API"]
         OBS["🔭 Observability<br/>Grafana + Prometheus<br/>+ Tempo + Langfuse"]
     end
 
-    U --> GW --> IG --> SAN --> RET
-    RET -->|"контекст (обезличенный)"| LLM
-    LLM --> OG --> REH --> GW --> U
+    U ==>|"① запрос клиента"| GW
+    GW ==>|"②"| IG
+    IG ==>|"③"| SAN
+    SAN ==>|"④"| RET
+    RET ==>|"⑤ контекст (обезличенный)"| LLM
+    LLM ==>|"⑥ черновик ответа"| OG
+    OG ==>|"⑦"| REH
+    REH ==>|"⑧"| GW
+    GW ==>|"⑨ ответ клиенту"| U
+
     RET -.->|"JIT-доступ к данным заказов"| SM
     IG -.-> OBS
     LLM -.-> OBS
@@ -73,9 +81,11 @@ flowchart TB
     classDef new fill:#ffebee,stroke:#c62828,color:#b71c1c;
     classDef base fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
     classDef data fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c;
+    classDef user fill:#fff3e0,stroke:#e65100,color:#bf360c;
     class IG,OG,SM new;
     class GW,SAN,REH,LLM,RET base;
     class VDB data;
+    class U user;
 ```
 
 | # | Компонент | Что делает | Где в потоке | Инструмент |
