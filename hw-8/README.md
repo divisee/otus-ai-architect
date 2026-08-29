@@ -269,14 +269,11 @@ http:
 **SLO** (Service Level Objective) - договорённость «сервис считается здоровым, если…»: например 5xx < 1% и P95 latency ≤ 2 с. Если canary ломает SLO - откат.
 
 
-| Группа | Метрики |
-|--------|---------|
-| Технические (SLO) | 5xx, timeout, P95/P99 latency, **OOM**, **CrashLoopBackOff** |
-| ML / RAG | Recall@5, доля пустых retrieval, faithfulness, доля fallback-ответов |
-| Бизнес | Доля решённых обращений, дизлайки, эскалации на оператора |
-
-- **OOM** (Out Of Memory) — процесс убили: кончилась память (часто GPU/RAM при инференсе).
-- **CrashLoopBackOff** — под падает, Kubernetes перезапускает, снова падает; кластер начинает ждать всё дольше между рестартами. Сервис по сути мёртв.
+| Группа            | Метрики                                                              |
+| ----------------- | -------------------------------------------------------------------- |
+| Технические (SLO) | 5xx, timeout, P95/P99 latency, **OOM**, **CrashLoopBackOff**         |
+| ML / RAG          | Recall@5, доля пустых retrieval, faithfulness, доля fallback-ответов |
+| Бизнес            | Доля решённых обращений, дизлайки, эскалации на оператора            |
 
 
 **Автооткат срабатывает**, если в двух подряд 5-минутных окнах выполнено любое условие:
@@ -287,7 +284,7 @@ http:
 - пустой retrieval > 5%;
 - faithfulness < 0.85 или на 3% ниже stable;
 - дизлайков на 5% больше, чем у stable;
-- **OOM** или **CrashLoopBackOff** у canary-подов (память кончилась или под бесконечно падает).
+- OOM (Out Of Memory) или CrashLoopBackOff у canary-подов (память кончилась или под бесконечно падает).
 
 **Что происходит при откате (без участия человека):**
 
@@ -316,22 +313,23 @@ http:
 
 ## 6. Инструменты
 
-| Инструмент | Что делает | Ссылка |
-|------------|------------|--------|
-| Terraform | IaC: описывает и поднимает сеть, K8s, S3, БД | [terraform.io](https://developer.hashicorp.com/terraform/docs) |
-| Yandex Cloud provider | Плагин Terraform для ресурсов Yandex Cloud | [документация провайдера](https://terraform-provider.yandexcloud.net/) |
-| Kubernetes | Кластер: запускает контейнеры сервиса, Airflow, MLflow | [kubernetes.io](https://kubernetes.io/docs/home/) |
-| Helm | Ставит готовые пакеты (charts) в кластер | [helm.sh](https://helm.sh/docs/) |
-| Docker / Container Registry | Собирает и хранит образы приложения | [Docker docs](https://docs.docker.com/) |
-| Argo CD | GitOps: кластер сам подтягивает манифесты из Git | [архитектура Argo CD](https://argo-cd.readthedocs.io/en/stable/operator-manual/architecture/) |
-| Istio | Делит трафик между stable и canary | [Istio traffic management](https://istio.io/latest/docs/concepts/traffic-management/) |
-| Apache Airflow | Оркестрация: DAG обучения и обновления индекса | [airflow.apache.org](https://airflow.apache.org/docs/) |
-| MLflow | Учёт экспериментов и Model Registry (версии моделей) | [Model Registry](https://mlflow.org/docs/latest/model-registry.html) |
-| Qdrant | Векторная база для RAG-поиска | [qdrant.tech](https://qdrant.tech/documentation/) |
-| Prometheus + Grafana | Метрики, дашборды, алерты (helm: kube-prometheus-stack) | [prometheus.io](https://prometheus.io/docs/introduction/overview/) |
-| Semgrep | SAST: ищет уязвимости в коде без запуска | [semgrep.dev](https://semgrep.dev/docs/) |
-| Trivy | Сканер уязвимостей в Docker-образе | [Trivy](https://trivy.dev/docs/) |
-| Gitleaks | Ищет секреты (пароли, ключи) в Git | [gitleaks.io](https://gitleaks.io/) |
+
+| Инструмент                  | Что делает                                              | Ссылка                                                                                        |
+| --------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Terraform                   | IaC: описывает и поднимает сеть, K8s, S3, БД            | [terraform.io](https://developer.hashicorp.com/terraform/docs)                                |
+| Yandex Cloud provider       | Плагин Terraform для ресурсов Yandex Cloud              | [документация провайдера](https://terraform-provider.yandexcloud.net/)                        |
+| Kubernetes                  | Кластер: запускает контейнеры сервиса, Airflow, MLflow  | [kubernetes.io](https://kubernetes.io/docs/home/)                                             |
+| Helm                        | Ставит готовые пакеты (charts) в кластер                | [helm.sh](https://helm.sh/docs/)                                                              |
+| Docker / Container Registry | Собирает и хранит образы приложения                     | [Docker docs](https://docs.docker.com/)                                                       |
+| Argo CD                     | GitOps: кластер сам подтягивает манифесты из Git        | [архитектура Argo CD](https://argo-cd.readthedocs.io/en/stable/operator-manual/architecture/) |
+| Istio                       | Делит трафик между stable и canary                      | [Istio traffic management](https://istio.io/latest/docs/concepts/traffic-management/)         |
+| Apache Airflow              | Оркестрация: DAG обучения и обновления индекса          | [airflow.apache.org](https://airflow.apache.org/docs/)                                        |
+| MLflow                      | Учёт экспериментов и Model Registry (версии моделей)    | [Model Registry](https://mlflow.org/docs/latest/model-registry.html)                          |
+| Qdrant                      | Векторная база для RAG-поиска                           | [qdrant.tech](https://qdrant.tech/documentation/)                                             |
+| Prometheus + Grafana        | Метрики, дашборды, алерты (helm: kube-prometheus-stack) | [prometheus.io](https://prometheus.io/docs/introduction/overview/)                            |
+| Semgrep                     | SAST: ищет уязвимости в коде без запуска                | [semgrep.dev](https://semgrep.dev/docs/)                                                      |
+| Trivy                       | Сканер уязвимостей в Docker-образе                      | [Trivy](https://trivy.dev/docs/)                                                              |
+| Gitleaks                    | Ищет секреты (пароли, ключи) в Git                      | [gitleaks.io](https://gitleaks.io/)                                                           |
+
 
 Про Canary как подход: [Martin Fowler — Canary Release](https://martinfowler.com/bliki/CanaryRelease.html).
-
