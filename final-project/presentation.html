@@ -227,6 +227,53 @@
     .api p { margin: 0; font-size: 14px; line-height: 1.4; }
     .api .meta { font-size: 13px; color: var(--muted); }
 
+    /* --- матрица доступа --- */
+    .matrix { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+    .matrix table { width: 100%; border-collapse: separate; border-spacing: 6px; table-layout: fixed; flex: 1; }
+    .matrix th, .matrix td { border: 0; padding: 0; vertical-align: middle; }
+    .matrix thead th {
+      font-size: 13px; font-weight: 700; color: var(--v-700); text-align: center;
+      background: var(--v-100); border-radius: 12px; padding: 8px 8px; line-height: 1.25;
+    }
+    .matrix thead th:first-child { background: transparent; }
+    .matrix thead th small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+    .matrix tbody th {
+      text-align: left; font-size: 14px; font-weight: 700; color: var(--ink);
+      background: var(--v-050); border-radius: 12px; padding: 10px 14px; line-height: 1.25;
+    }
+    .matrix tbody th small { display: block; font-weight: 400; font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .matrix td { text-align: center; border-radius: 12px; padding: 8px 6px; background: var(--v-025); }
+    .matrix td.yes { background: var(--sage-100); }
+    .matrix td.no { background: #f6f3f8; }
+    .matrix .sign { display: block; font-size: 19px; font-weight: 700; line-height: 1; }
+    .matrix td.yes .sign { color: var(--sage); }
+    .matrix td.no .sign { color: #9a8fae; }
+    .matrix .why { display: block; font-size: 11.5px; line-height: 1.25; margin-top: 4px; color: var(--muted); }
+    .matrix td.yes .why { color: #3f6a67; }
+    .matrix .note { margin: 0; font-size: 13px; color: var(--muted); }
+
+    /* --- пошаговая цепочка отказа --- */
+    .steps { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; align-content: stretch; }
+    .steps article {
+      position: relative; margin: 0; padding: 14px 16px; border-radius: 16px; background: var(--v-050);
+      box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 0;
+    }
+    .steps article .n {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--v-500); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+    }
+    .steps article h3 { margin: 0; font-size: 14.5px; font-weight: 700; color: var(--v-700); }
+    .steps article p { margin: 0; font-size: 13px; line-height: 1.35; }
+    .steps article ul { margin: 0; padding: 0; }
+    .steps article li { font-size: 12.5px; line-height: 1.35; margin: 0 0 3px; padding-left: 16px; }
+    .steps article li::before { width: 5px; height: 5px; top: 0.5em; background: var(--v-400); }
+    .steps article.deny { background: #fbeceb; }
+    .steps article.deny .n { background: var(--deny); }
+    .steps article.deny h3 { color: var(--deny); }
+    .steps article.gain { background: var(--sage-100); }
+    .steps article.gain .n { background: var(--sage); }
+    .steps article.gain h3 { color: #23524f; }
+
     /* --- слайд «правило доступа» --- */
     .rule { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 16px; }
     .rule-list {
@@ -719,11 +766,51 @@
       </section>
 
       <!-- 16. ReBAC схема -->
-      <section class="slide" data-note="ReBAC — Relationship-Based Access Control, доступ по связи. | Ребро — линия связи между двумя записями в реестре. | Актор — тот, от чьего имени идёт запрос. | Субъект — тот, чья карта запрашивается.">
-        <p class="kicker">Доступ</p>
-        <h2>Три пациента на одной схеме</h2>
-        <p class="sub">Пациент 1 читает свою карту и карту пациента 2 — в реестре есть опека. У пациента 2 своей учётной записи нет. Пациент 3 читает только свою карту: связи с картой пациента 1 в реестре нет — отказ.</p>
-        <figure class="diagram"><img src="slides/rebac.svg" alt="Схема доступа: пациент 1, пациент 2, пациент 3"></figure>
+            <section class="slide" data-note="ACL — Access Control List, список управления доступом: метка на фрагменте, кому его можно читать. | ReBAC — Relationship-Based Access Control, доступ по связи в реестре. | GUARDIAN_OF — ребро «законный представитель ребёнка». | Актор — тот, от чьего имени идёт запрос. | Субъект — тот, чья карта запрашивается.">
+        <p class="kicker">Доступ · сценарии стенда</p>
+        <h2>Кто что читает</h2>
+        <p class="sub">Строки — кто спрашивает, столбцы — что запрашивают. В каждой клетке основание решения: именно его проверяет Policy до вызова модели.</p>
+        <div class="matrix">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Открытые материалы<small>услуги, цены, филиалы, памятки</small></th>
+                <th>Служебные материалы<small>регламент регистратуры</small></th>
+                <th>Карта пациента 1<small>направление, визиты</small></th>
+                <th>Карта пациента 2<small>ребёнок, 8 лет</small></th>
+                <th>Карта пациента 3<small>направление, визиты</small></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Пациент 1<small>законный представитель</small></th>
+                <td class="yes"><span class="sign">✓</span><span class="why">acl = public</span></td>
+                <td class="no"><span class="sign">✕</span><span class="why">роль не staff</span></td>
+                <td class="yes"><span class="sign">✓</span><span class="why">своя карта</span></td>
+                <td class="yes"><span class="sign">✓</span><span class="why">опека, до 15 лет</span></td>
+                <td class="no"><span class="sign">✕</span><span class="why">связи нет</span></td>
+              </tr>
+              <tr>
+                <th>Пациент 3<small>другой пациент клиники</small></th>
+                <td class="yes"><span class="sign">✓</span><span class="why">acl = public</span></td>
+                <td class="no"><span class="sign">✕</span><span class="why">роль не staff</span></td>
+                <td class="no"><span class="sign">✕</span><span class="why">связи нет</span></td>
+                <td class="no"><span class="sign">✕</span><span class="why">связи нет</span></td>
+                <td class="yes"><span class="sign">✓</span><span class="why">своя карта</span></td>
+              </tr>
+              <tr>
+                <th>Регистратор<small>сотрудник клиники</small></th>
+                <td class="yes"><span class="sign">✓</span><span class="why">acl = public</span></td>
+                <td class="yes"><span class="sign">✓</span><span class="why">роль staff</span></td>
+                <td class="no"><span class="sign">✕</span><span class="why">карта — не по роли</span></td>
+                <td class="no"><span class="sign">✕</span><span class="why">карта — не по роли</span></td>
+                <td class="no"><span class="sign">✕</span><span class="why">карта — не по роли</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="note">У пациента 2 нет учётной записи: он не спрашивает сам, за него спрашивает представитель. Отклонённый фрагмент в контекст модели не передаётся, решение по каждому запросу видно в журнале.</p>
+        </div>
       </section>
 
       <!-- 17. Sequence -->
@@ -735,11 +822,42 @@
       </section>
 
       <!-- 18. Отказ -->
-      <section class="slide" data-note="ACL — Access Control List, список управления доступом: метка на фрагменте, кому его можно читать. | Журнал решения — запись о том, что доступ был запрошен и закрыт.">
+            <section class="slide" data-note="ACL — Access Control List, список управления доступом. | Индекс — векторный поиск по фрагментам документов клиники. | Policy — шаг проверки прав до вызова модели. | Журнал решения — запись о том, кому и на каком основании отказано; ручка /v1/audit.">
         <p class="kicker">Сценарий · отказ</p>
         <h2>Пациент 3 просит чужую карту</h2>
-        <p class="sub">Фрагмент направления в индексе есть, но до модели не доходит: опеки нет. Расписание по чужой карте не вызывается, в журнале остаётся отказ. Открытые услуги пациент 3 по-прежнему получает.</p>
-        <figure class="diagram"><img src="slides/policy-boris.svg" alt="Пациент 3: открытые услуги допущены, карта 1 отклонена"></figure>
+        <p class="sub">«Какое направление у пациента 1 и когда УЗИ?» Запрос проходит весь маршрут, и отказ наступает не в формулировке модели, а на шаг раньше — на проверке прав.</p>
+        <div class="steps">
+          <article>
+            <span class="n">1</span>
+            <h3>Запрос принят</h3>
+            <p>Фильтр ввода не срабатывает: диагноза не просят, персональных данных в реплике нет. Актор — пациент 3.</p>
+          </article>
+          <article>
+            <span class="n">2</span>
+            <h3>Поиск находит фрагмент</h3>
+            <p>В индексе есть направление из карты пациента 1: по словам запрос ему соответствует.</p>
+          </article>
+          <article>
+            <span class="n">3</span>
+            <h3>Policy сверяет основания</h3>
+            <ul>
+              <li>acl = public — нет</li>
+              <li>роль staff — нет</li>
+              <li>своя карта — нет</li>
+              <li>опека в реестре — нет</li>
+            </ul>
+          </article>
+          <article class="deny">
+            <span class="n">4</span>
+            <h3>Фрагмент отклонён</h3>
+            <p>В контекст модели он не попадает, расписание по чужой карте не вызывается. В журнале — отказ доступа.</p>
+          </article>
+          <article class="gain">
+            <span class="n">5</span>
+            <h3>Что получает пациент 3</h3>
+            <p>Отказ по чужой карте и предложение помощи по открытым услугам и собственной карте. Чужие сведения не называются.</p>
+          </article>
+        </div>
       </section>
 
       <!-- 19. Онтология -->
