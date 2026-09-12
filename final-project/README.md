@@ -589,13 +589,16 @@ flowchart TB
 
 ### Онтология и ER
 
-```
-(:Doctor)-[:PROVIDES]->(:Service)
-(:Service)-[:REQUIRES]->(:Preparation)
-(:Service)-[:AVAILABLE_AT]->(:Branch)
-(:Doctor)-[:WORKS_AT]->(:Branch)
-(:Service)-[:OFTEN_CODED_AS]->(:IcdCode)
-(:IcdCode)-[:PARENT]->(:IcdCode)
+Справочный граф. Карточки пациентов в него не входят.
+
+```mermaid
+flowchart LR
+    Doctor -->|PROVIDES| Service
+    Service -->|REQUIRES| Preparation
+    Service -->|AVAILABLE_AT| Branch
+    Doctor -->|WORKS_AT| Branch
+    Service -->|OFTEN_CODED_AS| IcdCode
+    IcdCode -->|PARENT| IcdCode
 ```
 
 
@@ -608,7 +611,9 @@ flowchart TB
 | `IcdCode`     | K21.0                 | public |
 
 
-`OFTEN_CODED_AS` — подсказка регистратору, не диагноз. Полный МКБ-10: `[backend/data/kb/reference/mkb10-parsed.csv](backend/data/kb/reference/mkb10-parsed.csv)`. В проде — выгрузка НСИ Минздрава `1.2.643.5.1.13.13.11.1005`. Симптомы («болит живот, что это») — отказ, без обхода МКБ как «подбери код».
+`OFTEN_CODED_AS` — подсказка регистратору, не диагноз. Полный МКБ-10: `[backend/data/kb/reference/mkb10-parsed.csv](backend/data/kb/reference/mkb10-parsed.csv)`. В проде — выгрузка НСИ Минздрава `1.2.643.5.1.13.13.11.1005`.
+
+Учётные сущности (пользователь, опека, визит, сессия):
 
 ```mermaid
 erDiagram
