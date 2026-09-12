@@ -328,7 +328,7 @@
           <li><strong>Рамка контура</strong><span>периметр, 152-ФЗ, что в объёме и что вне поставки</span></li>
           <li><strong>Стек и ADR</strong><span>слои контура и принятые решения 0001–0009</span></li>
           <li><strong>Архитектура C4</strong><span>периметр, плоскости, узлы; голос и чат; путь реплики</span></li>
-          <li><strong>Доступ</strong><span>Policy до модели, тенант clinic, ReBAC Анны, Михаила и Бориса</span></li>
+          <li><strong>Доступ</strong><span>Policy до модели, тенант clinic, ReBAC представителя и изоляция карт</span></li>
           <li><strong>Знания и данные</strong><span>GraphRAG, онтология, ER, ingest и runtime</span></li>
           <li><strong>Размещение и экономика</strong><span>зоны контура, TCO, локальный прогон</span></li>
           <li><strong>Выводы</strong><span>правовая рамка, доступ, архитектура, стоимость</span></li>
@@ -508,9 +508,9 @@
         <h2>Правило Policy</h2>
         <p class="sub">Отклонённый фрагмент в контекст модели не передаётся. Канал на ACL не влияет. actor_id — учётка или АОН, не метка SPEAKER.</p>
         <div class="grid grid-4 fill">
-          <div class="card"><h3>Анна</h3><p>своя карта и карта сына по GUARDIAN_OF</p></div>
-          <div class="card"><h3>Михаил, 8 лет</h3><p>учётки нет; запросы выполняет представитель</p></div>
-          <div class="card"><h3>Борис</h3><p>только своя карта; карту Анны не читает</p></div>
+          <div class="card"><h3>Представитель</h3><p>своя карта и карта ребёнка по GUARDIAN_OF</p></div>
+          <div class="card"><h3>Ребёнок, до 15 лет</h3><p>учётки нет; запросы выполняет представитель</p></div>
+          <div class="card"><h3>Соседний пациент</h3><p>только своя карта; чужую не читает</p></div>
           <div class="card"><h3>Регистратор</h3><p>материалы public и staff, не карты пациентов</p></div>
           <div class="card"><h3>acl = public</h3><p>услуги, врачи, филиалы, подготовка</p></div>
           <div class="card"><h3>acl = staff</h3><p>регламент регистратуры при роли staff</p></div>
@@ -553,23 +553,23 @@
 
       <section class="slide">
         <p class="kicker">ReBAC</p>
-        <h2>Анна, Михаил, Борис</h2>
+        <h2>Представитель, ребёнок, соседний пациент</h2>
         <p class="sub">Законный представитель получает доступ к карте ребёнка по ребру GUARDIAN_OF. При отсутствии ребра доступ отклоняется.</p>
-        <figure class="diagram"><img src="slides/rebac.svg" alt="Схема доступа Анны, Михаила и Бориса"></figure>
+        <figure class="diagram"><img src="slides/rebac.svg" alt="Схема доступа: представитель, ребёнок, соседний пациент"></figure>
       </section>
 
       <section class="slide">
         <p class="kicker">Sequence</p>
-        <h2>Анна: УЗИ, филиал Лесная, запись</h2>
+        <h2>Представитель: УЗИ ребёнка, запись</h2>
         <p class="sub">Knowledge → Policy → vLLM → слоты CRM → HITL → commit.</p>
-        <figure class="diagram"><img src="slides/sequence-anna.svg" alt="Sequence: сценарий Анны"></figure>
+        <figure class="diagram"><img src="slides/sequence-anna.svg" alt="Sequence: запись представителя на УЗИ ребёнка"></figure>
       </section>
 
       <section class="slide">
         <p class="kicker">Отказ ACL</p>
-        <h2>Борис: направление Анны</h2>
+        <h2>Соседний пациент: чужое направление</h2>
         <p class="sub">Чанк находится. Policy исключает чужой acl. CRM по чужому subject_id не вызывается. В трассировке — acl_denied.</p>
-        <figure class="diagram"><img src="slides/policy-boris.svg" alt="Policy: публичные узлы допущены, чанк Анны отклонён"></figure>
+        <figure class="diagram"><img src="slides/policy-boris.svg" alt="Policy: публичные узлы допущены, чужой чанк отклонён"></figure>
       </section>
 
       <section class="slide">
@@ -587,9 +587,9 @@
 
       <section class="slide">
         <p class="kicker">GraphRAG</p>
-        <h2>Опора ответа: Анна, карта сына</h2>
-        <p class="sub">Запрос: «Когда УЗИ у сына и что за код N28.1?». Контекст: услуга, врач, филиал, подготовка и направление Михаила. N28.1 — справочник, не постановка диагноза.</p>
-        <figure class="diagram"><img src="slides/misha-graph.svg" alt="Граф УЗИ ребёнку и направление Михаила"></figure>
+        <h2>Опора ответа: карта ребёнка</h2>
+        <p class="sub">Запрос представителя: дата УЗИ ребёнка и код из направления. Контекст: услуга, врач, филиал, подготовка. Код МКБ — справочник, не постановка диагноза.</p>
+        <figure class="diagram"><img src="slides/misha-graph.svg" alt="Граф УЗИ ребёнку и направление из карты"></figure>
         <div class="grid grid-4" style="margin-top:12px">
           <div class="card"><h3>Морозова</h3><p>кто принимает на УЗИ ребёнку</p></div>
           <div class="card"><h3>Подготовка</h3><p>не есть 5 часов</p></div>
@@ -637,9 +637,9 @@
         </div>
         <p class="kicker" style="margin:22px 0 10px">Стенд · 15 passed</p>
         <div class="grid grid-4">
-          <div class="card"><h3>Анна</h3><p>УЗИ сына, код N28.1</p><p class="ok">via=guardian</p></div>
-          <div class="card"><h3>Борис</h3><p>направление Анны</p><p class="deny">acl_denied</p></div>
-          <div class="card"><h3>Анна</h3><p>диагноз по симптомам</p><p>reject_diagnosis</p></div>
+          <div class="card"><h3>Представитель</h3><p>УЗИ ребёнка, код из направления</p><p class="ok">via=guardian</p></div>
+          <div class="card"><h3>Соседний пациент</h3><p>чужое направление</p><p class="deny">acl_denied</p></div>
+          <div class="card"><h3>Пациент</h3><p>диагноз по симптомам</p><p>reject_diagnosis</p></div>
           <div class="card"><h3>Регистратор</h3><p>скидка сотрудникам</p><p>STAFF30</p></div>
         </div>
       </section>
@@ -677,7 +677,7 @@
           </div>
           <div class="card">
             <h3>ReBAC на сценариях стенда</h3>
-            <p>Анна видит свою карту и карту Михаила. У Михаила учётки нет, запросы выполняет представитель. Борис видит только свою карту: направление Анны и формулировка «сын Соколовой» дают acl_denied — ребра нет.</p>
+            <p>Представитель видит свою карту и карту ребёнка. У ребёнка учётки нет. Соседний пациент видит только свою карту: чужое направление и формулировка «сын пациентки» дают acl_denied — ребра нет.</p>
           </div>
           <div class="card">
             <h3>Канал не меняет права</h3>
@@ -719,7 +719,7 @@
         <div class="grid grid-2 fill">
           <div class="card">
             <h3>Что доказал стенд без GPU</h3>
-            <p>Контракты /v1/chat, /v1/voice и /v1/audit живы на grounded-генераторе и лексическом индексе. Анна проходит как опекун, Борис получает отказ, диагноз отсекается до модели. 15 тестов: ACL, ReBAC, HITL, оба канала. Фаза H100 не блокирует проверку доступа.</p>
+            <p>Контракты /v1/chat, /v1/voice и /v1/audit живы на grounded-генераторе и лексическом индексе. Представитель проходит как опекун, соседний пациент получает отказ, диагноз отсекается до модели. 15 тестов: ACL, ReBAC, HITL, оба канала. Фаза H100 не блокирует проверку доступа.</p>
           </div>
           <div class="card">
             <h3>Что стенд не заменяет</h3>
@@ -763,7 +763,7 @@
           <article>
             <span class="n">Доступ</span>
             <h3>Policy — узел графа</h3>
-            <p>Анна видит сына. Борис чужую карту не читает. Модель ACL не решает.</p>
+            <p>Представитель видит карту ребёнка. Соседний пациент чужую карту не читает. Модель ACL не решает.</p>
           </article>
           <article>
             <span class="n">Знания</span>
