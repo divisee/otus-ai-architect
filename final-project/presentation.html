@@ -147,11 +147,13 @@
     .num { font-size: 34px; font-weight: 700; margin: 0 0 4px; }
     .plan { counter-reset: step; display: grid; grid-template-columns: 1fr; gap: 10px; list-style: none; padding: 0; flex: 1; }
     .plan li {
-      font-size: 22px; padding: 0 22px 0 72px; margin: 0; list-style: none; position: relative;
+      font-size: 20px; padding: 12px 22px 12px 72px; margin: 0; list-style: none; position: relative;
       border-radius: 16px; background: #f7f4fc; color: #1b1530;
       box-shadow: 0 10px 28px rgba(60, 1, 112, 0.08);
-      display: flex; align-items: center;
+      display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 2px;
     }
+    .plan li strong { font-size: 20px; font-weight: 700; }
+    .plan li span { font-size: 14px; color: #5a5470; font-weight: 400; }
     .plan li::after {
       content: "";
       position: absolute;
@@ -323,13 +325,13 @@
         <p class="kicker">План</p>
         <h2>Содержание</h2>
         <ol class="plan">
-          <li>Цель и рамка контура</li>
-          <li>Стек технологий</li>
-          <li>C4: Context, Container, Component</li>
-          <li>Policy, тенант, ReBAC</li>
-          <li>GraphRAG, Data Flow, Deployment</li>
-          <li>Нагрузка, TCO и стенд</li>
-          <li>Выводы</li>
+          <li><strong>Рамка контура</strong><span>периметр, 152-ФЗ, что в объёме и что вне поставки</span></li>
+          <li><strong>Стек и ADR</strong><span>слои контура и принятые решения 0001–0009</span></li>
+          <li><strong>Архитектура C4</strong><span>периметр, плоскости, узлы; голос и чат; путь реплики</span></li>
+          <li><strong>Доступ</strong><span>Policy до модели, тенант clinic, ReBAC Анны, Михаила и Бориса</span></li>
+          <li><strong>Знания и данные</strong><span>GraphRAG, онтология, ER, ingest и runtime</span></li>
+          <li><strong>Размещение и экономика</strong><span>зоны контура, TCO, локальный прогон</span></li>
+          <li><strong>Выводы</strong><span>правовая рамка, доступ, архитектура, стоимость</span></li>
         </ol>
       </section>
 
