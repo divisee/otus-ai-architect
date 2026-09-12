@@ -1,6 +1,6 @@
 # Backend
 
-Control Plane: ingest корпуса, Policy, машина состояний, HTTP API.
+Код Control Plane. Описание системы и схемы — в [`../README.md`](../README.md).
 
 | Путь | Что |
 |------|-----|

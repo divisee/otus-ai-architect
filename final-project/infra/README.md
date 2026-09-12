@@ -1,6 +1,8 @@
 # Infra
 
-Data Plane стенда — профиль `data`. Control Plane запускается на хосте: `uvicorn app.main:app` из `backend/`.
+Compose целевого Data Plane. Описание системы — в [`../README.md`](../README.md).
+
+Профиль `data`. Control Plane запускается на хосте: `uvicorn app.main:app` из `backend/`.
 
 ```text
 docker compose --profile data up -d
