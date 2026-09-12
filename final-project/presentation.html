@@ -67,6 +67,14 @@
     .cover-main .links a:hover { color: var(--accent); }
     .cover-visual { margin: 0; min-height: 0; overflow: hidden; background: #1a0833; }
     .cover-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .close { justify-content: center; gap: 8px; }
+    .close h2 { font-size: clamp(32px, 4vw, 44px); margin-bottom: 8px; }
+    .close .author { font-size: 22px; font-weight: 700; margin: 0 0 8px; }
+    .qrs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; max-width: 920px; }
+    .qrs figure { margin: 0; text-align: center; }
+    .qrs img { width: min(180px, 22vw); height: auto; background: #fff; padding: 8px; border: 1px solid var(--line); border-radius: 12px; }
+    .qrs figcaption { margin-top: 8px; font-size: 13px; }
+    .qrs a { color: var(--violet); }
     .kicker { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--violet-2); margin: 0 0 8px; font-weight: 500; }
     h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 44px); line-height: 1.15; font-weight: 700; max-width: 22ch; }
     h2 { margin: 0 0 18px; font-size: clamp(24px, 3vw, 34px); line-height: 1.15; font-weight: 700; }
@@ -81,20 +89,23 @@
     .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
     .card { background: var(--wash); padding: 16px 18px; border-radius: 12px; border: 1px solid var(--line); }
     .card h3 { margin: 0 0 8px; font-size: 15px; color: var(--violet); font-weight: 700; }
-    .card p, .card li { font-size: 15px; margin: 0; }
+    .card p, .card li { font-size: 15px; margin: 0; line-height: 1.4; }
     .card li { margin-bottom: 6px; }
+    .fill { flex: 1; min-height: 0; align-content: stretch; }
+    .fill .card { display: flex; flex-direction: column; }
     .num { font-size: 34px; font-weight: 700; color: var(--violet); margin: 0 0 4px; }
-    .plan { counter-reset: step; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; }
-    .plan li { font-size: 20px; padding-left: 52px; margin: 0; }
+    .plan { counter-reset: step; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; list-style: none; padding: 0; }
+    .plan li { font-size: 20px; padding-left: 52px; margin: 0; list-style: none; }
     .plan li::before {
       counter-increment: step; content: counter(step);
       width: 34px; height: 34px; border-radius: 50%;
       background: var(--violet); color: #fff; font-size: 15px; font-weight: 700;
       display: flex; align-items: center; justify-content: center; top: 0;
     }
-    table { width: 100%; border-collapse: collapse; font-size: 15px; }
-    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
     th { color: var(--violet); font-weight: 500; }
+    .tight { flex: 1; overflow: auto; }
     .quote { margin-top: auto; padding: 14px 18px; background: #f6f0ff; border-left: 4px solid var(--violet); font-size: 15px; border-radius: 0 10px 10px 0; }
     .diagram {
       flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;
@@ -112,14 +123,26 @@
     .stack .adr { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--lilac); font-weight: 700; }
     .stack h3 { margin: 0; font-size: 16px; color: var(--violet); }
     .stack p { margin: 0; font-size: 14px; color: var(--muted); }
-    .layers { display: grid; gap: 10px; }
-    .layer { display: flex; align-items: center; gap: 16px; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--line); }
-    .layer strong { min-width: 160px; color: var(--violet); }
-    .layer span { color: var(--ink); font-size: 15px; }
-    .layer.ch { background: #fff7eb; }
-    .layer.cp { background: #f6f0ff; }
-    .layer.dp { background: #eef7f7; }
-    .layer.gpu { background: #f3f0ff; }
+    .layers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; min-height: 0; }
+    .layer {
+      display: flex; flex-direction: column; justify-content: space-between;
+      gap: 10px; padding: 20px 22px; border-radius: 16px; border: 0; min-height: 0;
+    }
+    .layer .n { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
+    .layer strong { font-size: 22px; }
+    .layer .why { font-size: 15px; line-height: 1.35; margin: 0; }
+    .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pills b { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: rgba(255,255,255,0.75); }
+    .layer.ch { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
+    .layer.ch strong { color: #3d2200; }
+    .layer.cp { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
+    .layer.cp strong, .layer.cp .n { color: #fff; }
+    .layer.cp .pills b { background: rgba(255,255,255,0.2); color: #fff; }
+    .layer.dp { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
+    .layer.dp strong { color: #062b2e; }
+    .layer.gpu { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
+    .layer.gpu strong, .layer.gpu .n { color: #fff; }
+    .layer.gpu .pills b { background: rgba(255,255,255,0.18); color: #fff; }
     .ok { color: var(--ok); font-weight: 700; }
     .deny { color: var(--deny); font-weight: 700; }
     .bar { position: absolute; left: 0; right: 0; bottom: 48px; height: 4px; background: var(--lilac-soft); z-index: 4; }
@@ -179,26 +202,46 @@
         <ol class="plan">
           <li>Цель и рамка контура</li>
           <li>Стек технологий</li>
-          <li>C4: Context, Container, Component</li>
-          <li>Policy, ReBAC, сценарии</li>
-          <li>GraphRAG, Data Flow, Deployment</li>
-          <li>Нагрузка, TCO и стенд</li>
-          <li>Выводы и ограничения</li>
+          <li>Схемы: кто снаружи и что внутри</li>
+          <li>Кто что видит</li>
+          <li>Как собирается ответ</li>
+          <li>Нагрузка, стоимость и прогон</li>
+          <li>Выводы</li>
         </ol>
       </section>
 
       <section class="slide">
         <p class="kicker">Цель</p>
         <h2>Замкнутый контур клиники</h2>
-        <p class="sub">Речь, генерация и поиск выполняются внутри периметра. Внешние API LLM и STT не используются.</p>
-        <div class="grid grid-2">
+        <p class="sub">Речь, генерация и поиск — внутри периметра. Внешние API LLM и STT не используются. 152-ФЗ, 323-ФЗ ст. 13.</p>
+        <div class="grid grid-2 fill">
           <div class="card">
-            <h3>Назначение</h3>
-            <p>On-premise мультиагентный голосовой ассистент с GraphRAG и разграничением доступа к картам. Ответ — из графа и документов клиники.</p>
+            <h3>Что входит</h3>
+            <table>
+              <tr><th>Сценарий</th><th>Назначение</th></tr>
+              <tr><td>Услуги, врачи, филиалы, подготовка</td><td>граф и чанки</td></tr>
+              <tr><td>Запись, перенос, отмена</td><td>только после «да» пациента</td></tr>
+              <tr><td>Изоляция карт; опека</td><td>своя карта и карта ребёнка</td></tr>
+              <tr><td>Загрузка документов</td><td>в справочник и поиск</td></tr>
+              <tr><td>Речь → диалог → озвучка</td><td>основной канал</td></tr>
+              <tr><td>Чат POST /v1/chat</td><td>тот же граф</td></tr>
+              <tr><td>Отказ без опоры</td><td>антигаллюцинация</td></tr>
+              <tr><td>Трассировка ACL</td><td>/v1/audit</td></tr>
+            </table>
           </div>
           <div class="card">
-            <h3>Основание</h3>
-            <p>152-ФЗ и 323-ФЗ ст. 13. Канал на права не влияет. Система не ставит диагноз и не подбирает код МКБ по симптомам.</p>
+            <h3>Ограничения и принципы</h3>
+            <table>
+              <tr><th>Пункт</th><th>Статус</th></tr>
+              <tr><td>Диагноз и подбор МКБ по симптомам</td><td>вне объёма</td></tr>
+              <tr><td>Клинические назначения</td><td>вне объёма</td></tr>
+              <tr><td>Промышленная CRM и АТС</td><td>порты; в стенде заглушка</td></tr>
+              <tr><td>Обучение LLM и ASR</td><td>вне объёма</td></tr>
+              <tr><td>Внешние API генерации</td><td>запрещены</td></tr>
+              <tr><td>Поиск</td><td>граф, не только векторы</td></tr>
+              <tr><td>Control Plane / Data Plane</td><td>разделены</td></tr>
+              <tr><td>Оркестрация</td><td>машина состояний</td></tr>
+            </table>
           </div>
         </div>
       </section>
@@ -207,10 +250,38 @@
         <p class="kicker">Стек</p>
         <h2>Слои контура</h2>
         <div class="layers">
-          <div class="layer ch"><strong>Канал</strong><span>Whisper large-v3-turbo, WhisperX, Silero · <code>POST /v1/chat</code> и <code>/v1/voice</code></span></div>
-          <div class="layer cp"><strong>Control Plane</strong><span>FastAPI, LangGraph, Policy, ingest, Input / Output Guardrails</span></div>
-          <div class="layer dp"><strong>Data Plane</strong><span>Neo4j, Qdrant, Postgres, CRM, Vault, Langfuse</span></div>
-          <div class="layer gpu"><strong>GPU VLAN</strong><span>vLLM · T-pro-it-2.1 FP8 на 2× H100 · ASR/эмбеддинги на 1× L40S</span></div>
+          <div class="layer ch">
+            <div>
+              <div class="n">01 · ADR-0009</div>
+              <strong>Канал</strong>
+              <p class="why">Голос — основной вход. Чат вызывает тот же оркестратор, не второй продукт.</p>
+            </div>
+            <div class="pills"><b>Whisper turbo</b><b>WhisperX</b><b>синтез речи</b><b>/v1/voice</b><b>/v1/chat</b></div>
+          </div>
+          <div class="layer cp">
+            <div>
+              <div class="n">02 · ADR-0002 · 0008</div>
+              <strong>Control Plane</strong>
+              <p class="why">Маршрут, Policy до модели, HITL и ingest. Машина состояний, не линейный скрипт.</p>
+            </div>
+            <div class="pills"><b>FastAPI</b><b>LangGraph</b><b>Policy</b><b>Guardrails</b><b>ingest</b></div>
+          </div>
+          <div class="layer dp">
+            <div>
+              <div class="n">03 · ADR-0007</div>
+              <strong>Data Plane</strong>
+              <p class="why">Онтология, чанки с ACL, сессии, заглушка CRM. Карточки в справочный граф не входят.</p>
+            </div>
+            <div class="pills"><b>Neo4j</b><b>Qdrant</b><b>Postgres</b><b>CRM</b><b>Vault</b><b>Langfuse</b></div>
+          </div>
+          <div class="layer gpu">
+            <div>
+              <div class="n">04 · ADR-0003 · 0004 · 0005</div>
+              <strong>GPU VLAN</strong>
+              <p class="why">Генерация и речь разделены. Единственный движок LLM — vLLM. Без маршрута в интернет.</p>
+            </div>
+            <div class="pills"><b>T-pro-it-2.1</b><b>vLLM</b><b>2× H100 FP8</b><b>1× L40S</b><b>bge-m3</b></div>
+          </div>
         </div>
       </section>
 
@@ -226,29 +297,29 @@
           <article><span class="adr">ADR-0006</span><h3>bge-m3</h3><p>Эмбеддинги и reranker</p></article>
           <article><span class="adr">ADR-0007</span><h3>Neo4j + Qdrant</h3><p>Граф и чанки с ACL</p></article>
           <article><span class="adr">ADR-0008</span><h3>LangGraph</h3><p>Один граф на голос и чат</p></article>
-          <article><span class="adr">ADR-0009</span><h3>Whisper / Silero</h3><p>ASR, диаризация, TTS</p></article>
+          <article><span class="adr">ADR-0009</span><h3>Whisper + синтез речи</h3><p>распознавание, диаризация, озвучка</p></article>
           <article><span class="adr">Контур</span><h3>clinic-voice</h3><p>Control Plane ≠ Data Plane</p></article>
         </div>
       </section>
 
       <section class="slide">
-        <p class="kicker">C4 · L1 Context</p>
-        <h2>Периметр клиники</h2>
-        <p class="sub">Персональные данные и текст запросов за периметр не передаются.</p>
+        <p class="kicker">Контекст</p>
+        <h2>Кто снаружи, что внутри</h2>
+        <p class="sub">Пациент, врач и регистратор обращаются к платформе. Тексты и карты за клинику не уходят.</p>
         <figure class="diagram"><img src="slides/c4-l1.svg" alt="C4 L1: пациент, персонал, телефония, AI-платформа, CRM"></figure>
       </section>
 
       <section class="slide">
-        <p class="kicker">C4 · L2 Container</p>
-        <h2>Control Plane и Data Plane</h2>
-        <p class="sub">Голос и чат входят в один API Gateway и один оркестратор LangGraph.</p>
+        <p class="kicker">Контейнеры</p>
+        <h2>Управление и данные</h2>
+        <p class="sub">Голос и чат приходят в один вход и в один сценарий диалога.</p>
         <figure class="diagram"><img src="slides/c4-l2.svg" alt="C4 L2: контейнеры Control Plane, Data Plane, Observability"></figure>
       </section>
 
       <section class="slide">
-        <p class="kicker">C4 · L3 Component</p>
-        <h2>Узлы одного графа состояний</h2>
-        <p class="sub">Не микросервис на каждый субагент. Policy — узел графа до вызова модели.</p>
+        <p class="kicker">Компоненты</p>
+        <h2>Шаги одного сценария</h2>
+        <p class="sub">Это не отдельный сервис на каждую роль. Сначала права, потом генерация ответа.</p>
         <figure class="diagram"><img src="slides/c4-l3.svg" alt="C4 L3: Memory, Router, Tools, Policy, Generator, Guardrails"></figure>
       </section>
 
@@ -260,160 +331,302 @@
       </section>
 
       <section class="slide">
-        <p class="kicker">Когнитивная схема</p>
-        <h2>От реплики до grounded-ответа</h2>
-        <p class="sub">Input Guardrails → Router → GraphRAG / CRM / Policy → Output Guardrails → TTS или текст.</p>
+        <p class="kicker">Сценарий</p>
+        <h2>От фразы до ответа</h2>
+        <p class="sub">Проверка входа → маршрут → знания / запись / права → проверка выхода → озвучка или текст.</p>
         <figure class="diagram"><img src="slides/cognitive.svg" alt="Когнитивная схема Control Plane и Data Plane"></figure>
       </section>
 
       <section class="slide">
-        <p class="kicker">Доступ</p>
-        <h2>Policy до вызова модели</h2>
-        <div class="grid grid-2" style="flex:1">
-          <div class="card">
-            <h3>Допуск при одном условии</h3>
-            <ul>
-              <li><code>acl = public</code></li>
-              <li><code>acl = staff</code> и роль актора — staff</li>
-              <li><code>subject_id = actor.id</code></li>
-              <li><code>GUARDIAN_OF</code> и возраст субъекта менее 15 лет</li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Инварианты</h3>
-            <ul>
-              <li>Отклонённый фрагмент в промпт не входит</li>
-              <li>Канал на ACL не влияет</li>
-              <li><code>actor_id</code> — учётка или АОН, не SPEAKER</li>
-              <li>Регистр ПДн — CRM, не справочный граф</li>
-            </ul>
-          </div>
-        </div>
-        <p class="quote">Policy — узел LangGraph, не инструмент, который модель может обойти.</p>
+        <p class="kicker">Доступ · ADR-0002</p>
+        <h2>Сначала права, потом модель</h2>
+        <p class="sub">Фильтр стоит до T-pro. Не прошло проверку — в ответ не попадает. Голос и чат проверяются одинаково. Личность — из учётки или номера телефона, не из голоса.</p>
+        <table>
+          <tr><th>Кто</th><th>Видит</th><th>Не видит</th></tr>
+          <tr><td>Анна</td><td>свою карту и карту сына Михаила</td><td>карту Бориса</td></tr>
+          <tr><td>Михаил, 8 лет</td><td>учётки нет; запросы делает Анна</td><td>—</td></tr>
+          <tr><td>Борис</td><td>только свою карту и прайс</td><td>направление Анны</td></tr>
+          <tr><td>Регистратор</td><td>прайс и регламент staff</td><td>карты пациентов</td></tr>
+        </table>
+        <table>
+          <tr><th>Когда пускаем</th><th>Простыми словами</th></tr>
+          <tr><td>метка public</td><td>услуги, врачи, филиалы, подготовка — всем</td></tr>
+          <tr><td>метка staff + роль staff</td><td>внутренний регламент только персоналу</td></tr>
+          <tr><td>это своя карта</td><td>пациент читает только себя</td></tr>
+          <tr><td>опека, ребёнку нет 15 лет</td><td>законный представитель видит карту ребёнка</td></tr>
+        </table>
       </section>
 
       <section class="slide">
         <p class="kicker">ReBAC</p>
         <h2>Анна, Михаил, Борис</h2>
-        <p class="sub">Законный представитель видит карту ребёнка по ребру GUARDIAN_OF. Сосед по клинике — нет.</p>
+        <p class="sub">Анна — законный представитель Михаила. Борис в клинике сосед: ребра опеки нет, чужую карту не открываем.</p>
         <figure class="diagram"><img src="slides/rebac.svg" alt="Схема доступа Анны, Михаила и Бориса"></figure>
       </section>
 
       <section class="slide">
-        <p class="kicker">Sequence</p>
-        <h2>Анна: УЗИ на Лесной и запись</h2>
-        <p class="sub">Knowledge → Policy → vLLM → слоты CRM → HITL → commit.</p>
+        <p class="kicker">Сценарий Анны</p>
+        <h2>УЗИ на Лесной и запись</h2>
+        <p class="sub">Сначала знания и права, потом окна записи. Без «да» от Анны визит не создаётся.</p>
         <figure class="diagram"><img src="slides/sequence-anna.svg" alt="Sequence: сценарий Анны"></figure>
       </section>
 
       <section class="slide">
         <p class="kicker">Отказ</p>
         <h2>Борис не видит направление Анны</h2>
-        <p class="sub">Чанк находится, Policy отсекает чужой acl. CRM по чужому subject_id не вызывается.</p>
+        <p class="sub">Текст направления находится, но в ответ не попадает. Чужую карту система не открывает.</p>
         <figure class="diagram"><img src="slides/policy-boris.svg" alt="Policy: публичные узлы допущены, чанк Анны отклонён"></figure>
       </section>
 
       <section class="slide">
-        <p class="kicker">GraphRAG</p>
-        <h2>Справочная онтология</h2>
-        <p class="sub">Карточки пациентов в граф не входят. OFTEN_CODED_AS — подсказка регистратору, не диагноз.</p>
-        <figure class="diagram"><img src="slides/ontology.svg" alt="Онтология: Doctor, Service, Preparation, Branch, IcdCode"></figure>
+        <p class="kicker">Знания клиники</p>
+        <h2>Справочник, не карты пациентов</h2>
+        <p class="sub">В графе — врачи, услуги, подготовка, филиалы и коды МКБ. Карточки людей хранит учёт визитов.</p>
+        <figure class="diagram"><img src="slides/ontology.svg" alt="Справочный граф клиники"></figure>
+        <table>
+          <tr><th>Стрелка</th><th>Смысл</th></tr>
+          <tr><td>врач → услуга</td><td>кто делает процедуру</td></tr>
+          <tr><td>услуга → подготовка</td><td>как готовиться</td></tr>
+          <tr><td>услуга → филиал</td><td>куда приезжать</td></tr>
+          <tr><td>услуга → код МКБ</td><td>подсказка регистратору, не диагноз</td></tr>
+        </table>
       </section>
 
       <section class="slide">
-        <p class="kicker">GraphRAG</p>
-        <h2>Опора ответа Анны по сыну</h2>
-        <p class="sub">USI-02, подготовка, Морозова, Лесная, N28.1 как справочник. Чанк направления — subject_id=misha.</p>
-        <figure class="diagram"><img src="slides/misha-graph.svg" alt="Граф услуги УЗИ ребёнку и чанк направления Михаила"></figure>
+        <p class="kicker">Пример ответа</p>
+        <h2>Откуда берётся ответ Анне про сына</h2>
+        <p class="sub">Анна спрашивает: когда УЗИ у сына и что за код N28.1. Система собирает врача, филиал, подготовку и текст направления Михаила. Код читает из направления, диагноз не ставит.</p>
+        <figure class="diagram"><img src="slides/misha-graph.svg" alt="Граф УЗИ ребёнку и направление Михаила"></figure>
+        <table>
+          <tr><th>На схеме</th><th>Что говорит Анне</th></tr>
+          <tr><td>Морозова → УЗИ ребёнку</td><td>кто принимает</td></tr>
+          <tr><td>подготовка 5 часов</td><td>не есть перед исследованием</td></tr>
+          <tr><td>филиал Лесная</td><td>куда ехать</td></tr>
+          <tr><td>направление сына</td><td>дата из карты Михаила</td></tr>
+          <tr><td>N28.1</td><td>формулировка из справочника, не диагноз модели</td></tr>
+        </table>
       </section>
 
       <section class="slide">
-        <p class="kicker">ER</p>
-        <h2>Учётные сущности</h2>
-        <p class="sub">Опека, визит, сессия и аудит живут отдельно от справочного графа.</p>
+        <p class="kicker">Учёт</p>
+        <h2>Люди, опека и визиты</h2>
+        <p class="sub">Кто чей ребёнок и какая запись на приём — отдельно от справочника услуг.</p>
         <figure class="diagram"><img src="slides/er.svg" alt="ER: tenant, user, patient, guardian, document, session"></figure>
       </section>
 
       <section class="slide">
-        <p class="kicker">Data Flow</p>
-        <h2>Ingest и runtime</h2>
-        <p class="sub">ACL ставится на чанк при загрузке. В runtime пересекаются граф, векторы и права актора.</p>
+        <p class="kicker">Потоки данных</p>
+        <h2>Загрузка документов и ответ на вопрос</h2>
+        <p class="sub">Метка «кому можно» ставится при загрузке. В момент вопроса пересекаются справочник, тексты и права звонящего.</p>
         <figure class="diagram"><img src="slides/data-flow.svg" alt="Потоки ingest и runtime"></figure>
       </section>
 
       <section class="slide">
-        <p class="kicker">Deployment</p>
-        <h2>Зоны размещения</h2>
-        <p class="sub">DMZ, Control Plane, Data Plane, GPU VLAN без маршрута в интернет.</p>
-        <figure class="diagram"><img src="slides/deployment.svg" alt="Deployment: DMZ, internal, GPU VLAN"></figure>
-      </section>
-
-      <section class="slide">
-        <p class="kicker">Нагрузка и TCO</p>
-        <h2>Типовой объём клиники</h2>
-        <div class="grid grid-4">
-          <div class="card"><p class="num">500</p><p>сессий в день</p></div>
-          <div class="card"><p class="num">9,25</p><p>млн ₽ CapEx, середина</p></div>
-          <div class="card"><p class="num">≈ 30 ₽</p><p>на сессию</p></div>
-          <div class="card"><p class="num">15×</p><p>запас к штатному пику</p></div>
-        </div>
-        <p class="quote">Облачный Speech/LLM отклонён: ориентир 4–8 ₽/сессия, данные покидают периметр. Расчёт — ADR-0004, не прогон на H100.</p>
-      </section>
-
-      <section class="slide">
-        <p class="kicker">Стенд</p>
-        <h2>Локальный прогон, 2026-09-12</h2>
-        <p class="sub">macOS, только uvicorn на 127.0.0.1:8080. GraphRAG в памяти. 15 автотестов прошли. vLLM не поднимался.</p>
+        <p class="kicker">Размещение</p>
+        <h2>Где что стоит</h2>
+        <p class="sub">Пациент звонит или пишет в чат. Ответ считается внутри клиники. Видеокарты в интернет не ходят.</p>
+        <figure class="diagram"><img src="slides/deployment.svg" alt="Схема размещения: вход, управление, данные, видеокарты"></figure>
         <table>
-          <tr><th>Актор</th><th>Запрос</th><th>Результат</th></tr>
-          <tr><td>Анна</td><td>УЗИ сына, код N28.1</td><td class="ok">via=guardian, USI-02</td></tr>
-          <tr><td>Борис</td><td>направление Анны</td><td class="deny">acl_denied</td></tr>
-          <tr><td>Анна</td><td>диагноз по симптомам</td><td>reject_diagnosis</td></tr>
+          <tr><th>На схеме</th><th>Простыми словами</th></tr>
+          <tr><td>Вне контура</td><td>телефонная станция / микрофон и админ по защищённому входу</td></tr>
+          <tr><td>Вход</td><td>принимает звонок и чат, шифрует канал</td></tr>
+          <tr><td>Управление</td><td>ведёт диалог, права и загрузку документов</td></tr>
+          <tr><td>Данные</td><td>граф услуг, поиск по текстам, визиты, секреты</td></tr>
+          <tr><td>Видеокарты</td><td>распознавание речи и генерация ответа, без выхода в интернет</td></tr>
         </table>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Нагрузка и стоимость</p>
+        <h2>Типовой объём клиники</h2>
+        <p class="sub">Два филиала, 10 часов, 250 дней в году. 500 разговоров в день. Оценка закупки, не прогон на видеокартах.</p>
+        <div class="grid grid-4">
+          <div class="card"><p class="num">500</p><p>разговоров в день, 125 000 в год</p></div>
+          <div class="card"><p class="num">9,25</p><p>млн ₽ закупка железа, середина</p></div>
+          <div class="card"><p class="num">≈ 30 ₽</p><p>на один разговор</p></div>
+          <div class="card"><p class="num">15×</p><p>запас к обычному часу пик</p></div>
+        </div>
+        <div class="grid grid-2 fill" style="margin-top:16px">
+          <div class="card">
+            <h3>Из чего складывается закупка</h3>
+            <table>
+              <tr><th>Статья</th><th>Кол-во</th><th>Середина</th></tr>
+              <tr><td>карты для генерации ответа</td><td>2</td><td>6,5 млн ₽</td></tr>
+              <tr><td>карта для речи и поиска</td><td>1</td><td>1,15 млн ₽</td></tr>
+              <tr><td>серверы под карты</td><td>2</td><td>1,6 млн ₽</td></tr>
+              <tr><td>Итого</td><td></td><td>9,25 млн ₽</td></tr>
+            </table>
+          </div>
+          <div class="card">
+            <h3>Пик и содержание</h3>
+            <table>
+              <tr><th>Пункт</th><th>Число</th></tr>
+              <tr><td>обычный час пик</td><td>100 разговоров в час</td></tr>
+              <tr><td>доля бюджета генерации</td><td>2% от запаса</td></tr>
+              <tr><td>вторая карта генерации</td><td>резерв, не в расчёте пика</td></tr>
+              <tr><td>энергия + 0,3 ставки в год</td><td>692 тыс. ₽</td></tr>
+              <tr><td>аренда карт вместо покупки</td><td>≈ 6,3 млн ₽/год, отклонена</td></tr>
+            </table>
+          </div>
+        </div>
+        <p class="quote">Облачное распознавание и генерация дешевле (4–8 ₽ за разговор) и отклонены: текст уходит из клиники.</p>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Прогон 2026-09-12</p>
+        <h2>Три проверки на ноутбуке</h2>
+        <p class="sub">Без видеокарт и без внешней генерации. 15 автотестов прошли. Дальше — что спросили и что ответили.</p>
+        <table class="tight">
+          <tr><th>Кто</th><th>Спросил</th><th>Что сделала система</th></tr>
+          <tr><td>Анна</td><td>Когда УЗИ у сына и что за код N28.1?</td><td>Пустила как законного представителя</td></tr>
+          <tr><td>Борис</td><td>Какое направление у Анны Соколовой?</td><td>Закрыла чужую карту</td></tr>
+          <tr><td>Анна</td><td>Болит живот, что это за диагноз?</td><td>Отказалась ставить диагноз</td></tr>
+          <tr><td>Регистратор</td><td>скидка сотрудникам</td><td>Нашла внутренний код STAFF30</td></tr>
+        </table>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Пример 1</p>
+        <h2>Анна спрашивает про сына</h2>
+        <p class="sub">«Когда УЗИ у сына и что за код N28.1?»</p>
+        <table class="tight">
+          <tr><th>Что проверили</th><th>Результат</th></tr>
+          <tr><td>Чья карта</td><td>Михаил, 8 лет; Анна — представитель</td></tr>
+          <tr><td>Услуга</td><td>УЗИ органов брюшной полости ребёнку, 3000 ₽</td></tr>
+          <tr><td>Врач и филиал</td><td>Морозова А.П., Лесная</td></tr>
+          <tr><td>Подготовка</td><td>не есть 5 часов</td></tr>
+          <tr><td>Код N28.1</td><td>«Киста почки, приобретенная» — из справочника, пометка «не диагноз»</td></tr>
+          <tr><td>Направление</td><td>на 18.09.2026, текст из карты сына вошёл в ответ</td></tr>
+        </table>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Пример 2</p>
+        <h2>Борис спрашивает про Анну</h2>
+        <p class="sub">«Какое направление у Анны Соколовой?»</p>
+        <div class="grid grid-2 fill">
+          <div class="card">
+            <h3>Что произошло</h3>
+            <p>Направление Анны система нашла. В ответ его не отдала. Запись по чужой карте не вызывала. Борису оставили только прайс и свою карту.</p>
+          </div>
+          <div class="card">
+            <h3>Что услышал Борис</h3>
+            <p>«Эти сведения закрыты политикой доступа. Могу помочь с публичными услугами или вашей картой.»</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Пример 3</p>
+        <h2>Анна просит диагноз</h2>
+        <p class="sub">«Болит живот, что это за диагноз?»</p>
+        <div class="grid grid-2 fill">
+          <div class="card">
+            <h3>Что произошло</h3>
+            <p>Запрос ушёл в отказ до генерации клинического вывода. Справочник и карта не подставлялись. Код МКБ по симптомам не подбирался.</p>
+          </div>
+          <div class="card">
+            <h3>Что услышала Анна</h3>
+            <p>«Не могу ставить диагноз или подбирать код МКБ по симптомам. Могу записать к врачу клиники или прочитать код из уже выданного направления.»</p>
+          </div>
+        </div>
       </section>
 
       <section class="slide">
         <p class="kicker">Выводы</p>
         <h2>Контур и правовая рамка</h2>
-        <ul>
-          <li>Речь, генерация и поиск выполняются внутри периметра; внешние API LLM и STT не используются</li>
-          <li>152-ФЗ и 323-ФЗ ст. 13 закрываются размещением и Policy, а не оговоркой в промпте</li>
-          <li>Система не ставит диагноз и не подбирает код МКБ по симптомам</li>
-          <li>Регистр ПДн — CRM; справочный граф карточек не содержит</li>
-        </ul>
+        <div class="grid grid-2 fill">
+          <div class="card">
+            <h3>On-premise как условие, не опция</h3>
+            <p>Речь, генерация и поиск остаются в периметре. Внешние API LLM и STT отклонены: иначе текст запроса и фрагменты карт уходят за контур. 152-ФЗ и врачебная тайна закрываются размещением и Policy, а не фразой в системном промпте.</p>
+          </div>
+          <div class="card">
+            <h3>Диагноз вне продукта</h3>
+            <p>Система не ставит диагноз и не подбирает код МКБ по симптомам. МКБ-10 в графе — терминология и подсказка регистратору (OFTEN_CODED_AS). Запрос «что это» уходит в отказ, без вызова модели на клинический вывод.</p>
+          </div>
+          <div class="card">
+            <h3>Один регистр ПДн</h3>
+            <p>Карточки и опека живут в CRM. Справочный граф — услуги, врачи, филиалы, подготовка, коды. Документ пациента в индексе — копия с acl и subject_id для ответа, не второй регистр.</p>
+          </div>
+          <div class="card">
+            <h3>Следствие для архитектуры</h3>
+            <p>GPU VLAN без маршрута в интернет, веса — с внутреннего зеркала. Секреты в Vault. Телефония и CRM — внешние порты по контракту, вендор АТС в поставку не входит.</p>
+          </div>
+        </div>
       </section>
 
       <section class="slide">
         <p class="kicker">Выводы</p>
         <h2>Доступ и каналы</h2>
-        <ul>
-          <li>Policy — узел LangGraph до вызова модели; отклонённый фрагмент в контекст не входит</li>
-          <li>RBAC и ReBAC: своя карта, staff, GUARDIAN_OF до 15 лет</li>
-          <li>Канал на права не влияет; actor_id — учётка или АОН, не метка SPEAKER</li>
-          <li>Голос — основной канал; чат вызывает тот же оркестратор POST /v1/chat</li>
-        </ul>
+        <div class="grid grid-2 fill">
+          <div class="card">
+            <h3>Policy до модели</h3>
+            <p>Допуск при одном условии: public; staff+роль staff; своя карта; GUARDIAN_OF и возраст менее 15 лет. Отклонённый фрагмент в контекст T-pro не передаётся. Модель не решает ACL и не может обойти узел графа.</p>
+          </div>
+          <div class="card">
+            <h3>ReBAC на сценариях стенда</h3>
+            <p>Анна видит свою карту и карту Михаила. У Михаила учётки нет, запросы выполняет представитель. Борис видит только свою карту: направление Анны и формулировка «сын Соколовой» дают acl_denied — ребра нет.</p>
+          </div>
+          <div class="card">
+            <h3>Канал не меняет права</h3>
+            <p>actor_id берётся из учётки или АОН, не из метки SPEAKER. Голос и чат проходят один и тот же Policy. Диаризация нужна, чтобы развести реплики, а не чтобы назначить личность по тембру.</p>
+          </div>
+          <div class="card">
+            <h3>Один оркестратор</h3>
+            <p>Голос — основной канал (ADR-0009). Чат на сайте вызывает POST /v1/chat и тот же LangGraph. ASR и TTS — адаптер. Отдельный «мозг» для сайта отклонён: иначе два контура Policy и два источника правды.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Выводы</p>
+        <h2>Архитектура и GraphRAG</h2>
+        <div class="grid grid-2 fill">
+          <div class="card">
+            <h3>C4 и плоскости</h3>
+            <p>L1 фиксирует периметр. L2 разделяет Control Plane и Data Plane. L3 — узлы одного графа состояний, не микросервис на субагент. Observability (Langfuse, Prometheus) внутри контура.</p>
+          </div>
+          <div class="card">
+            <h3>LangGraph принят</h3>
+            <p>Нужны ветвления, повтор, HITL и отказ. Deep Agents для этого контура не подходит: Policy должен быть обязательным узлом, а не инструментом, который модель может не вызвать. Линейный скрипт не покрывает запись с подтверждением.</p>
+          </div>
+          <div class="card">
+            <h3>Граф плюс чанки</h3>
+            <p>Векторный поиск без онтологии не отвечает «кто делает УЗИ на Лесной и как готовиться». Neo4j держит Doctor, Service, Preparation, Branch, IcdCode. Qdrant держит чанки с вектором и меткой ACL. Generator видит только допущенное.</p>
+          </div>
+          <div class="card">
+            <h3>Grounding и HITL</h3>
+            <p>Ответ опирается на допущенные узлы и чанки. Без опоры — отказ или оператор. Запись, перенос и отмена не коммитятся без подтверждения пользователя. Output Guardrails проверяют чужое ФИО, диагноз и grounding.</p>
+          </div>
+        </div>
       </section>
 
       <section class="slide">
         <p class="kicker">Выводы</p>
         <h2>Принято и отклонено</h2>
-        <div class="grid grid-2" style="flex:1">
+        <div class="grid grid-2 fill">
           <div class="card">
             <h3>Принято</h3>
             <ul>
-              <li>On-premise, единственный движок LLM — vLLM</li>
-              <li>T-pro-it-2.1, Neo4j, Qdrant, LangGraph</li>
-              <li>GraphRAG: онтология плюс чанки с ACL</li>
-              <li>HITL на запись, перенос и отмену</li>
+              <li>On-premise контур, ADR-0001: данные не покидают периметр</li>
+              <li>Единственный промышленный движок LLM — vLLM; T-pro-it-2.1 на 2× H100 FP8</li>
+              <li>Речь на L40S: Whisper large-v3-turbo, WhisperX, синтез речи</li>
+              <li>RBAC и ReBAC GUARDIAN_OF; Policy — узел графа</li>
+              <li>GraphRAG: Neo4j + Qdrant + bge-m3; эмбеддинги с ACL до LLM</li>
+              <li>LangGraph на голос и чат; HITL на мутации CRM</li>
+              <li>CPU-стенд с теми же контрактами без GPU</li>
             </ul>
           </div>
           <div class="card">
-            <h3>Отклонено</h3>
+            <h3>Отклонено и почему</h3>
             <ul>
-              <li>Облачные Speech и LLM API</li>
-              <li>Deep Agents вместо машины состояний</li>
-              <li>Второй «мозг» для чата на сайте</li>
-              <li>Карточки пациентов в справочном графе</li>
+              <li>Облачные Speech/LLM: ориентир 4–8 ₽/сессия, текст уходит за периметр</li>
+              <li>Второй движок инференса: в контуре только vLLM</li>
+              <li>Deep Agents: Policy нельзя отдавать на усмотрение модели</li>
+              <li>Отдельный оркестратор чата: два ACL и расхождение ответов</li>
+              <li>Карточки в справочном графе: дубль регистра ПДн</li>
+              <li>Актор из тембра: канал начал бы влиять на права</li>
+              <li>Диагноз по симптомам: вне объёма и вне 323-ФЗ как функция системы</li>
             </ul>
           </div>
         </div>
@@ -421,40 +634,69 @@
 
       <section class="slide">
         <p class="kicker">Выводы</p>
-        <h2>Стенд и стоимость</h2>
-        <ul>
-          <li>CPU-стенд без GPU проверяет ACL, ReBAC, отказ в диагностике и оба канала</li>
-          <li>15 автотестов прошли; генератор на прогоне — grounded, индекс лексический</li>
-          <li>Типовой объём: 500 сессий/день, CapEx середина 9,25 млн ₽, ≈ 30 ₽/сессия</li>
-          <li>Облачный путь дешевле в ориентире 4–8 ₽/сессия и отклонён: данные покидают периметр</li>
-        </ul>
+        <h2>Стенд, нагрузка, стоимость</h2>
+        <div class="grid grid-2 fill">
+          <div class="card">
+            <h3>Что доказал стенд без GPU</h3>
+            <p>Контракты /v1/chat, /v1/voice и /v1/audit живы на grounded-генераторе и лексическом индексе. Анна проходит как опекун, Борис получает отказ, диагноз отсекается до модели. 15 тестов: ACL, ReBAC, HITL, оба канала. Фаза H100 не блокирует проверку доступа.</p>
+          </div>
+          <div class="card">
+            <h3>Что стенд не заменяет</h3>
+            <p>Нет p95 vLLM, нет RTF ASR, нет промышленной CRM и АТС. Лексический индекс добавляет соседние коды МКБ в node_ids — на решение Policy это не влияет, на качество формулировки на GPU-контуре нужна bge-m3.</p>
+          </div>
+          <div class="card">
+            <h3>Ёмкость</h3>
+            <p>Типовой день 500 сессий, пик 1,7 сессии/мин. Бюджет vLLM 10 RPS занят на 2%. Запас к штатному пику около 15×. Потолок 30 сессий/мин — инженерный, не штат двух филиалов. Второй H100 в расчёт RPS не входит.</p>
+          </div>
+          <div class="card">
+            <h3>TCO</h3>
+            <p>Середина CapEx 9,25 млн ₽ (диапазон 7,0–11,5). Амортизация 36 мес + энергия + 0,3 ставки ≈ 30 ₽/сессия при 125 000 сессий/год. Аренда GPU ≈ 6,3 млн ₽/год отклонена на горизонте от трёх лет. Облако дешевле и отклонено по 152-ФЗ.</p>
+          </div>
+        </div>
       </section>
 
       <section class="slide">
-        <p class="kicker">Ограничения</p>
-        <h2>Вне поставки</h2>
-        <ul>
-          <li>Диагноз и клинические назначения</li>
-          <li>Промышленная CRM и АТС</li>
-          <li>Обучение LLM и ASR</li>
-          <li>Штатный blue/green и ночная полная переиндексация</li>
-        </ul>
-        <p class="quote">Документация: README, GLOSSARY, ADR-0001…0009. Схемы C4, Sequence, Data Flow, Deployment, ER.</p>
+        <p class="kicker">Выводы</p>
+        <h2>Итог</h2>
+        <div class="grid grid-2 fill">
+          <div class="card">
+            <h3>Зафиксировано</h3>
+            <ul>
+              <li>Тема контура: on-premise мультиагентный голосовой ИИ-ассистент медицинского центра с GraphRAG, врачебной тайной и 152-ФЗ</li>
+              <li>Ответ grounded: граф + чанки после Policy, иначе отказ или оператор</li>
+              <li>Голос и чат делят один LangGraph; vLLM — единственный движок генерации</li>
+              <li>Анна / Михаил / Борис подтверждают RBAC, ReBAC и изоляцию карт</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Ограничение поставки</h3>
+            <ul>
+              <li>Нет диагноза, назначений, обучения моделей, промышленной CRM и АТС</li>
+              <li>Нет штатного blue/green и ночной полной переиндексации</li>
+              <li>Сеть, СХД и Vault в сумму CapEx не входят</li>
+              <li>Документация: README, GLOSSARY, ADR-0001…0009, C4 L1–L3, Sequence, Data Flow, Deployment, ER</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
-      <section class="slide cover">
-        <div class="cover-grid">
-          <div class="cover-main">
-            <p class="kicker">Контур clinic-voice-graphrag</p>
-            <h1>Проектирование и реализация on-premise мультиагентного голосового ИИ-ассистента медицинского центра с GraphRAG, обеспечением врачебной тайны и соблюдением 152-ФЗ</h1>
-            <p class="author">Распутина Анастасия</p>
-            <p class="links">
-              <a href="https://github.com/divisee">github.com/divisee</a>
-              <a href="https://github.com/divisee/otus-ai-architect">github.com/divisee/otus-ai-architect</a>
-            </p>
-          </div>
-          <figure class="cover-visual">
-            <img src="slides/cover-clinic-voice.jpg" alt="">
+      <section class="slide close">
+        <p class="kicker">Вопросы</p>
+        <h2>Спасибо за внимание</h2>
+        <p class="author">Распутина Анастасия</p>
+        <p class="sub">Контур clinic-voice-graphrag. README, ADR и схемы — в репозитории.</p>
+        <div class="qrs">
+          <figure>
+            <img src="slides/qr-github.svg" alt="QR: профиль GitHub">
+            <figcaption><a href="https://github.com/divisee">github.com/divisee</a></figcaption>
+          </figure>
+          <figure>
+            <img src="slides/qr-repo.svg" alt="QR: репозиторий">
+            <figcaption><a href="https://github.com/divisee/otus-ai-architect">репозиторий проекта</a></figcaption>
+          </figure>
+          <figure>
+            <img src="slides/qr-pages.svg" alt="QR: сайт презентации">
+            <figcaption><a href="https://divisee.github.io/otus-ai-architect/">страница презентации</a></figcaption>
           </figure>
         </div>
       </section>

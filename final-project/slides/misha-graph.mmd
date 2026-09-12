@@ -1,10 +1,8 @@
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px','actorBkg':'#efe6fa','actorBorder':'#6402ba','actorTextColor':'#111111','signalColor':'#6402ba','signalTextColor':'#111111','noteBkgColor':'#fff4e5','noteBorderColor':'#ffab40'}}}%%
-
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px'}}}%%
 flowchart LR
-    Belova[Белова И.С.] -->|PROVIDES| PED[PED-01]
-    Morozova[Морозова А.П.] -->|PROVIDES| USI2[USI-02]
-    USI2 -->|REQUIRES| Prep[подготовка 5 ч]
-    USI2 -->|AVAILABLE_AT| Les[Лесная]
-    USI2 -->|OFTEN_CODED_AS| N28[N28]
-    N281[N28.1] -->|PARENT| N28
-    Chunk[чанк направления] -.->|subject=misha| USI2
+    Morozova[врач Морозова] -->|оказывает| USI2[УЗИ ребёнку]
+    USI2 -->|нужна| Prep[не есть 5 часов]
+    USI2 -->|филиал| Les[Лесная]
+    Nap[направление сына] -.->|карта Михаила| USI2
+    USI2 -->|код из направления| N281[N28.1 киста почки]
+    N281 -->|это справочник| Note[не диагноз модели]
