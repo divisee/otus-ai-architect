@@ -34,11 +34,16 @@ On-premise мультиагентный ассистент медицинско�
 
 Control Plane — API и агенты. Data Plane — граф, векторы, модели, заглушка CRM.
 
-## Очередность работ
+Последовательность работ и реестр требований — [`docs/plan.md`](docs/plan.md).
 
-1. Документация и корпус знаний — выполнено.
-2. Загрузка документов и МКБ в Neo4j и Qdrant.
-3. LangGraph: Router, Knowledge, CRM, Policy.
-4. Проверка ACL (в том числе представитель и ребёнок).
-5. Голосовой адаптер.
-6. Наблюдаемость и нагрузочные измерения.
+## Стенд Control Plane
+
+```text
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+pytest -q
+uvicorn app.main:app --port 8080
+```
+
+Промышленные vLLM и Whisper подключаются теми же портами генерации и ASR (фаза 6 плана). На CPU-стенде генерация grounded, вход речи — транскрипт.

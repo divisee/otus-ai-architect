@@ -22,14 +22,17 @@ Architecture Decision Records, модель C4 и схемы потоков да
 
 | Документ | Статус |
 |----------|--------|
-| [Рамка MVP](mvp.md) | черновик |
-| [C4 Context](architecture/c4-context.md) | черновик |
-| [C4 Container](architecture/c4-container.md) | черновик |
-| [C4 Component](architecture/c4-component.md) | черновик |
-| [Deployment](architecture/deployment.md) | черновик |
-| [Sequence](architecture/sequence.md) | черновик |
-| [Data Flow](architecture/data-flow.md) | черновик |
-| [Граф и ER](architecture/graph-schema.md) | черновик |
-| [Когнитивная схема](diagrams/cognitive-architecture.mmd) | черновик |
+| [План и реестр требований](plan.md) | принято |
+| [Рамка MVP](mvp.md) | принято |
+| [C4 Context](architecture/c4-context.md) | принято |
+| [C4 Container](architecture/c4-container.md) | принято |
+| [C4 Component](architecture/c4-component.md) | принято |
+| [Deployment](architecture/deployment.md) | принято |
+| [Sequence](architecture/sequence.md) | принято |
+| [Data Flow](architecture/data-flow.md) | принято |
+| [Граф и ER](architecture/graph-schema.md) | принято |
+| [Внешние порты](architecture/external-ports.md) | принято |
+| [Нагрузка](architecture/load.md) | принято |
+| [Когнитивная схема](diagrams/cognitive-architecture.mmd) | принято |
 
 Корпус знаний: [`backend/data/kb/`](../backend/data/kb/manifest.yaml). МКБ-10: [`reference/`](../backend/data/kb/reference/README.md).

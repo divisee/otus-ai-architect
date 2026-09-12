@@ -1,11 +1,14 @@
 # Infra
 
-Цель — `docker compose up` для Data Plane и обвязки:
+Data Plane стенда — профиль `data`. Control Plane запускается на хосте: `uvicorn app.main:app` из `backend/`.
 
-- Neo4j
-- Qdrant
-- Langfuse (self-host)
-- Prometheus / Grafana
-- vLLM — на машине с GPU (профиль `demo-gpu`)
+```text
+docker compose --profile data up -d
+```
 
-Control Plane (API + агенты) можно гонять с хоста в dev. Секреты в git не кладём.
+| Сервис | Профиль | Назначение |
+|--------|---------|------------|
+| Neo4j, Qdrant, Postgres | `data` | целевые хранилища ADR-0007 |
+| vLLM, Whisper | не в Compose CPU | GPU-контур, ADR-0004 |
+
+На CPU-стенде API использует in-memory порты тех же контрактов (граф из Cypher, лексический индекс, CRM stub). Секреты в git не кладём.

@@ -1,0 +1,71 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import date
+
+
+@dataclass(frozen=True)
+class Actor:
+    id: str
+    login: str
+    role: str
+
+
+@dataclass(frozen=True)
+class AccessDecision:
+    allowed: bool
+    via: str | None
+    reason: str = ""
+
+
+def years_between(born: date, today: date) -> int:
+    years = today.year - born.year
+    if (today.month, today.day) < (born.month, born.day):
+        years -= 1
+    return years
+
+
+class PolicyGate:
+    """Пересечение retrieved ∩ acl роли. Отклонённый фрагмент в модель не идёт."""
+
+    def __init__(self, crm, today: date | None = None) -> None:
+        self.crm = crm
+        self.today = today or date.today()
+
+    def decide(self, actor: Actor, acl: str, subject_id: str | None) -> AccessDecision:
+        if acl == "public" or not acl:
+            return AccessDecision(True, "public")
+        if acl == "staff":
+            if actor.role == "staff":
+                return AccessDecision(True, "staff")
+            return AccessDecision(False, None, "staff_only")
+        if not subject_id:
+            return AccessDecision(False, None, "missing_subject")
+        if subject_id == actor.id:
+            return AccessDecision(True, "self")
+        if self.crm.is_guardian(actor.id, subject_id):
+            patient = self.crm.get_patient(subject_id)
+            if patient is None:
+                return AccessDecision(False, None, "unknown_subject")
+            age = years_between(patient.birth_date, self.today)
+            if age < 15 or patient.share_with_guardian:
+                return AccessDecision(True, "guardian")
+            return AccessDecision(False, None, "guardian_needs_consent")
+        return AccessDecision(False, None, "no_relation")
+
+    def filter_chunks(self, actor: Actor, chunks: list) -> list:
+        kept = []
+        for chunk in chunks:
+            decision = self.decide(actor, chunk.acl, chunk.subject_id)
+            if decision.allowed:
+                chunk.via = decision.via
+                kept.append(chunk)
+        return kept
+
+    def filter_nodes(self, actor: Actor, nodes: list) -> list:
+        kept = []
+        for node in nodes:
+            decision = self.decide(actor, node.props.get("acl", "public"), node.props.get("subject_id"))
+            if decision.allowed:
+                kept.append(node)
+        return kept
