@@ -151,8 +151,13 @@
     .econ > .card.mark::before { background: var(--sage); }
     .card .assume { margin-top: 9px; font-size: 12px; line-height: 1.35; color: var(--muted); }
     .card .assume b { color: var(--v-700); }
-    .contours .card { justify-content: center; }
-    .contours h3 { font-size: 20px; margin-bottom: 10px; }
+    .contours .card { justify-content: flex-start; padding: 22px 24px 22px 28px; }
+    .contours h3 { font-size: 22px; margin-bottom: 14px; }
+    .contours .spec { flex: 1 1 auto; justify-content: space-between; gap: 10px; }
+    .contours .spec .row { padding-bottom: 10px; border-bottom: 1px solid rgba(100, 2, 186, 0.08); }
+    .contours .spec .row.sum { padding: 11px 14px; border-bottom: 0; }
+    .contours .spec dt { flex: 0 0 88px; font-size: 13px; }
+    .contours .spec dd { font-size: 15.5px; }
     .spec { margin: 0; display: flex; flex-direction: column; gap: 8px; }
     .spec .row { display: flex; align-items: baseline; gap: 12px; }
     .spec dt { flex: 0 0 78px; margin: 0; font-size: 12.5px; color: var(--muted); }
