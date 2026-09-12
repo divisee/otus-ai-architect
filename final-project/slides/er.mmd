@@ -1,0 +1,13 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px','actorBkg':'#efe6fa','actorBorder':'#6402ba','actorTextColor':'#111111','signalColor':'#6402ba','signalTextColor':'#111111','noteBkgColor':'#fff4e5','noteBorderColor':'#ffab40'}}}%%
+
+erDiagram
+    TENANT ||--o{ USER : has
+    USER ||--o{ GUARDIAN_LINK : parent
+    USER ||--o{ PATIENT : represents
+    PATIENT ||--o{ GUARDIAN_LINK : child
+    PATIENT ||--o{ DOCUMENT : owns
+    DOCUMENT ||--o{ CHUNK : splits
+    CHUNK ||--o{ EMBEDDING : has
+    USER ||--o{ SESSION : opens
+    SESSION ||--o{ AUDIT_EVENT : logs
+    PATIENT ||--o{ APPOINTMENT : books

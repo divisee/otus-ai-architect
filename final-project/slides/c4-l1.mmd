@@ -1,0 +1,22 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px','actorBkg':'#efe6fa','actorBorder':'#6402ba','actorTextColor':'#111111','signalColor':'#6402ba','signalTextColor':'#111111','noteBkgColor':'#fff4e5','noteBorderColor':'#ffab40'}}}%%
+
+flowchart LR
+    patient[Пациент]
+    staff[Регистратор / врач]
+    operator[Оператор HITL]
+    subgraph perimeter["Периметр клиники"]
+        ai[AI-платформа<br/>мультиагент + GraphRAG + ACL]
+    end
+    telephony[Телефония / микрофон]
+    crm[(CRM)]
+    kb[Корпус документов]
+    notify[SMS / почта]
+    patient -->|речь| telephony
+    patient -->|чат на сайте| ai
+    staff --> ai
+    telephony -->|транскрипт / синтез| ai
+    kb -->|ingest| ai
+    ai -->|слоты, запись| crm
+    ai -->|эскалация| operator
+    operator --> crm
+    ai -.->|после HITL| notify

@@ -1,0 +1,43 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px','actorBkg':'#efe6fa','actorBorder':'#6402ba','actorTextColor':'#111111','signalColor':'#6402ba','signalTextColor':'#111111','noteBkgColor':'#fff4e5','noteBorderColor':'#ffab40'}}}%%
+
+flowchart TB
+    subgraph INET["Вне контура"]
+        TEL[АТС / микрофон]
+        ADM[Админ VPN]
+    end
+    subgraph DMZ["DMZ"]
+        WAF[WAF / TLS]
+        SIP[Voice SBC]
+        GW[API Gateway]
+    end
+    subgraph INT["Control Plane"]
+        ORCH[Orchestrator]
+        ING[Ingest]
+        LF[Langfuse]
+    end
+    subgraph DATA["Data Plane"]
+        NEO[(Neo4j)]
+        QD[(Qdrant)]
+        PG[(Postgres)]
+        CRM[(CRM)]
+        VAULT[Vault]
+    end
+    subgraph GPU["GPU VLAN"]
+        VLLM[vLLM T-pro FP8<br/>2× H100]
+        WHIS[Whisper + bge-m3<br/>1× L40S]
+    end
+    TEL --> WAF
+    TEL --> SIP
+    SIP --> GW
+    WAF --> GW
+    GW --> ORCH
+    ORCH --> NEO
+    ORCH --> QD
+    ORCH --> PG
+    ORCH --> VLLM
+    GW --> WHIS
+    ING --> NEO
+    ING --> QD
+    ORCH --> LF
+    ORCH -.-> VAULT
+    ADM --> VAULT

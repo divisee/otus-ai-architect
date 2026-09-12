@@ -1,0 +1,44 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px','actorBkg':'#efe6fa','actorBorder':'#6402ba','actorTextColor':'#111111','signalColor':'#6402ba','signalTextColor':'#111111','noteBkgColor':'#fff4e5','noteBorderColor':'#ffab40'}}}%%
+
+flowchart LR
+    CALL[Звонок / wav] --> ASR[Whisper + diarization]
+    TXT[Чат /v1/chat] --> PRE
+    ASR --> PRE[Препроцессинг]
+    PRE --> IG[Input Guardrails]
+    IG --> ANON[Анонимизатор ПДн]
+    ANON --> R[Router LangGraph]
+    R --> K[Knowledge GraphRAG]
+    R --> C[CRM Agent]
+    R --> POL[Policy / ACL]
+    R -->|N неудач| OP[Оператор]
+    K --> G[(Neo4j)]
+    K --> V[(Qdrant)]
+    C --> CRM[(CRM)]
+    POL --> ACL[(RBAC / ReBAC)]
+    K --> F[Final]
+    C --> F
+    POL --> F
+    F --> OG[Output Guardrails]
+    OG --> TTS[Silero TTS]
+    OG --> OUT[Текст]
+    TTS --> AUDIO[Аудио]
+    subgraph CP["Control Plane"]
+        IG
+        ANON
+        R
+        K
+        C
+        POL
+        F
+        OG
+    end
+    subgraph DP["Data Plane"]
+        G
+        V
+        CRM
+        ACL
+        LLM[vLLM]
+    end
+    R -.-> LLM
+    K -.-> LLM
+    F -.-> LLM

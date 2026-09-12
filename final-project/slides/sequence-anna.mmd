@@ -1,0 +1,32 @@
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px','actorBkg':'#efe6fa','actorBorder':'#6402ba','actorTextColor':'#111111','signalColor':'#6402ba','signalTextColor':'#111111','noteBkgColor':'#fff4e5','noteBorderColor':'#ffab40'}}}%%
+
+sequenceDiagram
+    autonumber
+    actor A as Анна
+    participant VA as Voice
+    participant GW as Gateway
+    participant IG as Guardrails
+    participant R as Router
+    participant K as Knowledge
+    participant P as Policy
+    participant C as CRM
+    participant LLM as vLLM
+    A->>VA: речь
+    VA->>GW: транскрипт + subject
+    GW->>IG: текст
+    IG->>R: очищенный текст
+    R->>K: УЗИ, филиал Лесная
+    K->>P: узлы и чанки
+    P-->>K: только acl=public
+    K->>LLM: допущенный контекст
+    LLM-->>K: подготовка, Морозова
+    K-->>R: grounded-ответ
+    R->>C: слоты послезавтра
+    C-->>R: два окна
+    R->>A: подготовка и слоты
+    A->>R: второе окно
+    R->>C: book HITL
+    R->>A: подтвердите
+    A->>R: да
+    C->>C: commit
+    VA->>A: TTS
