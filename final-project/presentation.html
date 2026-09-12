@@ -32,6 +32,7 @@
       padding: clamp(24px, 5vh, 56px) clamp(24px, 6vw, 88px) 80px;
       width: 100%;
       overflow: hidden;
+      background: radial-gradient(900px 420px at 0% -8%, #f3edff 0%, transparent 58%), #fff;
     }
     .slide.active { display: flex; flex-direction: column; }
     .slide.cover {
@@ -72,11 +73,19 @@
     .close h2 { font-size: clamp(36px, 4.4vw, 52px); margin: 0 0 12px; max-width: none; text-align: center; }
     .close .ask { margin: 0 0 8px; font-size: clamp(22px, 2.4vw, 28px); font-weight: 500; color: var(--violet); text-align: center; }
     .qrs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; max-width: 1080px; }
-    .qrs figure { margin: 0; text-align: center; padding: 16px 12px 14px; border-radius: 16px; box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12); }
-    .qrs figure:nth-child(6n+1) { background: linear-gradient(145deg, #efe8ff 0%, #b9a4e0 100%); color: #2a1860; }
-    .qrs figure:nth-child(6n+2) { background: linear-gradient(145deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
-    .qrs figure:nth-child(6n+3) { background: linear-gradient(145deg, #dceeee 0%, #6d9b9a 100%); color: #14302f; }
-    .qrs figure:nth-child(6n+4) { background: linear-gradient(145deg, #9aa3d8 0%, #3c0170 100%); color: #fff; }
+    .qrs figure {
+      margin: 0; text-align: center; padding: 16px 12px 14px; border-radius: 16px;
+      background: #f7f4fc; color: #1b1530; position: relative;
+      box-shadow: 0 10px 28px rgba(60, 1, 112, 0.08);
+    }
+    .qrs figure::before {
+      content: ""; display: block; height: 5px; margin: -16px -12px 12px;
+      border-radius: 16px 16px 0 0;
+    }
+    .qrs figure:nth-child(6n+1)::before { background: #8b6fc4; }
+    .qrs figure:nth-child(6n+2)::before { background: #6402ba; }
+    .qrs figure:nth-child(6n+3)::before { background: #4f8a86; }
+    .qrs figure:nth-child(6n+4)::before { background: #3c0170; }
     .qrs img { width: min(148px, 16vw); height: auto; background: #fff; padding: 8px; border-radius: 12px; }
     .qrs figcaption { margin-top: 8px; font-size: 13px; }
     .qrs a { color: inherit; }
@@ -93,45 +102,80 @@
     .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
     .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
     .card {
-      padding: 20px 22px;
+      padding: 20px 22px 20px 28px;
       border-radius: 16px;
       border: 0;
-      box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
+      background: #f7f4fc;
+      color: #1b1530;
+      position: relative;
+      box-shadow: 0 10px 28px rgba(60, 1, 112, 0.08);
     }
-    .card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
+    .card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; color: #2a1860; }
     .card p, .card li { font-size: 15px; margin: 0; line-height: 1.4; }
     .card li { margin-bottom: 6px; }
-    .card li::before { background: currentColor; }
-    .card th, .card td { border-bottom-color: color-mix(in srgb, currentColor 22%, transparent); }
-    .card th { color: inherit; font-weight: 700; }
+    .card li::before { background: var(--violet); }
+    .card th, .card td { border-bottom-color: #e3dcf0; }
+    .card th { color: var(--violet); font-weight: 700; }
     .card code { color: inherit; }
-    .grid > .card:nth-child(6n+1) { background: linear-gradient(145deg, #efe8ff 0%, #b9a4e0 100%); color: #2a1860; }
-    .grid > .card:nth-child(6n+2) { background: linear-gradient(145deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
-    .grid > .card:nth-child(6n+3) { background: linear-gradient(145deg, #dceeee 0%, #6d9b9a 100%); color: #14302f; }
-    .grid > .card:nth-child(6n+4) { background: linear-gradient(145deg, #9aa3d8 0%, #3c0170 100%); color: #fff; }
-    .grid > .card:nth-child(6n+5) { background: linear-gradient(145deg, #d8e4f4 0%, #5d7aa3 100%); color: #152033; }
-    .grid > .card:nth-child(6n+6) { background: linear-gradient(145deg, #e6d5ea 0%, #7a5388 100%); color: #fff; }
-    .grid > .card h3, .grid > .card .num { color: inherit; }
+    .grid > .card::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 14px; bottom: 14px;
+      width: 5px;
+      border-radius: 0 6px 6px 0;
+    }
+    .grid > .card:nth-child(6n+1) { background: #f5f0fc; }
+    .grid > .card:nth-child(6n+2) { background: #f3edfa; }
+    .grid > .card:nth-child(6n+3) { background: #eef6f5; }
+    .grid > .card:nth-child(6n+4) { background: #eef0f8; }
+    .grid > .card:nth-child(6n+5) { background: #eef3f8; }
+    .grid > .card:nth-child(6n+6) { background: #f6eef6; }
+    .grid > .card:nth-child(6n+1)::before { background: #8b6fc4; }
+    .grid > .card:nth-child(6n+2)::before { background: #6402ba; }
+    .grid > .card:nth-child(6n+3)::before { background: #4f8a86; }
+    .grid > .card:nth-child(6n+4)::before { background: #3c0170; }
+    .grid > .card:nth-child(6n+5)::before { background: #5d7aa3; }
+    .grid > .card:nth-child(6n+6)::before { background: #7a5388; }
+    .grid > .card:nth-child(6n+1) .num { color: #8b6fc4; }
+    .grid > .card:nth-child(6n+2) .num { color: #6402ba; }
+    .grid > .card:nth-child(6n+3) .num { color: #4f8a86; }
+    .grid > .card:nth-child(6n+4) .num { color: #3c0170; }
+    .grid > .card:nth-child(6n+5) .num { color: #5d7aa3; }
+    .grid > .card:nth-child(6n+6) .num { color: #7a5388; }
     .fill { flex: 1; min-height: 0; align-content: stretch; }
     .fill .card { display: flex; flex-direction: column; min-height: 0; overflow: auto; }
     .num { font-size: 34px; font-weight: 700; margin: 0 0 4px; }
     .plan { counter-reset: step; display: grid; grid-template-columns: 1fr; gap: 10px; list-style: none; padding: 0; flex: 1; }
     .plan li {
       font-size: 22px; padding: 0 22px 0 72px; margin: 0; list-style: none; position: relative;
-      border-radius: 16px; box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
+      border-radius: 16px; background: #f7f4fc; color: #1b1530;
+      box-shadow: 0 10px 28px rgba(60, 1, 112, 0.08);
       display: flex; align-items: center;
     }
-    .plan li:nth-child(6n+1) { background: linear-gradient(145deg, #efe8ff 0%, #b9a4e0 100%); color: #2a1860; }
-    .plan li:nth-child(6n+2) { background: linear-gradient(145deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
-    .plan li:nth-child(6n+3) { background: linear-gradient(145deg, #dceeee 0%, #6d9b9a 100%); color: #14302f; }
-    .plan li:nth-child(6n+4) { background: linear-gradient(145deg, #9aa3d8 0%, #3c0170 100%); color: #fff; }
-    .plan li:nth-child(6n+5) { background: linear-gradient(145deg, #d8e4f4 0%, #5d7aa3 100%); color: #152033; }
-    .plan li:nth-child(6n+6) { background: linear-gradient(145deg, #e6d5ea 0%, #7a5388 100%); color: #fff; }
+    .plan li::after {
+      content: "";
+      position: absolute;
+      left: 0; top: 12px; bottom: 12px;
+      width: 5px;
+      border-radius: 0 6px 6px 0;
+    }
+    .plan li:nth-child(6n+1) { background: #f5f0fc; }
+    .plan li:nth-child(6n+2) { background: #f3edfa; }
+    .plan li:nth-child(6n+3) { background: #eef6f5; }
+    .plan li:nth-child(6n+4) { background: #eef0f8; }
+    .plan li:nth-child(6n+5) { background: #eef3f8; }
+    .plan li:nth-child(6n+6) { background: #f6eef6; }
+    .plan li:nth-child(6n+1)::after, .plan li:nth-child(6n+1)::before { background: #8b6fc4; }
+    .plan li:nth-child(6n+2)::after, .plan li:nth-child(6n+2)::before { background: #6402ba; }
+    .plan li:nth-child(6n+3)::after, .plan li:nth-child(6n+3)::before { background: #4f8a86; }
+    .plan li:nth-child(6n+4)::after, .plan li:nth-child(6n+4)::before { background: #3c0170; }
+    .plan li:nth-child(6n+5)::after, .plan li:nth-child(6n+5)::before { background: #5d7aa3; }
+    .plan li:nth-child(6n+6)::after, .plan li:nth-child(6n+6)::before { background: #7a5388; }
     .plan li::before {
       counter-increment: step; content: counter(step);
       position: absolute;
       width: 34px; height: 34px; border-radius: 50%;
-      background: #fff; color: #6402ba; font-size: 15px; font-weight: 700;
+      color: #fff; font-size: 15px; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
       top: 50%; left: 20px; transform: translateY(-50%);
     }
@@ -224,12 +268,6 @@
     .wins article:nth-child(6n+6) { background: linear-gradient(145deg, #e6d5ea 0%, #7a5388 100%); color: #fff; }
     .ok { color: var(--ok); font-weight: 700; }
     .deny { color: var(--deny); font-weight: 700; }
-    .grid > .card:nth-child(6n+2) .ok,
-    .grid > .card:nth-child(6n+4) .ok,
-    .grid > .card:nth-child(6n+6) .ok { color: #d7fff8; }
-    .grid > .card:nth-child(6n+2) .deny,
-    .grid > .card:nth-child(6n+4) .deny,
-    .grid > .card:nth-child(6n+6) .deny { color: #ead8f5; }
     .bar { position: absolute; left: 0; right: 0; bottom: 48px; height: 4px; background: var(--lilac-soft); z-index: 4; }
     .bar span { display: block; height: 100%; background: var(--violet); width: 0; }
     .footer {
@@ -595,7 +633,8 @@
           <div class="card"><p class="num">≈ 30 ₽</p><p>сессия: 24,7 + 1,2 + 4,3</p></div>
           <div class="card"><p class="num">15×</p><p>запас к пику · облако 4–8 ₽ отклонено</p></div>
         </div>
-        <div class="grid grid-4" style="margin-top:16px; flex:1">
+        <p class="kicker" style="margin:22px 0 10px">Стенд · 15 passed</p>
+        <div class="grid grid-4">
           <div class="card"><h3>Анна</h3><p>УЗИ сына, код N28.1</p><p class="ok">via=guardian</p></div>
           <div class="card"><h3>Борис</h3><p>направление Анны</p><p class="deny">acl_denied</p></div>
           <div class="card"><h3>Анна</h3><p>диагноз по симптомам</p><p>reject_diagnosis</p></div>
