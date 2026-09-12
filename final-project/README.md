@@ -194,7 +194,6 @@ flowchart LR
     crm[(CRM)]
     kb[Корпус документов]
     notify[SMS / почта]
-    ext[OpenAI / Anthropic]
 
     patient -->|речь| telephony
     patient -->|чат на сайте| ai
@@ -205,13 +204,12 @@ flowchart LR
     ai -->|эскалация| operator
     operator --> crm
     ai -.->|после HITL| notify
-    ai -.->|нет вызова| ext
 ```
 
 
 
 
-**Снаружи системы:** пациент, персонал, оператор; исходные PDF клиники; промышленная CRM; SMS-провайдер; OpenAI / Anthropic (вызов не выполняется).
+**Снаружи системы:** пациент, персонал, оператор; исходные PDF клиники; промышленная CRM; SMS-провайдер.
 
 **Внутри периметра:** агенты, guardrails, ACL; Neo4j, Qdrant, сессии, аудит; vLLM, Whisper, Silero; секреты (Vault).
 
