@@ -9,8 +9,7 @@
 
 ## 1. Карточка модели (Model Card)
 
-**Идентификатор:** `technomart-support-rag-llama3-70b`.  
-**Формат:** [Mitchell et al.](https://arxiv.org/abs/1810.03993) и [шаблон Hugging Face](https://huggingface.co/docs/hub/model-cards).
+**Идентификатор:** `technomart-support-rag-llama3-70b`.
 
 | Поле | Значение |
 |------|----------|
