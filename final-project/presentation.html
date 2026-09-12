@@ -18,12 +18,12 @@
       --violet-2: #7629ba;
       --lilac: #8b8ee3;
       --lilac-soft: #bfc1f0;
-      --accent: #ffab40;
+      --accent: #8b8ee3;
       --ok: #0f766e;
       --deny: #b42318;
     }
     * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: Roboto, "Helvetica Neue", Arial, sans-serif; }
+    html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: Roboto, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Helvetica Neue", Arial, sans-serif; }
     .deck, .stage { height: 100%; width: 100%; position: relative; background: var(--paper); }
     .slide {
       display: none;
@@ -68,12 +68,12 @@
     .cover-main .links a:hover { color: var(--accent); }
     .cover-visual { margin: 0; min-height: 0; overflow: hidden; background: #1a0833; }
     .cover-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .close { justify-content: center; gap: 8px; }
-    .close h2 { font-size: clamp(32px, 4vw, 44px); margin-bottom: 8px; }
-    .close .author { font-size: 22px; font-weight: 700; margin: 0 0 8px; }
+    .close { justify-content: center; align-items: center; gap: 8px; }
+    .close h2 { font-size: clamp(36px, 4.4vw, 52px); margin: 0 0 12px; max-width: none; text-align: center; }
+    .close .ask { margin: 0 0 8px; font-size: clamp(22px, 2.4vw, 28px); font-weight: 500; color: var(--violet); text-align: center; }
     .qrs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; max-width: 1080px; }
     .qrs figure { margin: 0; text-align: center; padding: 16px 12px 14px; border-radius: 16px; box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12); }
-    .qrs figure:nth-child(4n+1) { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
+    .qrs figure:nth-child(4n+1) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
     .qrs figure:nth-child(4n+2) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
     .qrs figure:nth-child(4n+3) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
     .qrs figure:nth-child(4n+4) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
@@ -105,7 +105,7 @@
     .card th, .card td { border-bottom-color: color-mix(in srgb, currentColor 22%, transparent); }
     .card th { color: inherit; font-weight: 700; }
     .card code { color: inherit; }
-    .grid > .card:nth-child(4n+1) { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
+    .grid > .card:nth-child(4n+1) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
     .grid > .card:nth-child(4n+2) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
     .grid > .card:nth-child(4n+3) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
     .grid > .card:nth-child(4n+4) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
@@ -113,21 +113,22 @@
     .fill { flex: 1; min-height: 0; align-content: stretch; }
     .fill .card { display: flex; flex-direction: column; min-height: 0; overflow: auto; }
     .num { font-size: 34px; font-weight: 700; margin: 0 0 4px; }
-    .plan { counter-reset: step; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; list-style: none; padding: 0; flex: 1; align-content: start; }
+    .plan { counter-reset: step; display: grid; grid-template-columns: 1fr; gap: 10px; list-style: none; padding: 0; flex: 1; }
     .plan li {
-      font-size: 20px; padding: 20px 22px 20px 72px; margin: 0; list-style: none; position: relative;
+      font-size: 22px; padding: 0 22px 0 72px; margin: 0; list-style: none; position: relative;
       border-radius: 16px; box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
+      display: flex; align-items: center;
     }
-    .plan li:nth-child(4n+1) { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
-    .plan li:nth-child(4n+2) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
-    .plan li:nth-child(4n+3) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
-    .plan li:nth-child(4n+4) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
+    .plan li:nth-child(3n+1) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
+    .plan li:nth-child(3n+2) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
+    .plan li:nth-child(3n+3) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
     .plan li::before {
       counter-increment: step; content: counter(step);
       position: absolute;
       width: 34px; height: 34px; border-radius: 50%;
       background: #fff; color: #6402ba; font-size: 15px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; top: 18px; left: 20px;
+      display: flex; align-items: center; justify-content: center;
+      top: 50%; left: 20px; transform: translateY(-50%);
     }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -136,10 +137,10 @@
     .quote {
       margin-top: 14px;
       padding: 16px 20px;
-      background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%);
+      background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%);
       font-size: 15px;
       border-radius: 16px;
-      color: #3d2200;
+      color: #fff;
       box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
     }
     .diagram {
@@ -149,7 +150,7 @@
     }
     .diagram img { max-width: 100%; max-height: 100%; object-fit: contain; }
     .stack {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; flex: 1;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex: 1;
     }
     .stack article {
       border: 0;
@@ -165,10 +166,9 @@
     .stack h3 { margin: 0; font-size: 16px; }
     .stack p { margin: 0; font-size: 13px; line-height: 1.35; }
     .stack .rej { font-size: 12px; opacity: 0.88; }
-    .stack article:nth-child(4n+1) { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
-    .stack article:nth-child(4n+2) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
-    .stack article:nth-child(4n+3) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
-    .stack article:nth-child(4n+4) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
+    .stack article:nth-child(3n+1) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
+    .stack article:nth-child(3n+2) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
+    .stack article:nth-child(3n+3) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
     .layers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; min-height: 0; }
     .layer {
       display: flex; flex-direction: column; justify-content: space-between;
@@ -180,8 +180,9 @@
     .layer .why { font-size: 15px; line-height: 1.35; margin: 0; }
     .pills { display: flex; flex-wrap: wrap; gap: 6px; }
     .pills b { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: rgba(255,255,255,0.75); }
-    .layer.ch { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
-    .layer.ch strong { color: #3d2200; }
+    .layer.ch { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
+    .layer.ch strong, .layer.ch .n { color: #fff; }
+    .layer.ch .pills b { background: rgba(255,255,255,0.2); color: #fff; }
     .layer.cp { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
     .layer.cp strong, .layer.cp .n { color: #fff; }
     .layer.cp .pills b { background: rgba(255,255,255,0.2); color: #fff; }
@@ -192,7 +193,7 @@
     .layer.gpu .pills b { background: rgba(255,255,255,0.18); color: #fff; }
     .finale h2 { max-width: none; font-size: clamp(26px, 3.2vw, 38px); }
     .finale .pills { margin: 0 0 18px; }
-    .finale .pills b { border: 0; color: #3d2200; background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); }
+    .finale .pills b { border: 0; color: #fff; background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); }
     .finale .pills b:nth-child(4n+2) { color: #fff; background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); }
     .finale .pills b:nth-child(4n+3) { color: #062b2e; background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); }
     .finale .pills b:nth-child(4n+4) { color: #fff; background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); }
@@ -205,7 +206,7 @@
     .wins .n { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
     .wins h3 { margin: 0; font-size: 18px; }
     .wins p { margin: 0; font-size: 14px; line-height: 1.35; }
-    .wins article:nth-child(4n+1) { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
+    .wins article:nth-child(4n+1) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
     .wins article:nth-child(4n+2) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
     .wins article:nth-child(4n+3) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
     .wins article:nth-child(4n+4) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
@@ -214,7 +215,7 @@
     .grid > .card:nth-child(4n+2) .ok,
     .grid > .card:nth-child(4n+4) .ok { color: #d7fff8; }
     .grid > .card:nth-child(4n+2) .deny,
-    .grid > .card:nth-child(4n+4) .deny { color: #ffe3b0; }
+    .grid > .card:nth-child(4n+4) .deny { color: #ddd6ff; }
     .bar { position: absolute; left: 0; right: 0; bottom: 48px; height: 4px; background: var(--lilac-soft); z-index: 4; }
     .bar span { display: block; height: 100%; background: var(--violet); width: 0; }
     .footer {
@@ -283,35 +284,31 @@
       <section class="slide">
         <p class="kicker">Цель</p>
         <h2>Замкнутый контур клиники</h2>
-        <p class="sub">Речь, генерация и поиск — внутри периметра. Внешние API LLM и STT не используются. 152-ФЗ, 323-ФЗ ст. 13.</p>
-        <div class="grid grid-2 fill">
+        <p class="sub">152-ФЗ и 323-ФЗ ст. 13. Текст запроса и карты за периметр не передаются.</p>
+        <div class="grid grid-3 fill">
           <div class="card">
-            <h3>Что входит</h3>
-            <table>
-              <tr><th>Сценарий</th><th>Назначение</th></tr>
-              <tr><td>Услуги, врачи, филиалы, подготовка</td><td>граф и чанки</td></tr>
-              <tr><td>Запись, перенос, отмена</td><td>только после «да» пациента</td></tr>
-              <tr><td>Изоляция карт; опека</td><td>своя карта и карта ребёнка</td></tr>
-              <tr><td>Загрузка документов</td><td>в справочник и поиск</td></tr>
-              <tr><td>Речь → диалог → озвучка</td><td>основной канал</td></tr>
-              <tr><td>Чат POST /v1/chat</td><td>тот же граф</td></tr>
-              <tr><td>Отказ без опоры</td><td>антигаллюцинация</td></tr>
-              <tr><td>Трассировка ACL</td><td>/v1/audit</td></tr>
-            </table>
+            <h3>Периметр</h3>
+            <p>Речь, поиск и генерация остаются в клинике. Внешние API Speech/LLM запрещены.</p>
           </div>
           <div class="card">
-            <h3>Ограничения и принципы</h3>
-            <table>
-              <tr><th>Пункт</th><th>Статус</th></tr>
-              <tr><td>Диагноз и подбор МКБ по симптомам</td><td>вне объёма</td></tr>
-              <tr><td>Клинические назначения</td><td>вне объёма</td></tr>
-              <tr><td>Промышленная CRM и АТС</td><td>порты; в стенде заглушка</td></tr>
-              <tr><td>Обучение LLM и ASR</td><td>вне объёма</td></tr>
-              <tr><td>Внешние API генерации</td><td>запрещены</td></tr>
-              <tr><td>Поиск</td><td>граф, не только векторы</td></tr>
-              <tr><td>Control Plane / Data Plane</td><td>разделены</td></tr>
-              <tr><td>Оркестрация</td><td>машина состояний</td></tr>
-            </table>
+            <h3>Один оркестратор</h3>
+            <p>Голос — основной канал. Чат вызывает тот же LangGraph.</p>
+          </div>
+          <div class="card">
+            <h3>GraphRAG</h3>
+            <p>Услуги, врачи, филиалы, подготовка. Карточки живут в CRM, не в справочном графе.</p>
+          </div>
+          <div class="card">
+            <h3>Запись и доступ</h3>
+            <p>Мутации CRM только после «да». Своя карта и GUARDIAN_OF до 15 лет.</p>
+          </div>
+          <div class="card">
+            <h3>Вне объёма</h3>
+            <p>Диагноз, код МКБ по симптомам, назначения, обучение моделей.</p>
+          </div>
+          <div class="card">
+            <h3>Не в поставке</h3>
+            <p>Промышленные CRM и АТС — внешние порты. В стенде заглушка.</p>
           </div>
         </div>
       </section>
@@ -326,7 +323,7 @@
               <strong>Канал</strong>
               <p class="why">Голос — основной вход. Чат вызывает тот же оркестратор, не второй продукт.</p>
             </div>
-            <div class="pills"><b>Whisper turbo</b><b>WhisperX</b><b>синтез речи</b><b>/v1/voice</b><b>/v1/chat</b></div>
+            <div class="pills"><b>🎙️ Whisper turbo</b><b>👥 WhisperX</b><b>🔊 синтез речи</b><b>/v1/voice</b><b>/v1/chat</b></div>
           </div>
           <div class="layer cp">
             <div>
@@ -334,7 +331,7 @@
               <strong>Control Plane</strong>
               <p class="why">Маршрут, Policy до модели, HITL и ingest. Машина состояний, не линейный скрипт.</p>
             </div>
-            <div class="pills"><b>FastAPI</b><b>LangGraph</b><b>Policy</b><b>Guardrails</b><b>ingest</b></div>
+            <div class="pills"><b>⚡ FastAPI</b><b>🔀 LangGraph</b><b>🛡️ Policy</b><b>✅ Guardrails</b><b>📥 ingest</b></div>
           </div>
           <div class="layer dp">
             <div>
@@ -342,7 +339,7 @@
               <strong>Data Plane</strong>
               <p class="why">Онтология, чанки с ACL, сессии, заглушка CRM. Карточки в справочный граф не входят.</p>
             </div>
-            <div class="pills"><b>Neo4j</b><b>Qdrant</b><b>Postgres</b><b>CRM</b><b>Vault</b><b>Langfuse</b></div>
+            <div class="pills"><b>🔷 Neo4j</b><b>🔎 Qdrant</b><b>🗄️ Postgres</b><b>📋 CRM</b><b>🔐 Vault</b><b>📡 Langfuse</b></div>
           </div>
           <div class="layer gpu">
             <div>
@@ -350,7 +347,7 @@
               <strong>GPU VLAN</strong>
               <p class="why">Генерация и речь разделены. Единственный движок LLM — vLLM. Без маршрута в интернет.</p>
             </div>
-            <div class="pills"><b>T-pro-it-2.1</b><b>vLLM</b><b>2× H100 FP8</b><b>1× L40S</b><b>bge-m3</b></div>
+            <div class="pills"><b>🧠 T-pro-it-2.1</b><b>⚙️ vLLM</b><b>⚡ 2× H100 FP8</b><b>🎧 1× L40S</b><b>🔎 bge-m3</b></div>
           </div>
         </div>
       </section>
@@ -362,63 +359,57 @@
         <div class="stack">
           <article>
             <span class="adr">ADR-0001</span>
-            <h3>On-premise</h3>
+            <h3>🔒 On-premise</h3>
             <p>Данные не покидают периметр</p>
             <p class="rej">Отклонено: облачный Speech/LLM</p>
           </article>
           <article>
             <span class="adr">ADR-0002</span>
-            <h3>Тенант + ReBAC</h3>
+            <h3>👪 Тенант + ReBAC</h3>
             <p>Контур клиники; GUARDIAN_OF до 15 лет</p>
             <p class="rej">Отклонено: БД на пациента</p>
           </article>
           <article>
             <span class="adr">ADR-0003</span>
-            <h3>T-pro-it-2.1</h3>
+            <h3>🧠 T-pro-it-2.1</h3>
             <p>Qwen3-32B, русский и tool-calling</p>
             <p class="rej">Отклонено: 70B+ в этой поставке</p>
           </article>
           <article>
             <span class="adr">ADR-0004</span>
-            <h3>2× H100 + L40S</h3>
+            <h3>⚡ 2× H100 + L40S</h3>
             <p>Генерация и речь разделены</p>
             <p class="rej">Отклонено: аренда GPU</p>
           </article>
           <article>
             <span class="adr">ADR-0005</span>
-            <h3>vLLM</h3>
+            <h3>⚙️ vLLM</h3>
             <p>Единственный движок LLM</p>
             <p class="rej">Отклонено: SGLang, TGI, TensorRT-LLM</p>
           </article>
           <article>
             <span class="adr">ADR-0006</span>
-            <h3>bge-m3</h3>
+            <h3>🔎 bge-m3</h3>
             <p>Эмбеддинги и reranker, контекст 8192</p>
             <p class="rej">Отклонено: e5 / FRIDA (контекст 512)</p>
           </article>
           <article>
             <span class="adr">ADR-0007</span>
-            <h3>Neo4j + Qdrant</h3>
+            <h3>🔷 Neo4j + Qdrant</h3>
             <p>Онтология и чанки с ACL</p>
             <p class="rej">Отклонено: карточки в справочном графе</p>
           </article>
           <article>
             <span class="adr">ADR-0008</span>
-            <h3>LangGraph</h3>
+            <h3>🔀 LangGraph</h3>
             <p>Один граф на голос и чат; Policy — узел</p>
             <p class="rej">Отклонено: Deep Agents, отдельный граф чата</p>
           </article>
           <article>
             <span class="adr">ADR-0009</span>
-            <h3>Whisper + синтез речи</h3>
+            <h3>🎙️ Whisper + синтез речи</h3>
             <p>Распознавание, диаризация, озвучка</p>
             <p class="rej">Отклонено: актор по тембру, облачный TTS</p>
-          </article>
-          <article>
-            <span class="adr">Контур</span>
-            <h3>clinic-voice</h3>
-            <p>Control Plane ≠ Data Plane; тенант <code>clinic</code></p>
-            <p class="rej">Отклонено: второй стек инференса</p>
           </article>
         </div>
       </section>
@@ -581,46 +572,16 @@
       </section>
 
       <section class="slide">
-        <p class="kicker">Нагрузка и TCO</p>
-        <h2>Типовой объём клиники</h2>
-        <p class="sub">2 филиала, 10 ч, 250 дней. 500 сессий в сутки. Расчёт ADR-0004; не прогон на H100.</p>
+        <p class="kicker">Нагрузка · TCO · стенд</p>
+        <h2>Объём клиники и локальный прогон</h2>
+        <p class="sub">2 филиала, 500 сессий/день. Стенд 2026-09-12: uvicorn, без Neo4j / Qdrant / vLLM, 15 passed.</p>
         <div class="grid grid-4">
           <div class="card"><p class="num">500</p><p>сессий/день · 125 000 / год</p></div>
-          <div class="card"><p class="num">9,25</p><p>млн ₽ CapEx, середина 7,0–11,5</p></div>
-          <div class="card"><p class="num">≈ 30 ₽</p><p>на сессию замкнутого контура</p></div>
-          <div class="card"><p class="num">15×</p><p>запас к штатному пику 1,7 сессии/мин</p></div>
+          <div class="card"><p class="num">9,25</p><p>млн ₽ CapEx · 2× H100 + L40S</p></div>
+          <div class="card"><p class="num">≈ 30 ₽</p><p>сессия: 24,7 + 1,2 + 4,3</p></div>
+          <div class="card"><p class="num">15×</p><p>запас к пику · облако 4–8 ₽ отклонено</p></div>
         </div>
-        <div class="grid grid-2 fill" style="margin-top:16px">
-          <div class="card">
-            <h3>CapEx вычислительного контура</h3>
-            <table>
-              <tr><th>Статья</th><th>Кол-во</th><th>Середина</th></tr>
-              <tr><td>H100 80GB</td><td>2</td><td>6,5 млн ₽</td></tr>
-              <tr><td>L40S 48GB</td><td>1</td><td>1,15 млн ₽</td></tr>
-              <tr><td>GPU-серверы</td><td>2</td><td>1,6 млн ₽</td></tr>
-              <tr><td>Итого</td><td></td><td>9,25 млн ₽</td></tr>
-            </table>
-          </div>
-          <div class="card">
-            <h3>Стоимость сессии, ₽</h3>
-            <table>
-              <tr><th>Составляющая</th><th>₽/сессия</th></tr>
-              <tr><td>амортизация 9,25 млн ₽ / 36 мес</td><td>24,7</td></tr>
-              <tr><td>электроэнергия</td><td>1,2</td></tr>
-              <tr><td>сопровождение 0,3 ставки</td><td>4,3</td></tr>
-              <tr><td>итого on-premise</td><td>≈ 30</td></tr>
-              <tr><td>облачный Speech/LLM (отклонено)</td><td>4–8</td></tr>
-            </table>
-          </div>
-        </div>
-        <p class="quote">Облачный путь дешевле и отклонён: данные покидают периметр. Аренда GPU ≈ 6,3 млн ₽/год отклонена при горизонте от трёх лет.</p>
-      </section>
-
-      <section class="slide">
-        <p class="kicker">Стенд</p>
-        <h2>Локальный прогон, 2026-09-12</h2>
-        <p class="sub">macOS, uvicorn на 127.0.0.1:8080. Neo4j, Qdrant и vLLM не запускались. Автотесты: 15 passed.</p>
-        <div class="grid grid-4 fill">
+        <div class="grid grid-4" style="margin-top:16px; flex:1">
           <div class="card"><h3>Анна</h3><p>УЗИ сына, код N28.1</p><p class="ok">via=guardian</p></div>
           <div class="card"><h3>Борис</h3><p>направление Анны</p><p class="deny">acl_denied</p></div>
           <div class="card"><h3>Анна</h3><p>диагноз по симптомам</p><p>reject_diagnosis</p></div>
@@ -768,10 +729,8 @@
       </section>
 
       <section class="slide close">
-        <p class="kicker">Вопросы</p>
-        <h2>Спасибо за внимание</h2>
-        <p class="author">Распутина Анастасия</p>
-        <p class="sub">Контур clinic-voice-graphrag. README, ADR и схемы — в репозитории. Вопросы — в Telegram.</p>
+        <h2>Спасибо за внимание!</h2>
+        <p class="ask">Вопросы?</p>
         <div class="qrs">
           <figure>
             <img src="slides/qr-github.svg" alt="QR: профиль GitHub">
