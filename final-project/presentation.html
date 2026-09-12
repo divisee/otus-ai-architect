@@ -246,6 +246,9 @@
     .me-facts article:nth-child(4n+3)::before { background: var(--v-800); }
     .me-facts article:nth-child(4n+4)::before { background: var(--sage); }
     .me-facts article:nth-child(4n+4) { background: var(--sage-100); }
+    .me-facts article.now { background: var(--sage-100); }
+    .me-facts article.now::before { background: var(--sage); }
+    .me-facts article.now h3 { color: #23524f; }
     .me-facts h3 { margin: 0; font-size: 19px; font-weight: 700; color: var(--v-700); }
     .me-facts article:nth-child(4n+4) h3 { color: #23524f; }
     .me-facts p { margin: 0; font-size: 15px; line-height: 1.42; }
@@ -337,13 +340,9 @@
             </article>
             <article>
               <h3>≈ 9 лет коммерческой разработки</h3>
+              <p>КРОК, 6 лет — старший backend-разработчик: микросервисы, интеграции, корпоративные боты. Последние три года — сервисы с искусственным интеллектом: RAG по базам знаний и ИИ-агенты.</p>
             </article>
-            <article>
-              <h3>КРОК, 6 лет: старший backend-разработчик</h3>
-              <p>Первые три года — серверная разработка: микросервисы, интеграции, эксплуатация, корпоративные Telegram-боты и боты на других платформах.</p>
-              <p class="meta">Последние три года в КРОК — сервисы с искусственным интеллектом: RAG по базам знаний и ИИ-агенты.</p>
-            </article>
-            <article>
+            <article class="now">
               <h3>Сейчас — AI-инженер, Bitmanager AI</h3>
               <p>Платформа голосовых ИИ-агентов.</p>
             </article>
