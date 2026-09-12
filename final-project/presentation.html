@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>On-premise голосовой ассистент медицинского центра</title>
+  <title>Проектирование и реализация on-premise мультиагентного голосового ИИ-ассистента медицинского центра с GraphRAG, обеспечением врачебной тайны и соблюдением 152-ФЗ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -34,18 +34,43 @@
     }
     .slide.active { display: flex; flex-direction: column; }
     .slide.cover {
-      background: linear-gradient(135deg, #3c0170 0%, var(--violet) 52%, var(--violet-2) 100%);
-      color: #fff;
-      justify-content: flex-end;
-      padding-left: clamp(32px, 8vw, 120px);
-      padding-right: clamp(32px, 8vw, 120px);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 0 0 56px;
     }
+    .cover-grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+    .cover-main {
+      background: linear-gradient(160deg, #3c0170 0%, #6402ba 62%, #7629ba 100%);
+      color: #fff;
+      padding: clamp(28px, 5vh, 56px) clamp(28px, 4vw, 56px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 18px;
+    }
+    .cover-main .kicker { color: var(--lilac-soft); }
+    .cover-main h1 {
+      max-width: none;
+      color: #fff;
+      font-size: clamp(20px, 2.35vw, 30px);
+      line-height: 1.25;
+      margin: 0;
+    }
+    .cover-main .author { margin: 8px 0 0; font-size: 22px; font-weight: 700; }
+    .cover-main .links { display: flex; flex-direction: column; gap: 8px; margin: 0; }
+    .cover-main .links a { color: #fff; font-size: 15px; text-underline-offset: 3px; }
+    .cover-main .links a:hover { color: var(--accent); }
+    .cover-visual { margin: 0; min-height: 0; overflow: hidden; background: #1a0833; }
+    .cover-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .kicker { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--violet-2); margin: 0 0 8px; font-weight: 500; }
-    .cover .kicker { color: var(--lilac-soft); }
     h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 44px); line-height: 1.15; font-weight: 700; max-width: 22ch; }
     h2 { margin: 0 0 18px; font-size: clamp(24px, 3vw, 34px); line-height: 1.15; font-weight: 700; }
     .lead { font-size: 20px; line-height: 1.4; max-width: 46ch; margin: 0; }
-    .cover .lead { color: #f3e9ff; }
     .sub { color: var(--muted); font-size: 16px; margin: 0 0 16px; max-width: 70ch; }
     ul { margin: 0; padding: 0; list-style: none; }
     li { font-size: 18px; line-height: 1.35; margin: 0 0 10px; padding-left: 20px; position: relative; }
@@ -97,17 +122,33 @@
     .layer.gpu { background: #f3f0ff; }
     .ok { color: var(--ok); font-weight: 700; }
     .deny { color: var(--deny); font-weight: 700; }
-    .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 7px; background: var(--lilac-soft); }
+    .bar { position: absolute; left: 0; right: 0; bottom: 48px; height: 4px; background: var(--lilac-soft); z-index: 4; }
     .bar span { display: block; height: 100%; background: var(--violet); width: 0; }
-    .hud { position: absolute; left: 32px; right: 32px; bottom: 18px; display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); z-index: 2; pointer-events: none; }
-    .cover .hud { color: #e6d7ff; }
-    button.hit { position: absolute; top: 0; bottom: 0; width: 14%; border: 0; background: transparent; cursor: pointer; z-index: 3; }
+    .footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 48px;
+      background: #fff;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      font-size: 13px;
+      color: var(--muted);
+      z-index: 5;
+      pointer-events: none;
+    }
+    button.hit { position: absolute; top: 0; bottom: 48px; width: 14%; border: 0; background: transparent; cursor: pointer; z-index: 3; }
     button.prev { left: 0; }
     button.next { right: 0; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
     @media (max-width: 900px) {
-      .grid-2, .grid-3, .grid-4, .plan, .stack { grid-template-columns: 1fr; }
+      .grid-2, .grid-3, .grid-4, .plan, .stack, .cover-grid { grid-template-columns: 1fr; }
       .layer { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .cover-visual { min-height: 220px; }
     }
   </style>
 </head>
@@ -116,10 +157,20 @@
     <div class="stage" id="stage">
 
       <section class="slide cover active">
-        <p class="kicker">OTUS · Архитектор искусственного интеллекта</p>
-        <h1>On-premise голосовой ассистент медицинского центра</h1>
-        <p class="lead">GraphRAG, C4, врачебная тайна, 152-ФЗ. Контур clinic-voice-graphrag.</p>
-        <div class="hud"><span>divisee</span><span>2026-09-12</span></div>
+        <div class="cover-grid">
+          <div class="cover-main">
+            <p class="kicker">OTUS · Архитектор искусственного интеллекта</p>
+            <h1>Проектирование и реализация on-premise мультиагентного голосового ИИ-ассистента медицинского центра с GraphRAG, обеспечением врачебной тайны и соблюдением 152-ФЗ</h1>
+            <p class="author">Распутина Анастасия</p>
+            <p class="links">
+              <a href="https://github.com/divisee">github.com/divisee</a>
+              <a href="https://github.com/divisee/otus-ai-architect">github.com/divisee/otus-ai-architect</a>
+            </p>
+          </div>
+          <figure class="cover-visual">
+            <img src="slides/cover-clinic-voice.jpg" alt="">
+          </figure>
+        </div>
       </section>
 
       <section class="slide">
@@ -132,6 +183,7 @@
           <li>Policy, ReBAC, сценарии</li>
           <li>GraphRAG, Data Flow, Deployment</li>
           <li>Нагрузка, TCO и стенд</li>
+          <li>Выводы и ограничения</li>
         </ol>
       </section>
 
@@ -322,25 +374,93 @@
 
       <section class="slide">
         <p class="kicker">Выводы</p>
-        <h2>Зафиксированные решения</h2>
+        <h2>Контур и правовая рамка</h2>
         <ul>
-          <li>Контур on-premise закрывает 152-ФЗ и врачебную тайну</li>
-          <li>Policy — узел графа; отклонённый фрагмент в модель не входит</li>
-          <li>LangGraph принят; Deep Agents для этого контура не подходит</li>
-          <li>Голос и чат делят один оркестратор</li>
-          <li>Стенд без GPU проверяет ACL, ReBAC и GraphRAG</li>
+          <li>Речь, генерация и поиск выполняются внутри периметра; внешние API LLM и STT не используются</li>
+          <li>152-ФЗ и 323-ФЗ ст. 13 закрываются размещением и Policy, а не оговоркой в промпте</li>
+          <li>Система не ставит диагноз и не подбирает код МКБ по симптомам</li>
+          <li>Регистр ПДн — CRM; справочный граф карточек не содержит</li>
         </ul>
       </section>
 
+      <section class="slide">
+        <p class="kicker">Выводы</p>
+        <h2>Доступ и каналы</h2>
+        <ul>
+          <li>Policy — узел LangGraph до вызова модели; отклонённый фрагмент в контекст не входит</li>
+          <li>RBAC и ReBAC: своя карта, staff, GUARDIAN_OF до 15 лет</li>
+          <li>Канал на права не влияет; actor_id — учётка или АОН, не метка SPEAKER</li>
+          <li>Голос — основной канал; чат вызывает тот же оркестратор POST /v1/chat</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Выводы</p>
+        <h2>Принято и отклонено</h2>
+        <div class="grid grid-2" style="flex:1">
+          <div class="card">
+            <h3>Принято</h3>
+            <ul>
+              <li>On-premise, единственный движок LLM — vLLM</li>
+              <li>T-pro-it-2.1, Neo4j, Qdrant, LangGraph</li>
+              <li>GraphRAG: онтология плюс чанки с ACL</li>
+              <li>HITL на запись, перенос и отмену</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Отклонено</h3>
+            <ul>
+              <li>Облачные Speech и LLM API</li>
+              <li>Deep Agents вместо машины состояний</li>
+              <li>Второй «мозг» для чата на сайте</li>
+              <li>Карточки пациентов в справочном графе</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Выводы</p>
+        <h2>Стенд и стоимость</h2>
+        <ul>
+          <li>CPU-стенд без GPU проверяет ACL, ReBAC, отказ в диагностике и оба канала</li>
+          <li>15 автотестов прошли; генератор на прогоне — grounded, индекс лексический</li>
+          <li>Типовой объём: 500 сессий/день, CapEx середина 9,25 млн ₽, ≈ 30 ₽/сессия</li>
+          <li>Облачный путь дешевле в ориентире 4–8 ₽/сессия и отклонён: данные покидают периметр</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Ограничения</p>
+        <h2>Вне поставки</h2>
+        <ul>
+          <li>Диагноз и клинические назначения</li>
+          <li>Промышленная CRM и АТС</li>
+          <li>Обучение LLM и ASR</li>
+          <li>Штатный blue/green и ночная полная переиндексация</li>
+        </ul>
+        <p class="quote">Документация: README, GLOSSARY, ADR-0001…0009. Схемы C4, Sequence, Data Flow, Deployment, ER.</p>
+      </section>
+
       <section class="slide cover">
-        <p class="kicker">Документация</p>
-        <h1>README, ADR и схемы</h1>
-        <p class="lead">github.com/divisee/otus-ai-architect · final-project/</p>
-        <div class="hud"><span>divisee.github.io/otus-ai-architect</span><span>C4 L1–L3, Sequence, Data Flow, Deployment</span></div>
+        <div class="cover-grid">
+          <div class="cover-main">
+            <p class="kicker">Контур clinic-voice-graphrag</p>
+            <h1>Проектирование и реализация on-premise мультиагентного голосового ИИ-ассистента медицинского центра с GraphRAG, обеспечением врачебной тайны и соблюдением 152-ФЗ</h1>
+            <p class="author">Распутина Анастасия</p>
+            <p class="links">
+              <a href="https://github.com/divisee">github.com/divisee</a>
+              <a href="https://github.com/divisee/otus-ai-architect">github.com/divisee/otus-ai-architect</a>
+            </p>
+          </div>
+          <figure class="cover-visual">
+            <img src="slides/cover-clinic-voice.jpg" alt="">
+          </figure>
+        </div>
       </section>
 
       <div class="bar"><span id="progress"></span></div>
-      <div class="hud" id="hud"><span>← → или клик по краю</span><span id="page"></span></div>
+      <footer class="footer"><span>Распутина Анастасия</span><span id="page"></span></footer>
       <button class="hit prev" aria-label="Назад"></button>
       <button class="hit next" aria-label="Вперёд"></button>
     </div>
