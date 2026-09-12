@@ -6,7 +6,7 @@
   <title>Проектирование и реализация on-premise мультиагентного голосового ИИ-ассистента медицинского центра с GraphRAG, обеспечением врачебной тайны и соблюдением 152-ФЗ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --ink: #111111;
@@ -23,7 +23,8 @@
       --deny: #b42318;
     }
     * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: Roboto, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Helvetica Neue", Arial, sans-serif; }
+    html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: Manrope, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Helvetica Neue", Arial, sans-serif; }
+    h1, h2 { font-family: Unbounded, Manrope, sans-serif; font-weight: 600; letter-spacing: -0.03em; }
     .deck, .stage { height: 100%; width: 100%; position: relative; background: var(--paper); }
     .slide {
       display: none;
@@ -49,22 +50,22 @@
     .cover-main {
       background: linear-gradient(160deg, #3c0170 0%, #6402ba 62%, #7629ba 100%);
       color: #fff;
-      padding: clamp(28px, 5vh, 56px) clamp(28px, 4vw, 56px);
+      padding: clamp(36px, 7vh, 72px) clamp(28px, 4vw, 56px) clamp(28px, 5vh, 56px);
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      justify-content: flex-start;
       gap: 18px;
     }
-    .cover-main .kicker { color: var(--lilac-soft); }
+    .cover-main .kicker { color: var(--lilac-soft); margin-bottom: 0; }
     .cover-main h1 {
       max-width: none;
       color: #fff;
-      font-size: clamp(20px, 2.35vw, 30px);
-      line-height: 1.25;
-      margin: 0;
+      font-size: clamp(22px, 2.7vw, 34px);
+      line-height: 1.28;
+      margin: 8px 0 0;
     }
-    .cover-main .author { margin: 8px 0 0; font-size: 22px; font-weight: 700; }
-    .cover-main .links { display: flex; flex-direction: column; gap: 8px; margin: 0; }
+    .cover-main .author { margin: 16px 0 0; font-size: 22px; font-weight: 700; }
+    .cover-main .links { display: flex; flex-direction: column; gap: 8px; margin: auto 0 0; }
     .cover-main .links a { color: #fff; font-size: 15px; text-underline-offset: 3px; }
     .cover-main .links a:hover { color: var(--accent); }
     .cover-visual { margin: 0; min-height: 0; overflow: hidden; background: #1a0833; }
@@ -90,8 +91,8 @@
     .qrs figcaption { margin-top: 8px; font-size: 13px; }
     .qrs a { color: inherit; }
     .kicker { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--violet-2); margin: 0 0 8px; font-weight: 500; }
-    h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 44px); line-height: 1.15; font-weight: 700; max-width: 22ch; }
-    h2 { margin: 0 0 18px; font-size: clamp(24px, 3vw, 34px); line-height: 1.15; font-weight: 700; }
+    h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 44px); line-height: 1.2; max-width: 22ch; }
+    h2 { margin: 0 0 18px; font-size: clamp(24px, 3vw, 36px); line-height: 1.2; }
     .lead { font-size: 20px; line-height: 1.4; max-width: 46ch; margin: 0; }
     .sub { color: var(--muted); font-size: 16px; margin: 0 0 16px; max-width: 70ch; }
     ul { margin: 0; padding: 0; list-style: none; }
