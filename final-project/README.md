@@ -265,19 +265,19 @@ flowchart TB
 
 
 
-| Контейнер                | Плоскость     | Технология                | Ответственность                                |
-| ------------------------ | ------------- | ------------------------- | ---------------------------------------------- |
-| API Gateway              | Control       | FastAPI                   | текст и транскрипт, `patient:anna` / `staff:…` |
-| Voice Adapter            | Control       | Whisper, WhisperX, Silero | канал; актор не по тембру                      |
-| Orchestrator             | Control       | LangGraph                 | состояние, retry, fallback                     |
-| Knowledge / CRM / Policy | Control       | тот же runtime            | знания, запись, права                          |
-| Ingest Worker            | Control       | Python job                | PDF/MD → чанки, узлы, рёбра                    |
-| Neo4j                    | Data          | Neo4j 5                   | онтология                                      |
-| Qdrant                   | Data          | Qdrant                    | векторы с payload ACL                          |
-| vLLM                     | Data          | vLLM                      | генерация внутри периметра                     |
-| CRM                      | Data          | внешняя система; в стенде — JSON | слоты и визиты                            |
-| Vault                    | Data          | Vault; в dev — `.env`     | ключи                                          |
-| Langfuse + Prom/Grafana  | Observability | self-host                 | трейсы, latency                                |
+| Контейнер                | Плоскость     | Технология                | Назначение                                                          |
+| ------------------------ | ------------- | ------------------------- | ------------------------------------------------------------------- |
+| API Gateway              | Control       | FastAPI                   | Принимает запросы чата и голоса, передаёт `actor_id`                |
+| Voice Adapter            | Control       | Whisper, WhisperX, Silero | Распознаёт речь и синтезирует ответ. Личность по голосу не определяет |
+| Orchestrator             | Control       | LangGraph                 | Ведёт сессию: маршрут, повтор, отказ                                |
+| Knowledge / CRM / Policy | Control       | тот же runtime            | Извлекает знания, вызывает CRM, применяет ACL                       |
+| Ingest Worker            | Control       | Python job                | Загружает документы в граф и векторный индекс                       |
+| Neo4j                    | Data          | Neo4j 5                   | Хранит онтологию услуг, врачей, филиалов                            |
+| Qdrant                   | Data          | Qdrant                    | Хранит чанки с вектором и меткой ACL                                |
+| vLLM                     | Data          | vLLM                      | Генерирует ответ внутри периметра                                   |
+| CRM                      | Data          | внешняя система; в стенде — JSON | Учитывает карточки, слоты и визиты                             |
+| Vault                    | Data          | Vault; в dev — `.env`     | Хранит секреты                                                      |
+| Langfuse + Prom/Grafana  | Observability | self-host                 | Пишет трассировку вызовов и задержку                                |
 
 
 Из Data Plane нет вызова OpenAI/Anthropic. Клиент vLLM смотрит на внутренний URL.
