@@ -68,5 +68,18 @@ coverage.xml
 .env.*
 *.local
 
+# --- Final project: weights and local volumes ---
+final-project/**/models/
+final-project/**/.neo4j/
+final-project/**/.qdrant/
+*.gguf
+*.awq
+
 # --- Logs ---
 *.log
+
+# --- Course presentations (not submitted) ---
+hw-*/**/*.pdf
+hw-*/**/*.pptx
+**/_finops_imgs/
+**/_extract_*.txt
