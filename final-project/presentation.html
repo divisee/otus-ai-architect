@@ -30,7 +30,7 @@
       display: none;
       position: absolute;
       inset: 0;
-      padding: clamp(24px, 5vh, 56px) clamp(24px, 6vw, 88px) 80px;
+      padding: clamp(24px, 5vh, 56px) clamp(24px, 6vw, 88px) 88px;
       width: 100%;
       overflow: hidden;
       background: radial-gradient(900px 420px at 0% -8%, #f3edff 0%, transparent 58%), #fff;
@@ -295,26 +295,29 @@
     .wins article:nth-child(6n+6) { background: linear-gradient(145deg, #e6d5ea 0%, #7a5388 100%); color: #fff; }
     .ok { color: var(--ok); font-weight: 700; }
     .deny { color: var(--deny); font-weight: 700; }
-    .bar { position: absolute; left: 0; right: 0; bottom: 48px; height: 4px; background: var(--lilac-soft); z-index: 4; }
+    .bar { position: absolute; left: 0; right: 0; bottom: 52px; height: 4px; background: var(--lilac-soft); z-index: 4; }
     .bar span { display: block; height: 100%; background: var(--violet); width: 0; }
     .footer {
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      height: 48px;
+      height: 52px;
       background: #fff;
       border-top: 1px solid var(--line);
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: space-between;
+      gap: 20px;
       padding: 0 28px;
       font-size: 13px;
       color: var(--muted);
       z-index: 5;
       pointer-events: none;
     }
-    button.hit { position: absolute; top: 0; bottom: 48px; width: 14%; border: 0; background: transparent; cursor: pointer; z-index: 3; }
+    .footer #note { flex: 1; min-width: 0; font-size: 12px; line-height: 1.3; }
+    .footer #page { flex: 0 0 auto; white-space: nowrap; }
+    button.hit { position: absolute; top: 0; bottom: 52px; width: 14%; border: 0; background: transparent; cursor: pointer; z-index: 3; }
     button.prev { left: 0; }
     button.next { right: 0; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
@@ -329,7 +332,7 @@
   <div class="deck">
     <div class="stage" id="stage">
 
-      <section class="slide cover active">
+      <section class="slide cover active" data-note="* GraphRAG — ответ опирается на граф клиники и фрагменты документов, не «из головы» модели.">
         <div class="cover-grid">
           <div class="cover-main">
             <p class="kicker">OTUS · Архитектор искусственного интеллекта</p>
@@ -348,10 +351,10 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* CSAT — оценка «насколько вы довольны» после обращения. A/B — часть звонков у оператора, часть у ассистента.">
         <p class="kicker">Ценность</p>
         <h2>Что получает клиника</h2>
-        <p class="sub">152-ФЗ и 323-ФЗ ст. 13. Эффект считают: доля без оператора, CSAT, время линии. Проверка — A/B против живой регистратуры.</p>
+        <p class="sub">152-ФЗ и 323-ФЗ ст. 13. Эффект считают: доля без оператора, CSAT*, время линии. Проверка — A/B* против живой регистратуры.</p>
         <div class="grid grid-2 fill goal">
           <div class="card">
             <h3>⚖️ Закон соблюдается</h3>
@@ -367,12 +370,12 @@
           </div>
           <div class="card">
             <h3>📊 Эффект проверяют</h3>
-            <p>Часть звонков остаётся у оператора, часть ведёт ассистент. CSAT не ниже контроля. Чужая карта и запрос диагноза — стоп.</p>
+            <p>Часть звонков остаётся у оператора, часть ведёт ассистент. CSAT* не ниже контроля. Чужая карта и запрос диагноза — стоп.</p>
           </div>
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* ADR — запись, почему так собрали стек. ER — кто с кем связан. Ingest — загрузка документов в граф.">
         <p class="kicker">План</p>
         <h2>Содержание</h2>
         <ol class="plan">
@@ -387,7 +390,7 @@
         </ol>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* 152-ФЗ — закон о персональных данных. 323-ФЗ ст. 13 — врачебная тайна.">
         <p class="kicker">Цель</p>
         <h2>Замкнутый контур клиники</h2>
         <p class="sub">152-ФЗ и 323-ФЗ ст. 13. Текст запроса и карты за периметр не передаются.</p>
@@ -447,7 +450,7 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* ADR — принятое решение и отклонённый вариант. ReBAC — доступ по связи в реестре, не только «своя учётка». vLLM — движок генерации в периметре.">
         <p class="kicker">Стек</p>
         <h2>ADR контура</h2>
         <p class="sub">Принятое решение и отклонённый вариант.</p>
@@ -587,7 +590,7 @@
         <figure class="diagram"><img src="slides/rebac.svg" alt="Схема доступа: пациент 1, пациент 2, пациент 3"></figure>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* HITL — запись в календарь попадает только после явного «да».">
         <p class="kicker">Запись</p>
         <h2>Пациент 1 записывает пациента 2</h2>
         <p class="sub">Представитель спрашивает подготовку к УЗИ и свободное окно для ребёнка. Справочник открыт всем. Слоты показывает календарь. Запись в CRM попадает только после явного «да».</p>
@@ -601,7 +604,7 @@
         <figure class="diagram"><img src="slides/policy-boris.svg" alt="Пациент 3: открытые услуги допущены, карта 1 отклонена"></figure>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* OFTEN_CODED_AS — услугу обычно оформляют этим кодом МКБ. Подсказка стойке, не диагноз.">
         <p class="kicker">GraphRAG</p>
         <h2>Справочник клиники</h2>
         <p class="sub">Это прайс и памятки, не карты пациентов. Стрелка «обычно кодируют» (OFTEN_CODED_AS) — какой код МКБ стойка чаще ставит к услуге. Модель по ней диагноз не ставит. «Группа» (PARENT) — код входит в раздел справочника.</p>
@@ -614,7 +617,7 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* N28.1 — формулировка из справочника МКБ, не вывод модели.">
         <p class="kicker">GraphRAG</p>
         <h2>Опора ответа: карта пациента 2</h2>
         <p class="sub">Пациент 1 спрашивает дату УЗИ ребёнка и код из направления. В ответ попадают услуга, врач, филиал и подготовка. Код МКБ — строка справочника, не диагноз модели.</p>
@@ -627,7 +630,7 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* TENANT — организация. USER — кто вошёл. PATIENT — чья карта.">
         <p class="kicker">Учёт</p>
         <h2>Кого система знает</h2>
         <p class="sub">Это не прайс и не врачи. Здесь — организация, кто вошёл, чья карта, кто опекун, какой визит и какой был запрос. Справочник услуг лежит отдельно.</p>
@@ -640,14 +643,14 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* Ingest — загрузка документов. Runtime — каждый живой запрос. ACL — метка «кому можно читать».">
         <p class="kicker">Data Flow</p>
         <h2>Ingest и runtime</h2>
         <p class="sub">Метка ACL назначается при загрузке. В runtime пересекаются граф, векторный индекс и права актора.</p>
         <figure class="diagram"><img src="slides/data-flow.svg" alt="Потоки ingest и runtime"></figure>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* DMZ — тамбур сети: звонок не идёт сразу в базу и на видеокарты.">
         <p class="kicker">Размещение</p>
         <h2>Четыре зоны сети клиники</h2>
         <p class="sub">Звонок и чат не попадают сразу в базу и на видеокарты. С карт в интернет хода нет: модели ставятся с внутреннего зеркала.</p>
@@ -660,13 +663,13 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* CapEx — закупка железа. p95 — задержка, которую не превышают 95% ответов.">
         <p class="kicker">Нагрузка · TCO · стенд</p>
         <h2>Объём клиники и локальный прогон</h2>
         <p class="sub">2 филиала, 500 сессий/день. Стенд 2026-09-12: uvicorn, без Neo4j / Qdrant / vLLM, 15 passed.</p>
         <div class="grid grid-4">
           <div class="card"><p class="num">500</p><p>сессий/день · 125 000 / год</p></div>
-          <div class="card"><p class="num">9,25</p><p>млн ₽ CapEx · 2× H100 + L40S</p></div>
+          <div class="card"><p class="num">9,25</p><p>млн ₽ CapEx* · 2× H100 + L40S</p></div>
           <div class="card"><p class="num">≈ 30 ₽</p><p>сессия: 24,7 + 1,2 + 4,3</p></div>
           <div class="card"><p class="num">15×</p><p>запас к пику · облако 4–8 ₽ отклонено</p></div>
         </div>
@@ -679,25 +682,25 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* CSAT — оценка после цикла. p95 — почти все ответы быстрее этого времени. Recall@10 / nDCG — качество поиска на контрольном наборе.">
         <p class="kicker">Метрики</p>
         <h2>Онлайн и офлайн</h2>
-        <p class="sub">Онлайн — каждый день на живом трафике. Офлайн — до выкладки и при смене корпуса. Цикл: звонок → ответ или эскалация → при записи «да» → визит. CSAT снимают после цикла.</p>
+        <p class="sub">Онлайн — каждый день на живом трафике. Офлайн — до выкладки и при смене корпуса. Цикл: звонок → ответ или эскалация → при записи «да» → визит. CSAT* снимают после цикла.</p>
         <div class="grid grid-2 fill">
           <div class="card">
             <h3>Онлайн</h3>
-            <p>Доля без оператора. Время линии и время до записи. CSAT. Эскалация. Отказ в диагнозе и в доступе. p95 ответа ≤ 8 с, p95 ASR ≤ 1,0 с.</p>
+            <p>Доля без оператора. Время линии и время до записи. CSAT*. Эскалация. Отказ в диагнозе и в доступе. p95* ответа ≤ 8 с, p95 ASR ≤ 1,0 с.</p>
           </div>
           <div class="card">
             <h3>Офлайн</h3>
-            <p>Пациент 1 видит карту пациента 2, пациент 3 — отказ. Диагноз отсекается до модели. Запись только после «да». Recall@10 и nDCG на подготовке и филиале. Стенд: 15 автотестов.</p>
+            <p>Пациент 1 видит карту пациента 2, пациент 3 — отказ. Диагноз отсекается до модели. Запись только после «да». Recall@10* и nDCG* на подготовке и филиале. Стенд: 15 автотестов.</p>
           </div>
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* A/B — контроль у оператора, испытание у ассистента. AHT — среднее время цикла на линии.">
         <p class="kicker">Метрики</p>
-        <h2>A/B и экономия линии</h2>
+        <h2>A/B* и экономия линии</h2>
         <p class="sub">Контроль — оператор. Испытание — ассистент с эскалацией. Деление по учётке или номеру, 6–8 недель. Стоп, если ломается доступ или запрет диагноза.</p>
         <div class="grid grid-3 fill">
           <div class="card">
@@ -714,7 +717,7 @@
           </div>
           <div class="card">
             <h3>Как считают ставки</h3>
-            <p>500 сессий/день, типовой звонок 4 мин, ФОТ 1,8 млн ₽/ставка. 140 закрытых без оператора ≈ 1,2 ставки, короче AHT ≈ 0,3.</p>
+            <p>500 сессий/день, типовой звонок 4 мин, ФОТ 1,8 млн ₽/ставка. 140 закрытых без оператора ≈ 1,2 ставки, короче AHT* ≈ 0,3.</p>
           </div>
           <div class="card">
             <h3>Что не режут</h3>
@@ -727,7 +730,7 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* 152-ФЗ — персональные данные. 323-ФЗ ст. 13 — врачебная тайна.">
         <p class="kicker">Выводы</p>
         <h2>Контур и правовая рамка</h2>
         <div class="grid grid-2 fill">
@@ -773,7 +776,7 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* GraphRAG — ответ из графа и фрагментов. HITL — запись только после «да».">
         <p class="kicker">Выводы</p>
         <h2>Архитектура и GraphRAG</h2>
         <div class="grid grid-2 fill">
@@ -796,7 +799,7 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide" data-note="* p95 — почти все ответы быстрее этого времени. RPS — запросов в секунду.">
         <p class="kicker">Выводы</p>
         <h2>Стенд, нагрузка, стоимость</h2>
         <div class="grid grid-2 fill">
@@ -819,7 +822,7 @@
         </div>
       </section>
 
-      <section class="slide finale">
+      <section class="slide finale" data-note="* vLLM — единственный движок генерации в контуре.">
         <p class="kicker">Выводы</p>
         <h2>Голосовой контур клиники в периметре</h2>
         <p class="sub">On-premise мультиагентный ассистент: GraphRAG, врачебная тайна, 152-ФЗ. Ответ опирается на допущенные узлы и чанки. Иначе — отказ или оператор.</p>
@@ -890,7 +893,7 @@
       </section>
 
       <div class="bar"><span id="progress"></span></div>
-      <footer class="footer"><span id="page"></span></footer>
+      <footer class="footer"><span id="note"></span><span id="page"></span></footer>
       <button class="hit prev" aria-label="Назад"></button>
       <button class="hit next" aria-label="Вперёд"></button>
     </div>
@@ -899,11 +902,13 @@
     const slides = [...document.querySelectorAll(".slide")];
     let i = 0;
     const page = document.getElementById("page");
+    const note = document.getElementById("note");
     const progress = document.getElementById("progress");
     function show(n) {
       i = (n + slides.length) % slides.length;
       slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
       page.textContent = (i + 1) + " / " + slides.length;
+      note.textContent = slides[i].dataset.note || "";
       progress.style.width = ((i + 1) / slides.length * 100) + "%";
     }
     document.querySelector(".prev").onclick = () => show(i - 1);
