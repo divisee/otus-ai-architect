@@ -38,7 +38,7 @@ def test_boris_denied_anna_referral(orchestrator: Orchestrator, runtime):
     )
     assert state.acl_denied is True
     assert "K80.1" not in state.answer
-    assert "000-11-22" not in state.answer
+    assert "111-00-01" not in state.answer
     assert "закрыты" in state.answer.lower() or "доступ" in state.answer.lower()
 
 
@@ -55,4 +55,4 @@ def test_anna_reads_son_icd(orchestrator: Orchestrator, runtime):
     assert state.subject_id == "misha"
     assert "N28.1" in state.answer
     assert "киста" in state.answer.lower()
-    assert "000-33-44" not in state.answer
+    assert "111-00-02" not in state.answer

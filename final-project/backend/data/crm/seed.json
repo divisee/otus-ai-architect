@@ -6,14 +6,14 @@
       "login": "patient:anna",
       "role": "patient",
       "display_name": "Анна Соколова",
-      "phone": "+79160001122"
+      "phone": "+70001110001"
     },
     {
       "id": "boris",
       "login": "patient:boris",
       "role": "patient",
       "display_name": "Борис Орлов",
-      "phone": "+79250003344"
+      "phone": "+70001110002"
     },
     {
       "id": "registrar",
