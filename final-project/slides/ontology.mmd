@@ -1,9 +1,9 @@
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px','actorBkg':'#efe6fa','actorBorder':'#6402ba','actorTextColor':'#111111','signalColor':'#6402ba','signalTextColor':'#111111','noteBkgColor':'#fff4e5','noteBorderColor':'#ffab40'}}}%%
 
 flowchart LR
-    Doctor -->|PROVIDES| Service
-    Service -->|REQUIRES| Preparation
-    Service -->|AVAILABLE_AT| Branch
-    Doctor -->|WORKS_AT| Branch
-    Service -->|OFTEN_CODED_AS| IcdCode
-    IcdCode -->|PARENT| IcdCode
+    Doctor[врач] -->|делает| Service[услуга]
+    Service -->|нужна| Preparation[подготовка]
+    Service -->|где принимают| Branch[филиал]
+    Doctor -->|работает| Branch
+    Service -->|обычно кодируют| IcdCode[код МКБ]
+    IcdCode -->|группа справочника| IcdCode
