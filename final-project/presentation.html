@@ -228,6 +228,23 @@
     .stack article:nth-child(6n+4) { background: linear-gradient(145deg, #9aa3d8 0%, #3c0170 100%); color: #fff; }
     .stack article:nth-child(6n+5) { background: linear-gradient(145deg, #d8e4f4 0%, #5d7aa3 100%); color: #152033; }
     .stack article:nth-child(6n+6) { background: linear-gradient(145deg, #e6d5ea 0%, #7a5388 100%); color: #fff; }
+    .pitch {
+      flex: 1; min-height: 0; display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 20px;
+    }
+    .pitch-visual { margin: 0; min-height: 0; border-radius: 16px; overflow: hidden; background: #1a0833; box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12); }
+    .pitch-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pitch-points { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+    .pitch-points article {
+      flex: 1; min-height: 0; margin: 0; padding: 18px 22px; border-radius: 16px;
+      display: flex; flex-direction: column; justify-content: center; gap: 4px;
+      box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
+    }
+    .pitch-points h3 { margin: 0; font-size: clamp(18px, 2.1vw, 24px); font-weight: 600; line-height: 1.2; }
+    .pitch-points p { margin: 0; font-size: 15px; line-height: 1.35; opacity: 0.92; }
+    .pitch-points article:nth-child(6n+1) { background: linear-gradient(145deg, #efe8ff 0%, #b9a4e0 100%); color: #2a1860; }
+    .pitch-points article:nth-child(6n+2) { background: linear-gradient(145deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
+    .pitch-points article:nth-child(6n+3) { background: linear-gradient(145deg, #dceeee 0%, #6d9b9a 100%); color: #14302f; }
+    .pitch-points article:nth-child(6n+4) { background: linear-gradient(145deg, #9aa3d8 0%, #3c0170 100%); color: #fff; }
     .layers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; min-height: 0; align-content: stretch; }
     .layer {
       display: flex; flex-direction: column; justify-content: flex-start;
@@ -300,7 +317,7 @@
     button.next { right: 0; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
     @media (max-width: 900px) {
-      .grid-2, .grid-3, .grid-4, .plan, .stack, .cover-grid { grid-template-columns: 1fr; }
+      .grid-2, .grid-3, .grid-4, .plan, .stack, .cover-grid, .pitch { grid-template-columns: 1fr; }
       .layer { flex-direction: column; align-items: flex-start; gap: 6px; }
       .cover-visual { min-height: 220px; }
     }
@@ -332,31 +349,27 @@
       <section class="slide">
         <p class="kicker">Ценность</p>
         <h2>Зачем это клинике</h2>
-        <p class="sub">Голосовой контур снимает рутину регистратуры и оставляет речь, карты и генерацию внутри организации. Для сети филиалов это условие работы, не украшение стека.</p>
-        <div class="grid grid-3 fill">
-          <div class="card">
-            <h3>Пациент звонит, не пишет</h3>
-            <p>Основной вход в клинику — телефон. Ассистент отвечает, когда запись, как готовиться и куда ехать. Регистратура остаётся на сложные случаи, не на повторяющиеся вопросы.</p>
-          </div>
-          <div class="card">
-            <h3>Одна карта на все филиалы</h3>
-            <p>Пациент ходит в разные отделения одной организации. История общая: приём на Лесной виден и на Южном. Вторая клиника — другой контур, не копия стека на человека.</p>
-          </div>
-          <div class="card">
-            <h3>Можно внедрить и продавать</h3>
-            <p>Облачный Speech и LLM дешевле, но текст запроса и фрагменты карт уходят наружу. On-premise закрывает 152-ФЗ и врачебную тайну. Без этого продукта у сети нет легального голосового ИИ.</p>
-          </div>
-          <div class="card">
-            <h3>Стоимость понятна заранее</h3>
-            <p>Типовой день — 500 сессий. Свои карты, без аренды GPU: порядка 30 ₽ за обращение и запас к пику около 15×. Клиника считает контур как инфраструктуру, не как счёт за токены.</p>
-          </div>
-          <div class="card">
-            <h3>Один контур правды</h3>
-            <p>Голос и чат сайта идут в одну машину состояний. Кто что видит, решается до модели: представитель открывает карту ребёнка, соседний пациент — нет. Два «мозга» означали бы два правила доступа.</p>
-          </div>
-          <div class="card">
-            <h3>Ответ с опорой, не наугад</h3>
-            <p>Граф связывает услугу, врача, филиал и подготовку. Модель формулирует только по допущенным фрагментам. Диагноз не ставит. Запись в календарь попадает только после явного «да».</p>
+        <div class="pitch">
+          <figure class="pitch-visual">
+            <img src="slides/cover-clinic-voice.jpg" alt="">
+          </figure>
+          <div class="pitch-points">
+            <article>
+              <h3>Пациент звонит</h3>
+              <p>Запись, подготовка, филиал. Регистратура — на сложное.</p>
+            </article>
+            <article>
+              <h3>Данные не уходят</h3>
+              <p>Речь и карты в периметре. Облако дешевле — продавать его нельзя.</p>
+            </article>
+            <article>
+              <h3>Одна карта на филиалы</h3>
+              <p>Сеть отделений, общая история. Как у крупной клиники.</p>
+            </article>
+            <article>
+              <h3>Ответ с опорой</h3>
+              <p>Граф услуги и врача. Не диагноз. Запись только после «да».</p>
+            </article>
           </div>
         </div>
       </section>
