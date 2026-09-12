@@ -580,10 +580,16 @@
       </section>
 
       <section class="slide">
-        <p class="kicker">ER</p>
-        <h2>Учётные сущности</h2>
-        <p class="sub">TENANT → USER → PATIENT. Опека, визит, сессия и аудит — отдельно от справочного графа.</p>
-        <figure class="diagram"><img src="slides/er.svg" alt="ER: tenant, user, patient, guardian, document, session"></figure>
+        <p class="kicker">Учёт</p>
+        <h2>Кого система знает</h2>
+        <p class="sub">Это не прайс и не врачи. Здесь — организация, кто вошёл, чья карта, кто опекун, какой визит и какой был запрос. Справочник услуг лежит отдельно.</p>
+        <figure class="diagram"><img src="slides/er.svg" alt="Учёт: организация, учётка, карта, опека, визит, сессия"></figure>
+        <div class="grid grid-4" style="margin-top:12px">
+          <div class="card"><h3>Организация</h3><p>TENANT. Несколько филиалов, одна карта пациента.</p></div>
+          <div class="card"><h3>Учётка и карта</h3><p>USER — кто вошёл. PATIENT — чья история. У пациента 2 учётки нет.</p></div>
+          <div class="card"><h3>Опека и визит</h3><p>GUARDIAN_LINK связывает пациента 1 с пациентом 2. APPOINTMENT — запись в CRM.</p></div>
+          <div class="card"><h3>Сессия и журнал</h3><p>SESSION — этот разговор. AUDIT — кто что открыл или получил отказ.</p></div>
+        </div>
       </section>
 
       <section class="slide">
