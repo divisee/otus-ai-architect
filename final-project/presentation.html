@@ -127,6 +127,10 @@
     .grid > .card:nth-child(3n+1)::before { background: var(--v-400); }
     .grid > .card:nth-child(3n+2)::before { background: var(--v-600); }
     .grid > .card:nth-child(3n+3)::before { background: var(--v-800); }
+    .grid > .card.stop, .card.stop { background: var(--deny-100); }
+    .grid > .card.stop::before, .card.stop::before { background: var(--deny); }
+    .grid > .card.stop h3, .card.stop h3 { color: var(--deny); }
+    .ab .card { justify-content: flex-start; }
     .grid > .card.mark, .card.mark { background: var(--sage-100); }
     .grid > .card.mark::before, .card.mark::before { background: var(--sage); }
     .grid > .card.mark h3, .card.mark h3 { color: #23524f; }
@@ -147,11 +151,17 @@
     .econ > .card.mark::before { background: var(--sage); }
     .card .assume { margin-top: 9px; font-size: 12px; line-height: 1.35; color: var(--muted); }
     .card .assume b { color: var(--v-700); }
-    .contours .card { justify-content: flex-start; }
-    .contours h3 { font-size: 19px; margin-bottom: 2px; }
-    .contours .calc-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; }
-    .contours .calc-rows .row { padding: 9px 12px; }
-    .contours .calc-rows dt, .contours .calc-rows dd { font-size: 12.5px; }
+    .contours .card { justify-content: center; }
+    .contours h3 { font-size: 20px; margin-bottom: 10px; }
+    .spec { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+    .spec .row { display: flex; align-items: baseline; gap: 12px; }
+    .spec dt { flex: 0 0 78px; margin: 0; font-size: 12.5px; color: var(--muted); }
+    .spec dd { flex: 1; margin: 0; font-size: 14.5px; line-height: 1.35; color: var(--ink); }
+    .spec .row.sum { margin-top: 4px; padding: 9px 12px; border-radius: 10px; background: rgba(100, 2, 186, 0.07); }
+    .spec .row.sum dt { color: var(--v-700); font-weight: 700; }
+    .spec .row.sum dd { font-weight: 700; color: var(--v-800); }
+    .card.mark .spec .row.sum { background: rgba(79, 138, 134, 0.16); }
+    .card.mark .spec .row.sum dt, .card.mark .spec .row.sum dd { color: #23524f; }
     .calc-rows { flex: none; margin: 9px 0 0; border-radius: 10px; overflow: hidden; background: rgba(100, 2, 186, 0.05); }
     .calc-rows .row { display: flex; align-items: baseline; gap: 10px; padding: 4px 11px; border-top: 1px solid rgba(100, 2, 186, 0.09); }
     .calc-rows .row:first-child { border-top: 0; }
@@ -1022,7 +1032,7 @@
         <div class="grid grid-3 fill contours">
           <div class="card">
             <h3>📡 Онлайн</h3>
-            <dl class="calc-rows">
+            <dl class="spec">
               <div class="row"><dt>когда</dt><dd>каждый рабочий день</dd></div>
               <div class="row"><dt>на чём</dt><dd>живой поток обращений</dd></div>
               <div class="row"><dt>источник</dt><dd>журнал сессии, решение доступа, CRM, опрос</dd></div>
@@ -1031,16 +1041,16 @@
           </div>
           <div class="card">
             <h3>🧪 Офлайн</h3>
-            <dl class="calc-rows">
+            <dl class="spec">
               <div class="row"><dt>когда</dt><dd>перед каждым релизом</dd></div>
               <div class="row"><dt>на чём</dt><dd>фиксированный набор сценариев</dd></div>
               <div class="row"><dt>источник</dt><dd>автотесты стенда, отчёт качества поиска</dd></div>
               <div class="row sum"><dt>реакция</dt><dd>не прошёл — релиза нет</dd></div>
             </dl>
           </div>
-          <div class="card mark">
+          <div class="card">
             <h3>⚖️ Правовой</h3>
-            <dl class="calc-rows">
+            <dl class="spec">
               <div class="row"><dt>когда</dt><dd>постоянно, процентами не измеряется</dd></div>
               <div class="row"><dt>на чём</dt><dd>размещение контура и проверка прав</dd></div>
               <div class="row"><dt>источник</dt><dd>152-ФЗ, 323-ФЗ ст. 13, журнал доступа</dd></div>
@@ -1088,30 +1098,30 @@
         <p class="kicker">Метрики · проверка эффекта</p>
         <h2>Проверка эффекта: A/B против живой регистратуры</h2>
         <p class="sub">Деление устойчивое: один человек не переходит между группами внутри периода. Жалоба на самочувствие и просьба о диагнозе всегда уходят человеку — в обеих группах.</p>
-        <div class="grid grid-3 fill goal">
+        <div class="grid grid-3 fill ab">
           <div class="card">
             <h3>🧪 Две группы</h3>
-            <p>Контроль — оператор. Испытание — ассистент с эскалацией. Деление по учётной записи или номеру, период 6–8 недель.</p>
+            <p>Контроль — оператор, испытание — ассистент с эскалацией. Деление по учётной записи или номеру, период 6–8 недель.</p>
           </div>
           <div class="card">
             <h3>🎯 Первичная метрика</h3>
-            <p>Доля обращений без оператора при CSAT не ниже контроля. Рост удовлетворённости не требуется — требуется нехудшение.</p>
+            <p>Доля обращений без оператора при CSAT не ниже контроля: требуется нехудшение, а не рост.</p>
           </div>
           <div class="card">
             <h3>🛡️ Страховочные метрики</h3>
-            <p>Доля отказа в диагнозе, доля отказа в доступе, задержка ответа. Их проверяют раньше продуктового эффекта.</p>
+            <p>Отказ в диагнозе, отказ в доступе, задержка ответа — проверяются раньше продуктового эффекта.</p>
           </div>
           <div class="card">
             <h3>🚦 Расширение выборки</h3>
-            <p>20% трафика, затем 50%, затем 70% первого ответа. На каждом шаге — контрольная точка по метрикам.</p>
+            <p>20% трафика → 50% → 70% первого ответа, на каждом шаге контрольная точка по метрикам.</p>
           </div>
-          <div class="card mark">
+          <div class="card stop">
             <h3>🛑 Условие остановки</h3>
-            <p>Выход чужой карты в контекст модели или нарушение запрета диагноза — испытание останавливают, трафик возвращают на линию в тот же день.</p>
+            <p>Чужая карта в контексте модели или нарушение запрета диагноза — испытание снимают в тот же день, трафик возвращают на линию.</p>
           </div>
           <div class="card">
             <h3>⚠️ Сценарий без эффекта</h3>
-            <p>Доля без оператора ниже 25% — эффект в 1,5 ставки не подтверждён. Контур остаётся каналом записи с подтверждением, срок окупаемости сдвигается.</p>
+            <p>Доля без оператора ниже 25% — эффект в 1,5 ставки не подтверждён, контур остаётся каналом записи.</p>
           </div>
         </div>
       </section>
@@ -1180,40 +1190,7 @@
         </div>
       </section>
 
-      <!-- 30. Планы развития -->
-            <section class="slide" data-note="p95 — 95-й процентиль: задержка, которую не превышают 95% ответов. | A/B — A/B-тест, сравнение двух групп: контрольная (A) остаётся у оператора, испытательная (B) идёт к ассистенту. | SIP — Session Initiation Protocol, протокол установления телефонной сессии. | ДМС — добровольное медицинское страхование.">
-        <p class="kicker">Развитие</p>
-        <h2>Куда контур может расти</h2>
-        <p class="sub">Ближайший этап зафиксирован, остальное — направления, приоритет которых определяется после выхода на живую линию.</p>
-        <div class="grid grid-3 fill">
-          <div class="card mark">
-            <h3>Фаза ускорителей</h3>
-            <p>Единственный принятый шаг: генерация на H100, речь и эмбеддинги на L40S, приёмка по p95 и Recall@10.</p>
-          </div>
-          <div class="card">
-            <h3>Телефония по SIP</h3>
-            <p>Подключение АТС через пограничный контроллер вместо микрофона и транскрипта.</p>
-          </div>
-          <div class="card">
-            <h3>Исходящие сценарии</h3>
-            <p>Напоминание о визите и подготовке, перенос по инициативе клиники — тот же оркестратор, обратное направление.</p>
-          </div>
-          <div class="card">
-            <h3>Расширение знаний</h3>
-            <p>Программы ДМС, страховые реестры и протоколы подготовки как новые узлы графа.</p>
-          </div>
-          <div class="card">
-            <h3>Качество распознавания</h3>
-            <p>Доменная адаптация на названиях услуг, фамилиях врачей и терминах справочника.</p>
-          </div>
-          <div class="card">
-            <h3>Второй контур</h3>
-            <p>Другая организация — отдельная установка по тому же шаблону, без общей базы.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 31. Финал -->
+      <!-- 30. Финал -->
       <section class="slide finale" data-note="vLLM — движок инференса больших языковых моделей (LLM) с PagedAttention; работает внутри периметра. | GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф знаний и фрагменты документов. | ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — Context, Container, Component, Code — четыре уровня архитектурных схем.">
         <p class="kicker">Итог</p>
         <h2>Голосовой контур клиники внутри периметра</h2>
@@ -1230,7 +1207,7 @@
         <div class="quote" style="margin-top:16px">Ответ формируется только из допущенного контекста: открытые материалы клиники, служебные материалы персонала, своя карта и карта ребёнка по активной опеке. При отсутствии опоры — отказ или передача оператору.</div>
       </section>
 
-      <!-- 32. Спасибо -->
+      <!-- 31. Спасибо -->
       <section class="slide close">
         <h2>Спасибо за внимание!</h2>
         <p class="ask">Вопросы?</p>
