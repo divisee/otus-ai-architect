@@ -6,7 +6,7 @@
   <title>Проектирование и реализация on-premise мультиагентного голосового ИИ-ассистента медицинского центра с GraphRAG, обеспечением врачебной тайны и соблюдением 152-ФЗ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Unbounded:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --ink: #111111;
@@ -24,7 +24,7 @@
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: Manrope, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Helvetica Neue", Arial, sans-serif; }
-    h1, h2 { font-family: Unbounded, Manrope, sans-serif; font-weight: 600; letter-spacing: -0.03em; }
+    h1, h2 { font-family: Unbounded, Manrope, sans-serif; font-weight: 500; letter-spacing: -0.02em; }
     .deck, .stage { height: 100%; width: 100%; position: relative; background: var(--paper); }
     .slide {
       display: none;
@@ -53,19 +53,23 @@
       padding: clamp(36px, 7vh, 72px) clamp(28px, 4vw, 56px) clamp(28px, 5vh, 56px);
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      gap: 18px;
+      justify-content: space-between;
+      gap: 24px;
     }
-    .cover-main .kicker { color: var(--lilac-soft); margin-bottom: 0; }
+    .cover-main .kicker { color: var(--lilac-soft); margin: 0; }
+    .cover-copy { margin: auto 0; }
     .cover-main h1 {
       max-width: none;
       color: #fff;
-      font-size: clamp(22px, 2.7vw, 34px);
-      line-height: 1.28;
-      margin: 8px 0 0;
+      font-family: Manrope, "Helvetica Neue", Arial, sans-serif;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      font-size: clamp(24px, 2.8vw, 36px);
+      line-height: 1.32;
+      margin: 0;
     }
-    .cover-main .author { margin: 16px 0 0; font-size: 22px; font-weight: 700; }
-    .cover-main .links { display: flex; flex-direction: column; gap: 8px; margin: auto 0 0; }
+    .cover-main .author { margin: 18px 0 0; font-size: 20px; font-weight: 400; letter-spacing: 0.01em; opacity: 0.92; }
+    .cover-main .links { display: flex; flex-direction: column; gap: 8px; margin: 0; }
     .cover-main .links a { color: #fff; font-size: 15px; text-underline-offset: 3px; }
     .cover-main .links a:hover { color: var(--accent); }
     .cover-visual { margin: 0; min-height: 0; overflow: hidden; background: #1a0833; }
@@ -224,16 +228,15 @@
     .stack article:nth-child(6n+4) { background: linear-gradient(145deg, #9aa3d8 0%, #3c0170 100%); color: #fff; }
     .stack article:nth-child(6n+5) { background: linear-gradient(145deg, #d8e4f4 0%, #5d7aa3 100%); color: #152033; }
     .stack article:nth-child(6n+6) { background: linear-gradient(145deg, #e6d5ea 0%, #7a5388 100%); color: #fff; }
-    .layers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; min-height: 0; }
+    .layers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; min-height: 0; align-content: stretch; }
     .layer {
-      display: flex; flex-direction: column; justify-content: space-between;
-      gap: 16px; padding: 24px 26px; border-radius: 16px; border: 0; min-height: 0;
+      display: flex; flex-direction: column; justify-content: flex-start;
+      gap: 8px; padding: 20px 22px; border-radius: 16px; border: 0; min-height: 0; overflow: hidden;
       box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
     }
-    .layer > div { display: flex; flex-direction: column; gap: 12px; }
-    .layer .n { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; opacity: 0.8; margin: 0; }
-    .layer strong { font-size: 22px; display: block; margin: 0; line-height: 1.25; }
-    .layer .why { font-size: 15px; line-height: 1.45; margin: 0; }
+    .layer .n { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; opacity: 0.8; margin: 0; }
+    .layer strong { font-size: 20px; display: block; margin: 0; line-height: 1.25; }
+    .layer .why { font-size: 15px; line-height: 1.4; margin: 0; }
     .pills { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; }
     .pills b {
       display: inline-flex; align-items: center; width: auto; flex: 0 0 auto;
@@ -242,15 +245,12 @@
     }
     .layer.ch { background: linear-gradient(145deg, #efe8ff 0%, #b9a4e0 100%); color: #2a1860; }
     .layer.ch strong, .layer.ch .n { color: #2a1860; }
-    .layer.ch .pills b { background: rgba(255,255,255,0.55); color: #2a1860; }
     .layer.cp { background: linear-gradient(145deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
     .layer.cp strong, .layer.cp .n { color: #fff; }
-    .layer.cp .pills b { background: rgba(255,255,255,0.2); color: #fff; }
     .layer.dp { background: linear-gradient(145deg, #dceeee 0%, #6d9b9a 100%); color: #14302f; }
-    .layer.dp strong { color: #14302f; }
+    .layer.dp strong, .layer.dp .n { color: #14302f; }
     .layer.gpu { background: linear-gradient(145deg, #9aa3d8 0%, #3c0170 100%); color: #fff; }
     .layer.gpu strong, .layer.gpu .n { color: #fff; }
-    .layer.gpu .pills b { background: rgba(255,255,255,0.18); color: #fff; }
     .finale h2 { max-width: none; font-size: clamp(26px, 3.2vw, 38px); }
     .finale .pills { margin: 0 0 18px; }
     .finale .pills b { border: 0; color: #2a1860; background: linear-gradient(145deg, #efe8ff 0%, #b9a4e0 100%); }
@@ -314,8 +314,10 @@
         <div class="cover-grid">
           <div class="cover-main">
             <p class="kicker">OTUS · Архитектор искусственного интеллекта</p>
-            <h1>Проектирование и реализация on-premise мультиагентного голосового ИИ-ассистента медицинского центра с GraphRAG, обеспечением врачебной тайны и соблюдением 152-ФЗ</h1>
-            <p class="author">Распутина Анастасия</p>
+            <div class="cover-copy">
+              <h1>Проектирование и реализация on-premise мультиагентного голосового ИИ-ассистента медицинского центра с GraphRAG, обеспечением врачебной тайны и соблюдением 152-ФЗ</h1>
+              <p class="author">Распутина Анастасия</p>
+            </div>
             <p class="links">
               <a href="https://github.com/divisee">github.com/divisee</a>
               <a href="https://github.com/divisee/otus-ai-architect">github.com/divisee/otus-ai-architect</a>
@@ -379,36 +381,24 @@
         <p class="sub">Где исполняется контур. Состав стека и развилки — на следующем слайде, в ADR.</p>
         <div class="layers">
           <div class="layer ch">
-            <div>
-              <div class="n">01 · вход</div>
-              <strong>Канал</strong>
-              <p class="why">Голос — основной вход. Чат приходит в тот же API. Распознавание и синтез не решают, кому что можно читать.</p>
-            </div>
-            <div class="pills"><b>/v1/voice</b><b>/v1/chat</b></div>
+            <div class="n">01 · вход</div>
+            <strong>Канал</strong>
+            <p class="why">Голос — основной вход: речь распознаётся, диалог идёт, ответ озвучивается. Чат сайта приходит в тот же API. Кто что видит, решает не канал.</p>
           </div>
           <div class="layer cp">
-            <div>
-              <div class="n">02 · управление</div>
-              <strong>Control Plane</strong>
-              <p class="why">Маршрут диалога, Policy до модели, подтверждение записи, загрузка корпуса. Машина состояний, не линейный скрипт.</p>
-            </div>
-            <div class="pills"><b>маршрут</b><b>Policy</b><b>HITL</b></div>
+            <div class="n">02 · управление диалогом</div>
+            <strong>Оркестратор</strong>
+            <p class="why">Ведёт маршрут, проверяет права до модели, ждёт подтверждения записи. Это машина состояний, не линейный скрипт.</p>
           </div>
           <div class="layer dp">
-            <div>
-              <div class="n">03 · данные</div>
-              <strong>Data Plane</strong>
-              <p class="why">Справочный граф, чанки с меткой ACL, сессии. Карточки пациентов — в CRM. Секреты и трассировка — внутри периметра.</p>
-            </div>
-            <div class="pills"><b>граф</b><b>индекс</b><b>сессии</b></div>
+            <div class="n">03 · хранилища</div>
+            <strong>Данные</strong>
+            <p class="why">Справочный граф, фрагменты документов, сессии. Карточки пациентов — в CRM. Секреты и след запросов не выходят за периметр.</p>
           </div>
           <div class="layer gpu">
-            <div>
-              <div class="n">04 · ускорители</div>
-              <strong>GPU VLAN</strong>
-              <p class="why">Генерация и речь на разных картах: пик звонков не вытесняет KV-cache. Сегмент без маршрута в интернет.</p>
-            </div>
-            <div class="pills"><b>генерация</b><b>речь</b><b>эмбеддинги</b></div>
+            <div class="n">04 · видеокарты</div>
+            <strong>Генерация и речь</strong>
+            <p class="why">Ответ пишет модель, речь распознаёт отдельная карта. Из этой сети в интернет хода нет: текст запроса и карты наружу не уходят.</p>
           </div>
         </div>
       </section>
@@ -620,15 +610,15 @@
       </section>
 
       <section class="slide">
-        <p class="kicker">Deployment</p>
-        <h2>Зоны размещения</h2>
-        <p class="sub">DMZ, Control Plane, Data Plane, GPU VLAN. Сегмент видеокарт не имеет маршрута в интернет.</p>
-        <figure class="diagram"><img src="slides/deployment.svg" alt="Схема размещения: вход, управление, данные, видеокарты"></figure>
+        <p class="kicker">Размещение</p>
+        <h2>Четыре зоны сети клиники</h2>
+        <p class="sub">Звонок и чат не попадают сразу в базу и на видеокарты. С карт в интернет хода нет: модели ставятся с внутреннего зеркала.</p>
+        <figure class="diagram"><img src="slides/deployment.svg" alt="Схема размещения: вход, управление, хранилища, видеокарты"></figure>
         <div class="grid grid-4" style="margin-top:12px">
-          <div class="card"><h3>Вне контура</h3><p>АТС / микрофон; администрирование по VPN</p></div>
-          <div class="card"><h3>DMZ</h3><p>TLS, API Gateway, целевой SBC</p></div>
-          <div class="card"><h3>Control / Data</h3><p>оркестратор, Neo4j, Qdrant, Postgres, CRM, Vault</p></div>
-          <div class="card"><h3>GPU VLAN</h3><p>vLLM и речь; без маршрута в интернет</p></div>
+          <div class="card"><h3>Вне контура</h3><p>Телефония и сайт клиники. Администратор заходит по VPN, не с открытого интернета.</p></div>
+          <div class="card"><h3>Вход, тамбур сети</h3><p>DMZ — буфер перед внутренностью. Здесь обрывается шифрование и стоит шлюз API. Дальше проходит только принятый запрос.</p></div>
+          <div class="card"><h3>Управление и хранилища</h3><p>Оркестратор ведёт диалог. Граф, индекс, сессии и секреты — внутри. Карточки пациентов — в CRM.</p></div>
+          <div class="card"><h3>Сегмент видеокарт</h3><p>Распознавание речи и генерация ответа. Отдельная сеть без маршрута наружу, чтобы текст запроса и карты не ушли.</p></div>
         </div>
       </section>
 

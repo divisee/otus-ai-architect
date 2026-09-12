@@ -5,26 +5,26 @@ flowchart TB
         TEL[АТС / микрофон]
         ADM[Админ VPN]
     end
-    subgraph DMZ["DMZ"]
-        WAF[WAF / TLS]
-        SIP[Voice SBC]
-        GW[API Gateway]
+    subgraph DMZ["Вход, тамбур сети"]
+        WAF[шифрование]
+        SIP[вход звонка]
+        GW[шлюз API]
     end
-    subgraph INT["Control Plane"]
-        ORCH[Orchestrator]
-        ING[Ingest]
-        LF[Langfuse]
+    subgraph INT["Управление диалогом"]
+        ORCH[оркестратор]
+        ING[загрузка корпуса]
+        LF[трассировка]
     end
-    subgraph DATA["Data Plane"]
-        NEO[(Neo4j)]
-        QD[(Qdrant)]
-        PG[(Postgres)]
+    subgraph DATA["Хранилища"]
+        NEO[(граф)]
+        QD[(индекс)]
+        PG[(сессии)]
         CRM[(CRM)]
-        VAULT[Vault]
+        VAULT[секреты]
     end
-    subgraph GPU["GPU VLAN"]
-        VLLM[vLLM T-pro FP8<br/>2× H100]
-        WHIS[Whisper + bge-m3<br/>1× L40S]
+    subgraph GPU["Видеокарты"]
+        VLLM[генерация<br/>2× H100]
+        WHIS[речь<br/>1× L40S]
     end
     TEL --> WAF
     TEL --> SIP
