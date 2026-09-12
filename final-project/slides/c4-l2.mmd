@@ -5,7 +5,7 @@ flowchart TB
     CH -->|речь| VG[Voice Adapter<br/>ASR / TTS]
     CH -->|чат на сайте| GW[API Gateway<br/>FastAPI]
     VG --> GW
-    subgraph CP["Control Plane"]
+    subgraph CP["Управление диалогом"]
         GW --> ORCH[Orchestrator<br/>LangGraph]
         ORCH --> IG[Input Guardrails]
         ORCH --> KN[Knowledge Agent]
@@ -13,7 +13,7 @@ flowchart TB
         ORCH --> POL[Policy Agent]
         ING[Ingest Worker]
     end
-    subgraph DP["Data Plane"]
+    subgraph DP["Хранилища"]
         NEO[(Neo4j)]
         QD[(Qdrant)]
         LLM[vLLM T-pro]
@@ -21,7 +21,7 @@ flowchart TB
         VAULT[Vault]
         SESS[(Сессии + audit)]
     end
-    subgraph OBS["Observability"]
+    subgraph OBS["Наблюдение"]
         LF[Langfuse]
         PR[Prometheus]
     end

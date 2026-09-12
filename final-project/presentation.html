@@ -520,10 +520,14 @@
       </section>
 
       <section class="slide">
-        <p class="kicker">C4 · L2 Container</p>
-        <h2>Control Plane и Data Plane</h2>
-        <p class="sub">Звонок и чат входят в один шлюз и одну программу диалога.</p>
-        <figure class="diagram"><img src="slides/c4-l2.svg" alt="C4 L2: контейнеры Control Plane, Data Plane, Observability"></figure>
+        <p class="kicker">Состав контура</p>
+        <h2>Управление диалогом и хранилища</h2>
+        <p class="sub">Верхний контур ведёт разговор: принимает звонок или чат, выбирает путь, проверяет права. Нижний держит граф, индекс, карты, секреты и модель. Оба входят через один шлюз.</p>
+        <figure class="diagram"><img src="slides/c4-l2.svg" alt="Управление диалогом, хранилища и наблюдение"></figure>
+        <div class="grid grid-2" style="margin-top:12px">
+          <div class="card"><h3>Управление диалогом</h3><p>Шлюз, маршрут, проверка входа и прав, запись. Здесь решают, что ответить и кому что можно.</p></div>
+          <div class="card"><h3>Хранилища</h3><p>Граф услуг, фрагменты документов, карточки в CRM, секреты, сессии и модель. Данные лежат здесь, наружу не ходят.</p></div>
+        </div>
       </section>
 
       <section class="slide">
@@ -730,7 +734,7 @@
         <div class="grid grid-2 fill">
           <div class="card">
             <h3>C4 и плоскости</h3>
-            <p>L1 фиксирует периметр. L2 разделяет Control Plane и Data Plane. L3 — узлы одного графа состояний, не микросервис на субагент. Observability (Langfuse, Prometheus) внутри контура.</p>
+            <p>Сначала периметр. Затем разговор отдельно от хранилищ: маршрут и права сверху, граф, карты и модель снизу. Наблюдение — внутри контура.</p>
           </div>
           <div class="card">
             <h3>LangGraph принят</h3>
