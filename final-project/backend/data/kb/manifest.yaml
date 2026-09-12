@@ -1,5 +1,5 @@
 # Карта корпуса → ACL. Ingest читает это, а не «угадывает» тайну из текста.
-tenant: severnaya-liniya
+tenant: clinic
 
 documents:
   - path: public/01-uslugi-i-ceny.md

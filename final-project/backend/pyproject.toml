@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "severnaya-liniya-assistant"
+name = "clinic-assistant"
 version = "0.1.0"
 description = "On-prem clinic voice assistant Control Plane"
 readme = "README.md"
