@@ -43,13 +43,13 @@
       display: none;
       position: absolute;
       inset: 0;
-      padding: clamp(22px, 4.4vh, 52px) clamp(24px, 6vw, 88px) 96px;
+      padding: clamp(20px, 4vh, 48px) clamp(24px, 6vw, 88px) 116px;
       width: 100%;
       overflow: hidden;
       background: radial-gradient(900px 420px at 0% -8%, #f4eeff 0%, transparent 58%), #fff;
     }
     .slide.active { display: flex; flex-direction: column; }
-    .slide.cover { background: var(--paper); padding: 0 0 64px; }
+    .slide.cover { background: var(--paper); padding: 0 0 84px; }
 
     /* --- обложка --- */
     .cover-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.05fr 0.95fr; }
@@ -227,6 +227,30 @@
     .api p { margin: 0; font-size: 14px; line-height: 1.4; }
     .api .meta { font-size: 13px; color: var(--muted); }
 
+    /* --- слайд «обо мне» --- */
+    .me { flex: 1; min-height: 0; display: grid; grid-template-columns: 0.62fr 1.38fr; gap: 22px; }
+    .me-photo {
+      margin: 0; min-height: 0; border-radius: 18px; overflow: hidden;
+      background: var(--v-900); box-shadow: var(--shadow-deep);
+    }
+    .me-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; transform: scale(1.2); transform-origin: 50% 24%; }
+    .me-facts { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+    .me-facts article {
+      flex: 1; min-height: 0; margin: 0; padding: 16px 22px; border-radius: 16px;
+      display: flex; flex-direction: column; justify-content: center; gap: 4px;
+      background: var(--v-050); box-shadow: var(--shadow); position: relative;
+    }
+    .me-facts article::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 5px; border-radius: 0 6px 6px 0; }
+    .me-facts article:nth-child(4n+1)::before { background: var(--v-400); }
+    .me-facts article:nth-child(4n+2)::before { background: var(--v-600); }
+    .me-facts article:nth-child(4n+3)::before { background: var(--v-800); }
+    .me-facts article:nth-child(4n+4)::before { background: var(--sage); }
+    .me-facts article:nth-child(4n+4) { background: var(--sage-100); }
+    .me-facts h3 { margin: 0; font-size: 19px; font-weight: 700; color: var(--v-700); }
+    .me-facts article:nth-child(4n+4) h3 { color: #23524f; }
+    .me-facts p { margin: 0; font-size: 15px; line-height: 1.42; }
+    .me-facts .meta { font-size: 13.5px; color: var(--muted); }
+
     /* --- финальная плитка --- */
     .finale h2 { max-width: none; font-size: clamp(26px, 3.2vw, 38px); }
     .pills { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -252,20 +276,22 @@
     .wins article:nth-child(3n+3) { background: linear-gradient(145deg, #a99ad6 0%, var(--v-800) 100%); color: #fff; }
 
     /* --- служебное --- */
-    .bar { position: absolute; left: 0; right: 0; bottom: 64px; height: 4px; background: var(--v-100); z-index: 4; }
+    .bar { position: absolute; left: 0; right: 0; bottom: 84px; height: 4px; background: var(--v-100); z-index: 4; }
     .bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--v-400) 0%, var(--v-600) 100%); width: 0; }
     .footer {
-      position: absolute; left: 0; right: 0; bottom: 0; height: 64px;
+      position: absolute; left: 0; right: 0; bottom: 0; height: 84px;
       background: #fff; border-top: 1px solid var(--line);
       display: flex; align-items: center; justify-content: space-between; gap: 20px;
       padding: 0 28px; font-size: 13px; color: var(--muted); z-index: 5; pointer-events: none;
     }
     .footer #note {
-      flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.32; color: #4b4462;
-      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+      flex: 1; min-width: 0; color: #4b4462; font-size: 11.5px; line-height: 1.3;
+      column-count: 2; column-gap: 30px; max-height: 68px; overflow: hidden;
     }
+    .footer #note .gl { display: block; break-inside: avoid; margin: 0 0 2px; }
+    .footer #note .gl b { color: var(--v-700); font-weight: 700; }
     .footer #page { flex: 0 0 auto; white-space: nowrap; font-weight: 700; color: var(--v-600); }
-    button.hit { position: absolute; top: 0; bottom: 64px; width: 14%; border: 0; background: transparent; cursor: pointer; z-index: 3; }
+    button.hit { position: absolute; top: 0; bottom: 84px; width: 14%; border: 0; background: transparent; cursor: pointer; z-index: 3; }
     button.prev { left: 0; }
     button.next { right: 0; }
     @media (max-width: 900px) {
@@ -280,7 +306,7 @@
     <div class="stage" id="stage">
 
       <!-- 1. Обложка -->
-      <section class="slide cover active" data-note="GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф: ответ собирается из графа знаний клиники и фрагментов её документов. 152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных».">
+      <section class="slide cover active" data-note="GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф: ответ собирается из графа знаний клиники и фрагментов её документов. | 152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных».">
         <div class="cover-grid">
           <div class="cover-main">
             <p class="kicker">OTUS · Архитектор искусственного интеллекта</p>
@@ -299,8 +325,35 @@
         </div>
       </section>
 
-      <!-- 2. Ценность -->
-      <section class="slide" data-note="CSAT — Customer Satisfaction, удовлетворённость клиента: короткая оценка после закрытия обращения. A/B — сравнение двух групп: контрольная остаётся на операторе, испытательная идёт к ассистенту. ФОТ — фонд оплаты труда.">
+      <!-- 2. Обо мне -->
+      <section class="slide" data-note="AI-инженер — инженер, который проектирует и выводит в эксплуатацию системы на языковых моделях. | Backend — серверная часть приложения. | LLM — Large Language Model, большая языковая модель. | ASR — Automatic Speech Recognition, распознавание речи.">
+        <p class="kicker">Автор работы</p>
+        <h2>Анастасия Распутина</h2>
+        <div class="me">
+          <figure class="me-photo"><img src="slides/about-anastasia.jpg" alt="Анастасия Распутина"></figure>
+          <div class="me-facts">
+            <article>
+              <h3>Университет ИТМО, выпуск 2021 года</h3>
+            </article>
+            <article>
+              <h3>9 лет коммерческой разработки</h3>
+              <p>Из них 6 лет — серверная разработка: высоконагруженные сервисы, интеграции, эксплуатация.</p>
+            </article>
+            <article>
+              <h3>Ex-КРОС: старший backend-разработчик</h3>
+              <p>Корпоративные системы крупного системного интегратора: проектирование сервисов и вывод их в промышленную эксплуатацию.</p>
+            </article>
+            <article>
+              <h3>Сейчас — AI-инженер, Bitmanager AI</h3>
+              <p>Платформа голосовых ИИ-агентов: распознавание речи, оркестрация языковых моделей, наблюдаемость и оценка качества диалога.</p>
+              <p class="meta">Тот же класс задач, что и в дипломном проекте: голос, агенты, периметр данных.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Ценность -->
+      <section class="slide" data-note="CSAT — Customer Satisfaction, удовлетворённость клиента: короткая оценка после закрытия обращения. | A/B — сравнение двух групп: контрольная остаётся на операторе, испытательная идёт к ассистенту. | ФОТ — фонд оплаты труда.">
         <p class="kicker">Ценность</p>
         <h2>Что получает клиника</h2>
         <p class="sub">Ассистент закрывает справочную линию и запись, не выходя за периметр. Эффект измеряется тремя величинами: доля обращений без оператора, CSAT, время линии. Проверка — A/B против живой регистратуры.</p>
@@ -324,8 +377,8 @@
         </div>
       </section>
 
-      <!-- 3. Содержание -->
-      <section class="slide" data-note="ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. C4 — модель схем Context, Container, Component, Code. ER — Entity-Relationship, схема сущностей и связей. API — Application Programming Interface, программный интерфейс.">
+      <!-- 4. Содержание -->
+      <section class="slide" data-note="ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — модель схем Context, Container, Component, Code. | ER — Entity-Relationship, схема сущностей и связей. | API — Application Programming Interface, программный интерфейс.">
         <p class="kicker">План</p>
         <h2>Содержание</h2>
         <ol class="plan">
@@ -340,8 +393,8 @@
         </ol>
       </section>
 
-      <!-- 4. Цель -->
-      <section class="slide" data-note="152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных». 323-ФЗ ст. 13 — статья о врачебной тайне в законе об основах охраны здоровья. МКБ-10 — Международная классификация болезней, 10-й пересмотр: справочник кодов. CRM — Customer Relationship Management, система учёта карточек и визитов.">
+      <!-- 5. Цель -->
+      <section class="slide" data-note="152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных». | 323-ФЗ ст. 13 — статья о врачебной тайне в законе об основах охраны здоровья. | МКБ-10 — Международная классификация болезней, 10-й пересмотр: справочник кодов. | CRM — Customer Relationship Management, система учёта карточек и визитов.">
         <p class="kicker">Цель</p>
         <h2>Замкнутый контур клиники</h2>
         <p class="sub">Голосовой ассистент типового медицинского центра: справка по услугам и подготовке, запись, перенос и отмена. Текст запроса, карты и синтез речи остаются внутри периметра.</p>
@@ -373,8 +426,8 @@
         </div>
       </section>
 
-      <!-- 5. Четыре места контура -->
-      <section class="slide" data-note="ASR — Automatic Speech Recognition, автоматическое распознавание речи. TTS — Text-to-Speech, синтез речи по тексту. GPU — Graphics Processing Unit, графический процессор (видеокарта). LLM — Large Language Model, большая языковая модель.">
+      <!-- 6. Четыре места контура -->
+      <section class="slide" data-note="ASR — Automatic Speech Recognition, автоматическое распознавание речи. | TTS — Text-to-Speech, синтез речи по тексту. | GPU — Graphics Processing Unit, графический процессор (видеокарта). | LLM — Large Language Model, большая языковая модель.">
         <p class="kicker">Стек</p>
         <h2>Четыре места контура</h2>
         <p class="sub">Карта контура: где ведётся диалог, где хранятся знания и где выполняются вычисления. Конкретные решения и отклонённые варианты — на следующем слайде.</p>
@@ -402,8 +455,8 @@
         </div>
       </section>
 
-      <!-- 6. ADR -->
-      <section class="slide" data-note="ADR — Architecture Decision Record, запись архитектурного решения. ReBAC — Relationship-Based Access Control, доступ по связи в реестре, а не только по своей учётке. vLLM — движок инференса больших языковых моделей внутри периметра. bge-m3 — модель векторных представлений текста.">
+      <!-- 7. ADR -->
+      <section class="slide" data-note="ADR — Architecture Decision Record, запись архитектурного решения. | ReBAC — Relationship-Based Access Control, доступ по связи в реестре, а не только по своей учётке. | vLLM — движок инференса больших языковых моделей внутри периметра. | bge-m3 — модель векторных представлений текста.">
         <p class="kicker">Стек</p>
         <h2>Девять решений и отклонённые варианты</h2>
         <p class="sub">Что принято, что отклонено и по какой причине. Полные записи — в репозитории.</p>
@@ -465,16 +518,16 @@
         </div>
       </section>
 
-      <!-- 7. C4 L1 -->
-      <section class="slide" data-note="C4 L1 — первый уровень модели C4, Context: система целиком и всё, что её окружает. CRM — Customer Relationship Management, система учёта карточек и визитов. ПДн — персональные данные в смысле 152-ФЗ.">
+      <!-- 8. C4 L1 -->
+      <section class="slide" data-note="C4 L1 — первый уровень модели C4, Context: система целиком и всё, что её окружает. | CRM — Customer Relationship Management, система учёта карточек и визитов. | ПДн — персональные данные в смысле 152-ФЗ.">
         <p class="kicker">C4 · L1 Context</p>
         <h2>Периметр клиники</h2>
         <p class="sub">Слева — люди и телефония, справа — учётные системы. Персональные данные и текст запроса за периметр не выходят ни на одном плече.</p>
         <figure class="diagram"><img src="slides/c4-l1.svg" alt="C4 L1: пациент, персонал, телефония, AI-платформа, CRM"></figure>
       </section>
 
-      <!-- 8. C4 L2 -->
-      <section class="slide" data-note="C4 L2 — второй уровень модели C4, Container: из каких запускаемых частей собрана система. Control Plane — плоскость управления диалогом. Data Plane — плоскость данных: хранилища и модели.">
+      <!-- 9. C4 L2 -->
+      <section class="slide" data-note="C4 L2 — второй уровень модели C4, Container: из каких запускаемых частей собрана система. | Control Plane — плоскость управления диалогом. | Data Plane — плоскость данных: хранилища и модели.">
         <p class="kicker">C4 · L2 Container</p>
         <h2>Управление диалогом и хранилища</h2>
         <p class="sub">Верхняя плоскость ведёт разговор: принимает звонок или чат, выбирает путь, проверяет права. Нижняя держит граф, индекс, карточки, секреты и модель. Вход в обе — через один шлюз.</p>
@@ -485,24 +538,24 @@
         </div>
       </section>
 
-      <!-- 9. C4 L3 -->
-      <section class="slide" data-note="C4 L3 — третий уровень модели C4, Component: узлы внутри одного приложения. Policy — шаг проверки прав до вызова модели. Guardrails — фильтры на входе и выходе диалога.">
+      <!-- 10. C4 L3 -->
+      <section class="slide" data-note="C4 L3 — третий уровень модели C4, Component: узлы внутри одного приложения. | Policy — шаг проверки прав до вызова модели. | Guardrails — фильтры на входе и выходе диалога.">
         <p class="kicker">C4 · L3 Component</p>
         <h2>Узлы графа состояний</h2>
         <p class="sub">Одно приложение, а не отдельный сервис на каждый шаг. Проверка прав стоит перед генерацией: чужой фрагмент до модели не доходит — значит, не может быть пересказан.</p>
         <figure class="diagram"><img src="slides/c4-l3.svg" alt="C4 L3: Memory, Router, Tools, Policy, Generator, Guardrails"></figure>
       </section>
 
-      <!-- 10. Каналы -->
-      <section class="slide" data-note="ASR — Automatic Speech Recognition, распознавание речи. TTS — Text-to-Speech, синтез речи. АТС — автоматическая телефонная станция. Оркестратор — программа, которая ведёт диалог по графу состояний.">
+      <!-- 11. Каналы -->
+      <section class="slide" data-note="ASR — Automatic Speech Recognition, распознавание речи. | TTS — Text-to-Speech, синтез речи. | АТС — автоматическая телефонная станция. | Оркестратор — программа, которая ведёт диалог по графу состояний.">
         <p class="kicker">Каналы</p>
         <h2>Голос и чат ведёт один оркестратор</h2>
         <p class="sub">Голос — основной канал. Распознавание и синтез только меняют форму реплики: смысл, маршрут и права одинаковы для звонка и для чата на сайте.</p>
         <figure class="diagram"><img src="slides/channels.svg" alt="Каналы: распознавание речи и чат сходятся в один оркестратор"></figure>
       </section>
 
-      <!-- 11. Ручки API -->
-      <section class="slide" data-note="API — Application Programming Interface, программный интерфейс. HTTP — Hypertext Transfer Protocol, протокол запроса и ответа. POST и GET — методы: отправить данные и получить данные. JSON — JavaScript Object Notation, формат обмена. ACL — Access Control List, список управления доступом.">
+      <!-- 12. Ручки API -->
+      <section class="slide" data-note="API — Application Programming Interface, программный интерфейс. | HTTP — Hypertext Transfer Protocol, протокол запроса и ответа. | POST и GET — методы: отправить данные и получить данные. | JSON — JavaScript Object Notation, формат обмена. | ACL — Access Control List, список управления доступом.">
         <p class="kicker">Контракт</p>
         <h2>Четыре ручки API</h2>
         <p class="sub">Внешняя граница системы — четыре метода HTTP. Актор передаётся заголовком <code>X-Actor-Id</code> и берётся из учётной записи или определившегося номера, но не из тембра голоса.</p>
@@ -530,16 +583,16 @@
         </div>
       </section>
 
-      <!-- 12. Когнитивная схема -->
-      <section class="slide" data-note="ПДн — персональные данные. Guardrails — фильтры: на входе отсекают запрос диагноза и лишние персональные данные, на выходе проверяют опору ответа. Grounding — опора ответа на допущенные узлы и фрагменты.">
+      <!-- 13. Когнитивная схема -->
+      <section class="slide" data-note="ПДн — персональные данные. | Guardrails — фильтры: на входе отсекают запрос диагноза и лишние персональные данные, на выходе проверяют опору ответа. | Grounding — опора ответа на допущенные узлы и фрагменты.">
         <p class="kicker">Когнитивная схема</p>
         <h2>Как из реплики получается ответ</h2>
         <p class="sub">Реплику сначала проверяют: нет ли просьбы о диагнозе и лишних персональных данных. Оркестратор выбирает путь — справочник, запись или оба. Чужие фрагменты отсекаются до модели. Модель формулирует только по допущенному. На выходе — озвучка или текст.</p>
         <figure class="diagram"><img src="slides/cognitive.svg" alt="Путь реплики: проверка, маршрут, права, генерация, ответ"></figure>
       </section>
 
-      <!-- 13. Доступ -->
-      <section class="slide" data-note="RBAC — Role-Based Access Control, доступ по роли. ReBAC — Relationship-Based Access Control, доступ по связи в реестре. GUARDIAN_OF — ребро «законный представитель ребёнка». 323-ФЗ ст. 13 — врачебная тайна.">
+      <!-- 14. Доступ -->
+      <section class="slide" data-note="RBAC — Role-Based Access Control, доступ по роли. | ReBAC — Relationship-Based Access Control, доступ по связи в реестре. | GUARDIAN_OF — ребро «законный представитель ребёнка». | 323-ФЗ ст. 13 — врачебная тайна.">
         <p class="kicker">Доступ · ADR-0002</p>
         <h2>Организация, карта и тот, кто спрашивает</h2>
         <p class="sub">Сначала граница организации, затем карта человека, затем право — и всё это до вызова модели. Звонок и чат проходят одну и ту же проверку.</p>
@@ -571,32 +624,32 @@
         </div>
       </section>
 
-      <!-- 14. ReBAC схема -->
-      <section class="slide" data-note="ReBAC — Relationship-Based Access Control, доступ по связи. Ребро — линия связи между двумя записями в реестре. Актор — тот, от чьего имени идёт запрос. Субъект — тот, чья карта запрашивается.">
+      <!-- 15. ReBAC схема -->
+      <section class="slide" data-note="ReBAC — Relationship-Based Access Control, доступ по связи. | Ребро — линия связи между двумя записями в реестре. | Актор — тот, от чьего имени идёт запрос. | Субъект — тот, чья карта запрашивается.">
         <p class="kicker">Доступ</p>
         <h2>Три пациента на одной схеме</h2>
         <p class="sub">Пациент 1 читает свою карту и карту пациента 2 — в реестре есть опека. У пациента 2 своей учётной записи нет. Пациент 3 читает только свою карту: связи с картой пациента 1 в реестре нет — отказ.</p>
         <figure class="diagram"><img src="slides/rebac.svg" alt="Схема доступа: пациент 1, пациент 2, пациент 3"></figure>
       </section>
 
-      <!-- 15. Sequence -->
-      <section class="slide" data-note="HITL — Human-in-the-loop, человек в контуре решения: запись, перенос и отмена совершаются только после явного подтверждения человеком. Слот — свободное окно в расписании врача.">
+      <!-- 16. Sequence -->
+      <section class="slide" data-note="HITL — Human-in-the-loop, человек в контуре решения: запись, перенос и отмена совершаются только после явного подтверждения человеком. | Слот — свободное окно в расписании врача.">
         <p class="kicker">Сценарий · запись</p>
         <h2>Представитель записывает ребёнка</h2>
         <p class="sub">Пациент 1 спрашивает подготовку к УЗИ и свободное окно для ребёнка. Справочник открыт всем, окна показывает расписание, а в учётную систему запись уходит только после явного «да».</p>
         <figure class="diagram"><img src="slides/sequence-anna.svg" alt="Пациент 1 записывает пациента 2 на УЗИ"></figure>
       </section>
 
-      <!-- 16. Отказ -->
-      <section class="slide" data-note="ACL — Access Control List, список управления доступом: метка на фрагменте, кому его можно читать. Журнал решения — запись о том, что доступ был запрошен и закрыт.">
+      <!-- 17. Отказ -->
+      <section class="slide" data-note="ACL — Access Control List, список управления доступом: метка на фрагменте, кому его можно читать. | Журнал решения — запись о том, что доступ был запрошен и закрыт.">
         <p class="kicker">Сценарий · отказ</p>
         <h2>Пациент 3 просит чужую карту</h2>
         <p class="sub">Фрагмент направления в индексе есть, но до модели не доходит: опеки нет. Расписание по чужой карте не вызывается, в журнале остаётся отказ. Открытые услуги пациент 3 по-прежнему получает.</p>
         <figure class="diagram"><img src="slides/policy-boris.svg" alt="Пациент 3: открытые услуги допущены, карта 1 отклонена"></figure>
       </section>
 
-      <!-- 17. Онтология -->
-      <section class="slide" data-note="Онтология — словарь сущностей и связей предметной области. МКБ-10 — Международная классификация болезней, 10-й пересмотр. OFTEN_CODED_AS — ребро «услугу обычно оформляют этим кодом». PARENT — ребро «код входит в раздел справочника».">
+      <!-- 18. Онтология -->
+      <section class="slide" data-note="Онтология — словарь сущностей и связей предметной области. | МКБ-10 — Международная классификация болезней, 10-й пересмотр. | OFTEN_CODED_AS — ребро «услугу обычно оформляют этим кодом». | PARENT — ребро «код входит в раздел справочника».">
         <p class="kicker">GraphRAG</p>
         <h2>Справочный граф клиники</h2>
         <p class="sub">Это прайс, врачи, филиалы и памятки — не карты пациентов. Ребро «обычно кодируют» подсказывает регистратуре код из бланка; вывода о болезни из него не делается.</p>
@@ -609,8 +662,8 @@
         </div>
       </section>
 
-      <!-- 18. Опора ответа -->
-      <section class="slide" data-note="Grounding — опора ответа: каждая фраза восходит к допущенному узлу графа или фрагменту документа. N28.1 — код из справочника МКБ-10 «Киста почки, приобретённая»; это цитата бланка, а не вывод модели.">
+      <!-- 19. Опора ответа -->
+      <section class="slide" data-note="Grounding — опора ответа: каждая фраза восходит к допущенному узлу графа или фрагменту документа. | N28.1 — код из справочника МКБ-10 «Киста почки, приобретённая»; это цитата бланка, а не вывод модели.">
         <p class="kicker">GraphRAG</p>
         <h2>Опора ответа: карта ребёнка</h2>
         <p class="sub">Пациент 1 спрашивает дату исследования и код из направления. В ответ собираются услуга, врач, филиал и подготовка; код МКБ читается из справочника дословно.</p>
@@ -623,8 +676,8 @@
         </div>
       </section>
 
-      <!-- 19. ER -->
-      <section class="slide" data-note="ER — Entity-Relationship, схема сущностей и связей. TENANT — организация-владелец контура. USER — учётная запись того, кто вошёл. PATIENT — карта пациента. APPOINTMENT — визит. SESSION — один разговор.">
+      <!-- 20. ER -->
+      <section class="slide" data-note="ER — Entity-Relationship, схема сущностей и связей. | TENANT — организация-владелец контура. | USER — учётная запись того, кто вошёл. | PATIENT — карта пациента. | APPOINTMENT — визит. | SESSION — один разговор.">
         <p class="kicker">Учёт</p>
         <h2>Учётные сущности контура</h2>
         <p class="sub">Это не справочник услуг, а учёт: организация, учётная запись, карта пациента, связь представительства, визит и запрос. Справочный граф хранится отдельно.</p>
@@ -637,16 +690,16 @@
         </div>
       </section>
 
-      <!-- 20. Data Flow -->
-      <section class="slide" data-note="ACL — Access Control List, список управления доступом: метка на фрагменте. Ingest — загрузка документов клиники в граф и индекс. Runtime — обработка живого запроса. Чанк — фрагмент документа после нарезки.">
+      <!-- 21. Data Flow -->
+      <section class="slide" data-note="ACL — Access Control List, список управления доступом: метка на фрагменте. | Ingest — загрузка документов клиники в граф и индекс. | Runtime — обработка живого запроса. | Чанк — фрагмент документа после нарезки.">
         <p class="kicker">Data Flow</p>
         <h2>Загрузка корпуса и живой запрос</h2>
         <p class="sub">Метка доступа ставится один раз, при загрузке: открытый документ, служебный или карта конкретного пациента. В живом запросе пересекаются граф, индекс и права того, кто спрашивает.</p>
         <figure class="diagram"><img src="slides/data-flow.svg" alt="Потоки загрузки корпуса и обработки запроса"></figure>
       </section>
 
-      <!-- 21. Deployment -->
-      <section class="slide" data-note="DMZ — Demilitarized Zone, демилитаризованная зона: буферный сегмент между внешней сетью и внутренним периметром. VLAN — Virtual Local Area Network, выделенный сегмент сети. VPN — Virtual Private Network, защищённый удалённый доступ.">
+      <!-- 22. Deployment -->
+      <section class="slide" data-note="DMZ — Demilitarized Zone, демилитаризованная зона: буферный сегмент между внешней сетью и внутренним периметром. | VLAN — Virtual Local Area Network, выделенный сегмент сети. | VPN — Virtual Private Network, защищённый удалённый доступ.">
         <p class="kicker">Размещение</p>
         <h2>Четыре зоны сети клиники</h2>
         <p class="sub">Звонок и чат не попадают сразу в базу и на видеокарты. Из сегмента ускорителей в интернет маршрута нет: веса моделей ставятся с внутреннего зеркала.</p>
@@ -659,8 +712,8 @@
         </div>
       </section>
 
-      <!-- 22. Нагрузка, TCO, стенд -->
-      <section class="slide" data-note="CapEx — Capital Expenditure, капитальные затраты: закупка оборудования. TCO — Total Cost of Ownership, полная стоимость владения: закупка, энергия, сопровождение. p95 — 95-й процентиль: значение, которое не превышают 95% измерений.">
+      <!-- 23. Нагрузка, TCO, стенд -->
+      <section class="slide" data-note="CapEx — Capital Expenditure, капитальные затраты: закупка оборудования. | TCO — Total Cost of Ownership, полная стоимость владения: закупка, энергия, сопровождение. | p95 — 95-й процентиль: значение, которое не превышают 95% измерений.">
         <p class="kicker">Нагрузка · TCO · стенд</p>
         <h2>Объём клиники и локальный прогон</h2>
         <p class="sub">Два филиала, 500 голосовых сессий в день. Локальный прогон 12 сентября 2026: uvicorn на одном хосте, без графовой и векторной СУБД и без ускорителей.</p>
@@ -679,8 +732,8 @@
         </div>
       </section>
 
-      <!-- 23. Рамка метрик -->
-      <section class="slide" data-note="Онлайн-метрика — снимается на живом трафике каждый рабочий день. Офлайн-метрика — считается до выкладки на фиксированном наборе сценариев. A/B — сравнение группы у оператора и группы у ассистента.">
+      <!-- 24. Рамка метрик -->
+      <section class="slide" data-note="Онлайн-метрика — снимается на живом трафике каждый рабочий день. | Офлайн-метрика — считается до выкладки на фиксированном наборе сценариев. | A/B — сравнение группы у оператора и группы у ассистента.">
         <p class="kicker">Метрики</p>
         <h2>Три контура измерения</h2>
         <p class="sub">Эффект считают раздельно, и смешивать контуры нельзя: у каждого свой источник данных, своя частота и своя реакция на провал.</p>
@@ -703,8 +756,8 @@
         </div>
       </section>
 
-      <!-- 24. Онлайн-метрики -->
-      <section class="slide" data-note="CSAT — Customer Satisfaction, удовлетворённость после закрытия цикла обращения. AHT — Average Handle Time, среднее время обработки обращения на линии. p95 — задержка, которую не превышают 95% ответов. ASR — Automatic Speech Recognition, распознавание речи.">
+      <!-- 25. Онлайн-метрики -->
+      <section class="slide" data-note="CSAT — Customer Satisfaction, удовлетворённость после закрытия цикла обращения. | AHT — Average Handle Time, среднее время обработки обращения на линии. | p95 — задержка, которую не превышают 95% ответов. | ASR — Automatic Speech Recognition, распознавание речи.">
         <p class="kicker">Метрики · онлайн</p>
         <h2>Что считаем на живой линии</h2>
         <p class="sub">Цикл обращения: звонок или чат → ответ либо эскалация → при записи подтверждение → визит. Удовлетворённость спрашивают после закрытия цикла, а не в середине разговора.</p>
@@ -721,8 +774,8 @@
         </div>
       </section>
 
-      <!-- 25. Офлайн-метрики -->
-      <section class="slide" data-note="Recall@10 — доля нужных документов среди первых десяти результатов поиска. nDCG — Normalized Discounted Cumulative Gain, качество порядка выдачи. Золотой набор — заранее размеченный список запросов с известным правильным ответом.">
+      <!-- 26. Офлайн-метрики -->
+      <section class="slide" data-note="Recall@10 — доля нужных документов среди первых десяти результатов поиска. | nDCG — Normalized Discounted Cumulative Gain, качество порядка выдачи. | Золотой набор — заранее размеченный список запросов с известным правильным ответом.">
         <p class="kicker">Метрики · офлайн</p>
         <h2>Что проверяем до выкладки</h2>
         <p class="sub">Прогон на фиксированном наборе — перед выкладкой и при каждой смене графа, индекса или правила доступа. Первые три проверки — ворота релиза: не прошли, выкладки нет.</p>
@@ -736,8 +789,8 @@
         </div>
       </section>
 
-      <!-- 26. A/B -->
-      <section class="slide" data-note="A/B — сравнение двух групп: контрольная остаётся у оператора, испытательная идёт к ассистенту. Нехудшение — критерий «не хуже контроля», рост не обязателен. Страховочная метрика — показатель, срыв которого останавливает испытание.">
+      <!-- 27. A/B -->
+      <section class="slide" data-note="A/B — сравнение двух групп: контрольная остаётся у оператора, испытательная идёт к ассистенту. | Нехудшение — критерий «не хуже контроля», рост не обязателен. | Страховочная метрика — показатель, срыв которого останавливает испытание.">
         <p class="kicker">Метрики · проверка эффекта</p>
         <h2>A/B против живой регистратуры</h2>
         <p class="sub">Деление устойчивое: один человек не переходит между группами внутри периода. Жалоба на самочувствие и просьба о диагнозе всегда уходят человеку — в обеих группах.</p>
@@ -769,8 +822,8 @@
         </div>
       </section>
 
-      <!-- 27. Цели первого года -->
-      <section class="slide" data-note="ФОТ — фонд оплаты труда. Ставка — один сотрудник на полной занятости, ориентир 1,8 млн ₽ в год с налогами. CSAT — удовлетворённость после обращения. AHT — среднее время обработки обращения.">
+      <!-- 28. Цели первого года -->
+      <section class="slide" data-note="ФОТ — фонд оплаты труда. | Ставка — один сотрудник на полной занятости, ориентир 1,8 млн ₽ в год с налогами. | CSAT — удовлетворённость после обращения. | AHT — среднее время обработки обращения.">
         <p class="kicker">Метрики · горизонт</p>
         <h2>Цели первого года и экономия линии</h2>
         <p class="sub">Три контрольные точки. Доля без оператора считается внутри испытательной группы, не от всего входящего потока.</p>
@@ -799,8 +852,8 @@
         <div class="quote">Высвобождаются ставки справочной линии, а не врачи. Оператор остаётся на жалобе, исключении и всём, где нужно человеческое решение.</div>
       </section>
 
-      <!-- 28. Выводы: правовая рамка -->
-      <section class="slide" data-note="152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных». 323-ФЗ ст. 13 — врачебная тайна. ПДн — персональные данные. Vault — хранилище секретов: паролей, ключей и токенов.">
+      <!-- 29. Выводы: правовая рамка -->
+      <section class="slide" data-note="152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных». | 323-ФЗ ст. 13 — врачебная тайна. | ПДн — персональные данные. | Vault — хранилище секретов: паролей, ключей и токенов.">
         <p class="kicker">Выводы · 1 из 4</p>
         <h2>Правовая рамка и её следствия</h2>
         <div class="grid grid-2 fill">
@@ -823,8 +876,8 @@
         </div>
       </section>
 
-      <!-- 29. Выводы: доступ -->
-      <section class="slide" data-note="ReBAC — Relationship-Based Access Control, доступ по связи в реестре. Диаризация — разметка записи по говорящим. Актор — тот, от чьего имени идёт запрос; определяется учётной записью или номером.">
+      <!-- 30. Выводы: доступ -->
+      <section class="slide" data-note="ReBAC — Relationship-Based Access Control, доступ по связи в реестре. | Диаризация — разметка записи по говорящим. | Актор — тот, от чьего имени идёт запрос; определяется учётной записью или номером.">
         <p class="kicker">Выводы · 2 из 4</p>
         <h2>Доступ и каналы</h2>
         <div class="grid grid-2 fill">
@@ -847,8 +900,8 @@
         </div>
       </section>
 
-      <!-- 30. Выводы: архитектура -->
-      <section class="slide" data-note="GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф и фрагменты документов. HITL — Human-in-the-loop, подтверждение человеком. Guardrails — фильтры входа и выхода. Чанк — фрагмент документа.">
+      <!-- 31. Выводы: архитектура -->
+      <section class="slide" data-note="GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф и фрагменты документов. | HITL — Human-in-the-loop, подтверждение человеком. | Guardrails — фильтры входа и выхода. | Чанк — фрагмент документа.">
         <p class="kicker">Выводы · 3 из 4</p>
         <h2>Архитектура и знания</h2>
         <div class="grid grid-2 fill">
@@ -871,8 +924,8 @@
         </div>
       </section>
 
-      <!-- 31. Выводы: стенд и деньги -->
-      <section class="slide" data-note="p95 — задержка, которую не превышают 95% ответов. RPS — Requests Per Second, запросов в секунду. TCO — Total Cost of Ownership, полная стоимость владения. CapEx — Capital Expenditure, капитальные затраты.">
+      <!-- 32. Выводы: стенд и деньги -->
+      <section class="slide" data-note="p95 — задержка, которую не превышают 95% ответов. | RPS — Requests Per Second, запросов в секунду. | TCO — Total Cost of Ownership, полная стоимость владения. | CapEx — Capital Expenditure, капитальные затраты.">
         <p class="kicker">Выводы · 4 из 4</p>
         <h2>Стенд, ёмкость, стоимость</h2>
         <div class="grid grid-2 fill">
@@ -895,8 +948,8 @@
         </div>
       </section>
 
-      <!-- 32. Финал -->
-      <section class="slide finale" data-note="vLLM — единственный движок генерации в контуре. GraphRAG — генерация с опорой на граф знаний и фрагменты документов. ADR — запись архитектурного решения. C4 — модель архитектурных схем.">
+      <!-- 33. Финал -->
+      <section class="slide finale" data-note="vLLM — единственный движок генерации в контуре. | GraphRAG — генерация с опорой на граф знаний и фрагменты документов. | ADR — запись архитектурного решения. | C4 — модель архитектурных схем.">
         <p class="kicker">Итог</p>
         <h2>Голосовой контур клиники внутри периметра</h2>
         <p class="sub">On-premise мультиагентный ассистент с GraphRAG: врачебная тайна и требования 152-ФЗ обеспечены размещением контура и проверкой прав до вызова модели.</p>
@@ -912,7 +965,7 @@
         <div class="quote" style="margin-top:16px">Ответ формируется только из допущенного контекста: открытые материалы клиники, служебные материалы персонала, своя карта и карта ребёнка по активной опеке. При отсутствии опоры — отказ или передача оператору.</div>
       </section>
 
-      <!-- 33. Спасибо -->
+      <!-- 34. Спасибо -->
       <section class="slide close">
         <h2>Спасибо за внимание!</h2>
         <p class="ask">Вопросы?</p>
@@ -948,11 +1001,20 @@
     const page = document.getElementById("page");
     const note = document.getElementById("note");
     const progress = document.getElementById("progress");
+    const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    function renderNote(raw) {
+      if (!raw) return "";
+      return raw.split(" | ").map((part) => {
+        const at = part.indexOf(" — ");
+        if (at < 0) return '<span class="gl">' + esc(part) + "</span>";
+        return '<span class="gl"><b>' + esc(part.slice(0, at)) + "</b> — " + esc(part.slice(at + 3)) + "</span>";
+      }).join("");
+    }
     function show(n) {
       i = (n + slides.length) % slides.length;
       slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
       page.textContent = (i + 1) + " / " + slides.length;
-      note.textContent = slides[i].dataset.note || "";
+      note.innerHTML = renderNote(slides[i].dataset.note);
       progress.style.width = ((i + 1) / slides.length * 100) + "%";
     }
     document.querySelector(".prev").onclick = () => show(i - 1);
