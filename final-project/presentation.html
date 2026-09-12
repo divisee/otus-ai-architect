@@ -31,6 +31,7 @@
       inset: 0;
       padding: clamp(24px, 5vh, 56px) clamp(24px, 6vw, 88px) 80px;
       width: 100%;
+      overflow: hidden;
     }
     .slide.active { display: flex; flex-direction: column; }
     .slide.cover {
@@ -70,11 +71,15 @@
     .close { justify-content: center; gap: 8px; }
     .close h2 { font-size: clamp(32px, 4vw, 44px); margin-bottom: 8px; }
     .close .author { font-size: 22px; font-weight: 700; margin: 0 0 8px; }
-    .qrs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; max-width: 920px; }
-    .qrs figure { margin: 0; text-align: center; }
-    .qrs img { width: min(180px, 22vw); height: auto; background: #fff; padding: 8px; border: 1px solid var(--line); border-radius: 12px; }
+    .qrs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; max-width: 1080px; }
+    .qrs figure { margin: 0; text-align: center; padding: 16px 12px 14px; border-radius: 16px; box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12); }
+    .qrs figure:nth-child(4n+1) { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
+    .qrs figure:nth-child(4n+2) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
+    .qrs figure:nth-child(4n+3) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
+    .qrs figure:nth-child(4n+4) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
+    .qrs img { width: min(148px, 16vw); height: auto; background: #fff; padding: 8px; border-radius: 12px; }
     .qrs figcaption { margin-top: 8px; font-size: 13px; }
-    .qrs a { color: var(--violet); }
+    .qrs a { color: inherit; }
     .kicker { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--violet-2); margin: 0 0 8px; font-weight: 500; }
     h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 44px); line-height: 1.15; font-weight: 700; max-width: 22ch; }
     h2 { margin: 0 0 18px; font-size: clamp(24px, 3vw, 34px); line-height: 1.15; font-weight: 700; }
@@ -88,42 +93,54 @@
     .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
     .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
     .card {
-      padding: 18px 20px;
+      padding: 20px 22px;
       border-radius: 16px;
       border: 0;
-      box-shadow: 0 10px 28px rgba(60, 1, 112, 0.08);
+      box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
     }
-    .card h3 { margin: 0 0 8px; font-size: 15px; font-weight: 700; }
+    .card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
     .card p, .card li { font-size: 15px; margin: 0; line-height: 1.4; }
     .card li { margin-bottom: 6px; }
-    .grid > .card:nth-child(4n+1) { background: linear-gradient(160deg, #fff8ec 0%, #ffd58a 100%); color: #3d2200; }
-    .grid > .card:nth-child(4n+2) { background: linear-gradient(160deg, #f4edff 0%, #c9b3ff 100%); color: #2a0860; }
-    .grid > .card:nth-child(4n+3) { background: linear-gradient(160deg, #f0fffe 0%, #8ee8e4 100%); color: #062b2e; }
-    .grid > .card:nth-child(4n+4) { background: linear-gradient(160deg, #f3f1ff 0%, #b8baf0 100%); color: #1c1650; }
+    .card li::before { background: currentColor; }
+    .card th, .card td { border-bottom-color: color-mix(in srgb, currentColor 22%, transparent); }
+    .card th { color: inherit; font-weight: 700; }
+    .card code { color: inherit; }
+    .grid > .card:nth-child(4n+1) { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
+    .grid > .card:nth-child(4n+2) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
+    .grid > .card:nth-child(4n+3) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
+    .grid > .card:nth-child(4n+4) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
     .grid > .card h3, .grid > .card .num { color: inherit; }
     .fill { flex: 1; min-height: 0; align-content: stretch; }
-    .fill .card { display: flex; flex-direction: column; }
+    .fill .card { display: flex; flex-direction: column; min-height: 0; overflow: auto; }
     .num { font-size: 34px; font-weight: 700; margin: 0 0 4px; }
-    .plan { counter-reset: step; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; list-style: none; padding: 0; }
-    .plan li { font-size: 20px; padding-left: 52px; margin: 0; list-style: none; position: relative; }
+    .plan { counter-reset: step; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; list-style: none; padding: 0; flex: 1; align-content: start; }
+    .plan li {
+      font-size: 20px; padding: 20px 22px 20px 72px; margin: 0; list-style: none; position: relative;
+      border-radius: 16px; box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
+    }
+    .plan li:nth-child(4n+1) { background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); color: #3d2200; }
+    .plan li:nth-child(4n+2) { background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); color: #fff; }
+    .plan li:nth-child(4n+3) { background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); color: #062b2e; }
+    .plan li:nth-child(4n+4) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
     .plan li::before {
       counter-increment: step; content: counter(step);
+      position: absolute;
       width: 34px; height: 34px; border-radius: 50%;
-      background: var(--violet); color: #fff; font-size: 15px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; top: 0;
+      background: #fff; color: #6402ba; font-size: 15px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; top: 18px; left: 20px;
     }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
     th { color: var(--violet); font-weight: 500; }
     .tight { flex: 1; overflow: auto; }
     .quote {
-      margin-top: auto;
-      padding: 14px 18px;
-      background: linear-gradient(90deg, #ffe3b0 0%, #f3e9ff 100%);
-      border-left: 6px solid var(--accent);
+      margin-top: 14px;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%);
       font-size: 15px;
-      border-radius: 0 12px 12px 0;
+      border-radius: 16px;
       color: #3d2200;
+      box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
     }
     .diagram {
       flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;
@@ -156,6 +173,7 @@
     .layer {
       display: flex; flex-direction: column; justify-content: space-between;
       gap: 10px; padding: 20px 22px; border-radius: 16px; border: 0; min-height: 0;
+      box-shadow: 0 10px 28px rgba(60, 1, 112, 0.12);
     }
     .layer .n { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
     .layer strong { font-size: 22px; }
@@ -174,7 +192,10 @@
     .layer.gpu .pills b { background: rgba(255,255,255,0.18); color: #fff; }
     .finale h2 { max-width: none; font-size: clamp(26px, 3.2vw, 38px); }
     .finale .pills { margin: 0 0 18px; }
-    .finale .pills b { background: var(--wash); color: var(--violet); border: 1px solid var(--line); }
+    .finale .pills b { border: 0; color: #3d2200; background: linear-gradient(135deg, #ffe3b0 0%, #ffab40 100%); }
+    .finale .pills b:nth-child(4n+2) { color: #fff; background: linear-gradient(135deg, #cfc2ff 0%, #6402ba 100%); }
+    .finale .pills b:nth-child(4n+3) { color: #062b2e; background: linear-gradient(135deg, #b8f0ef 0%, #00838f 100%); }
+    .finale .pills b:nth-child(4n+4) { color: #fff; background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); }
     .wins { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
     .wins article {
       border: 0; border-radius: 16px; padding: 18px 20px;
@@ -190,6 +211,10 @@
     .wins article:nth-child(4n+4) { background: linear-gradient(135deg, #8b8ee3 0%, #3c0170 100%); color: #fff; }
     .ok { color: var(--ok); font-weight: 700; }
     .deny { color: var(--deny); font-weight: 700; }
+    .grid > .card:nth-child(4n+2) .ok,
+    .grid > .card:nth-child(4n+4) .ok { color: #d7fff8; }
+    .grid > .card:nth-child(4n+2) .deny,
+    .grid > .card:nth-child(4n+4) .deny { color: #ffe3b0; }
     .bar { position: absolute; left: 0; right: 0; bottom: 48px; height: 4px; background: var(--lilac-soft); z-index: 4; }
     .bar span { display: block; height: 100%; background: var(--violet); width: 0; }
     .footer {
@@ -436,28 +461,16 @@
       <section class="slide">
         <p class="kicker">Доступ · ADR-0002</p>
         <h2>Правило Policy</h2>
-        <p class="sub">Ресурс имеет acl и subject_id. Отклонённый фрагмент в контекст модели не передаётся. Канал на ACL не влияет. actor_id — учётная запись или АОН, не метка SPEAKER.</p>
-        <div class="grid grid-2 fill">
-          <div class="card">
-            <h3>Субъекты стенда</h3>
-            <table>
-              <tr><th>Идентификатор</th><th>Права</th></tr>
-              <tr><td>patient:anna</td><td>своя карта и карта сына (GUARDIAN_OF)</td></tr>
-              <tr><td>patient:misha</td><td>учётной записи нет; запросы выполняет представитель</td></tr>
-              <tr><td>patient:boris</td><td>только своя карта</td></tr>
-              <tr><td>staff:registrar</td><td>материалы public и staff</td></tr>
-            </table>
-          </div>
-          <div class="card">
-            <h3>Условие допуска</h3>
-            <table>
-              <tr><th>Условие</th><th>Смысл</th></tr>
-              <tr><td>acl = public</td><td>услуги, врачи, филиалы, подготовка</td></tr>
-              <tr><td>acl = staff и роль staff</td><td>регламент регистратуры</td></tr>
-              <tr><td>subject_id = actor.id</td><td>доступ к собственной карте</td></tr>
-              <tr><td>GUARDIAN_OF, возраст &lt; 15 лет</td><td>законный представитель</td></tr>
-            </table>
-          </div>
+        <p class="sub">Отклонённый фрагмент в контекст модели не передаётся. Канал на ACL не влияет. actor_id — учётка или АОН, не метка SPEAKER.</p>
+        <div class="grid grid-4 fill">
+          <div class="card"><h3>Анна</h3><p>своя карта и карта сына по GUARDIAN_OF</p></div>
+          <div class="card"><h3>Михаил, 8 лет</h3><p>учётки нет; запросы выполняет представитель</p></div>
+          <div class="card"><h3>Борис</h3><p>только своя карта; карту Анны не читает</p></div>
+          <div class="card"><h3>Регистратор</h3><p>материалы public и staff, не карты пациентов</p></div>
+          <div class="card"><h3>acl = public</h3><p>услуги, врачи, филиалы, подготовка</p></div>
+          <div class="card"><h3>acl = staff</h3><p>регламент регистратуры при роли staff</p></div>
+          <div class="card"><h3>своя карта</h3><p>subject_id совпадает с actor.id</p></div>
+          <div class="card"><h3>GUARDIAN_OF</h3><p>законный представитель, возраст менее 15 лет</p></div>
         </div>
       </section>
 
@@ -465,18 +478,21 @@
         <p class="kicker">Изоляция · ADR-0002</p>
         <h2>Мультитенантность</h2>
         <p class="sub">Два уровня изоляции. Отдельная база данных на каждого пациента не создаётся. Внутри тенанта действует ReBAC.</p>
-        <table>
-          <tr><th>Уровень</th><th>Объект изоляции</th><th>В контуре</th></tr>
-          <tr><td>Tenant</td><td>юридическое лицо / контур клиники</td><td>MVP — один тенант <code>clinic</code></td></tr>
-          <tr><td>Subject</td><td>карточка пациента и связи GUARDIAN_OF</td><td>Policy внутри тенанта</td></tr>
-        </table>
-        <div class="grid grid-2 fill" style="margin-top:16px">
+        <div class="grid grid-2 fill">
+          <div class="card">
+            <h3>Tenant</h3>
+            <p>Юридическое лицо / контур клиники. В поставке один тенант <code>clinic</code>.</p>
+          </div>
+          <div class="card">
+            <h3>Subject</h3>
+            <p>Карточка пациента и связи GUARDIAN_OF. Policy работает внутри тенанта.</p>
+          </div>
           <div class="card">
             <h3>Принято</h3>
             <ul>
               <li>общая платформа на тенант</li>
               <li>изоляция карт — метки ACL и рёбра, не отдельная СУБД</li>
-              <li>расширение на клиники — новый tenant_id, не копия стека на пациента</li>
+              <li>расширение на клиники — новый tenant_id</li>
             </ul>
           </div>
           <div class="card">
@@ -516,13 +532,12 @@
         <h2>Справочная онтология</h2>
         <p class="sub">Карточки пациентов в справочный граф не входят. OFTEN_CODED_AS — подсказка регистратору, не диагноз.</p>
         <figure class="diagram"><img src="slides/ontology.svg" alt="Справочный граф клиники"></figure>
-        <table>
-          <tr><th>Стрелка</th><th>Смысл</th></tr>
-          <tr><td>врач → услуга</td><td>кто делает процедуру</td></tr>
-          <tr><td>услуга → подготовка</td><td>как готовиться</td></tr>
-          <tr><td>услуга → филиал</td><td>куда приезжать</td></tr>
-          <tr><td>услуга → код МКБ</td><td>подсказка регистратору, не диагноз</td></tr>
-        </table>
+        <div class="grid grid-4" style="margin-top:12px">
+          <div class="card"><h3>врач → услуга</h3><p>кто делает процедуру</p></div>
+          <div class="card"><h3>услуга → подготовка</h3><p>как готовиться</p></div>
+          <div class="card"><h3>услуга → филиал</h3><p>куда приезжать</p></div>
+          <div class="card"><h3>услуга → код МКБ</h3><p>подсказка регистратору, не диагноз</p></div>
+        </div>
       </section>
 
       <section class="slide">
@@ -530,14 +545,12 @@
         <h2>Опора ответа: Анна, карта сына</h2>
         <p class="sub">Запрос: «Когда УЗИ у сына и что за код N28.1?». Контекст: услуга, врач, филиал, подготовка и направление Михаила. N28.1 — справочник, не постановка диагноза.</p>
         <figure class="diagram"><img src="slides/misha-graph.svg" alt="Граф УЗИ ребёнку и направление Михаила"></figure>
-        <table>
-          <tr><th>На схеме</th><th>Что говорит Анне</th></tr>
-          <tr><td>Морозова → УЗИ ребёнку</td><td>кто принимает</td></tr>
-          <tr><td>подготовка 5 часов</td><td>не есть перед исследованием</td></tr>
-          <tr><td>филиал Лесная</td><td>куда ехать</td></tr>
-          <tr><td>направление сына</td><td>дата из карты Михаила</td></tr>
-          <tr><td>N28.1</td><td>формулировка из справочника, не диагноз модели</td></tr>
-        </table>
+        <div class="grid grid-4" style="margin-top:12px">
+          <div class="card"><h3>Морозова</h3><p>кто принимает на УЗИ ребёнку</p></div>
+          <div class="card"><h3>Подготовка</h3><p>не есть 5 часов</p></div>
+          <div class="card"><h3>Лесная</h3><p>куда ехать</p></div>
+          <div class="card"><h3>N28.1</h3><p>формулировка из справочника, не диагноз</p></div>
+        </div>
       </section>
 
       <section class="slide">
@@ -559,14 +572,12 @@
         <h2>Зоны размещения</h2>
         <p class="sub">DMZ, Control Plane, Data Plane, GPU VLAN. Сегмент видеокарт не имеет маршрута в интернет.</p>
         <figure class="diagram"><img src="slides/deployment.svg" alt="Схема размещения: вход, управление, данные, видеокарты"></figure>
-        <table>
-          <tr><th>Зона</th><th>Назначение</th></tr>
-          <tr><td>Вне контура</td><td>АТС / микрофон; администрирование по VPN</td></tr>
-          <tr><td>DMZ</td><td>терминация TLS, API Gateway, целевой SBC</td></tr>
-          <tr><td>Control Plane</td><td>оркестратор, ingest, наблюдаемость</td></tr>
-          <tr><td>Data Plane</td><td>Neo4j, Qdrant, Postgres, CRM, Vault</td></tr>
-          <tr><td>GPU VLAN</td><td>vLLM и речевой контур; без маршрута в интернет</td></tr>
-        </table>
+        <div class="grid grid-4" style="margin-top:12px">
+          <div class="card"><h3>Вне контура</h3><p>АТС / микрофон; администрирование по VPN</p></div>
+          <div class="card"><h3>DMZ</h3><p>TLS, API Gateway, целевой SBC</p></div>
+          <div class="card"><h3>Control / Data</h3><p>оркестратор, Neo4j, Qdrant, Postgres, CRM, Vault</p></div>
+          <div class="card"><h3>GPU VLAN</h3><p>vLLM и речь; без маршрута в интернет</p></div>
+        </div>
       </section>
 
       <section class="slide">
@@ -609,13 +620,12 @@
         <p class="kicker">Стенд</p>
         <h2>Локальный прогон, 2026-09-12</h2>
         <p class="sub">macOS, uvicorn на 127.0.0.1:8080. Neo4j, Qdrant и vLLM не запускались. Автотесты: 15 passed.</p>
-        <table class="tight">
-          <tr><th>Актор</th><th>Запрос</th><th>Результат</th></tr>
-          <tr><td>Анна</td><td>УЗИ сына, код N28.1</td><td class="ok">via=guardian</td></tr>
-          <tr><td>Борис</td><td>направление Анны</td><td class="deny">acl_denied</td></tr>
-          <tr><td>Анна</td><td>диагноз по симптомам</td><td>reject_diagnosis</td></tr>
-          <tr><td>Регистратор</td><td>скидка сотрудникам</td><td>STAFF30</td></tr>
-        </table>
+        <div class="grid grid-4 fill">
+          <div class="card"><h3>Анна</h3><p>УЗИ сына, код N28.1</p><p class="ok">via=guardian</p></div>
+          <div class="card"><h3>Борис</h3><p>направление Анны</p><p class="deny">acl_denied</p></div>
+          <div class="card"><h3>Анна</h3><p>диагноз по симптомам</p><p>reject_diagnosis</p></div>
+          <div class="card"><h3>Регистратор</h3><p>скидка сотрудникам</p><p>STAFF30</p></div>
+        </div>
       </section>
 
       <section class="slide">
@@ -761,7 +771,7 @@
         <p class="kicker">Вопросы</p>
         <h2>Спасибо за внимание</h2>
         <p class="author">Распутина Анастасия</p>
-        <p class="sub">Контур clinic-voice-graphrag. README, ADR и схемы — в репозитории.</p>
+        <p class="sub">Контур clinic-voice-graphrag. README, ADR и схемы — в репозитории. Вопросы — в Telegram.</p>
         <div class="qrs">
           <figure>
             <img src="slides/qr-github.svg" alt="QR: профиль GitHub">
@@ -774,6 +784,10 @@
           <figure>
             <img src="slides/qr-pages.svg" alt="QR: сайт презентации">
             <figcaption><a href="https://divisee.github.io/otus-ai-architect/">страница презентации</a></figcaption>
+          </figure>
+          <figure>
+            <img src="slides/qr-tg.svg" alt="QR: Telegram">
+            <figcaption><a href="https://t.me/divisee">t.me/divisee</a></figcaption>
           </figure>
         </div>
       </section>
