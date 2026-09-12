@@ -1,6 +1,6 @@
 # Проектирование и реализация on-premise мультиагентного голосового ИИ-ассистента медицинского центра с GraphRAG, обеспечением врачебной тайны и соблюдением 152-ФЗ
 
-Система — голосовой ассистент **типового медицинского центра**. Пациент или регистратор запрашивает сведения об услугах, врачах, филиалах, подготовке к исследованиям и записи на приём. Ответ формируется из графа знаний и документов клиники (**GraphRAG**). Запись, перенос и отмена выполняются через инструменты СРМ с подтверждением (**HITL**).
+Система — голосовой ассистент **типового медицинского центра**. Пациент или регистратор запрашивает сведения об услугах, врачах, филиалах, подготовке к исследованиям и записи на приём. Ответ формируется из графа знаний и документов клиники (**GraphRAG**). Запись, перенос и отмена выполняются через инструменты CRM с подтверждением (**HITL**).
 
 Контур **замкнут**: речь, генерация и поиск выполняются внутри периметра. **Внешние API LLM и STT не используются** — так соблюдаются **152-ФЗ** и врачебная тайна. Один пациент не видит карту другого; законный представитель видит карту ребёнка по связи `GUARDIAN_OF`. Канал на права **не влияет**.
 
@@ -22,7 +22,7 @@
   - [5.2. Карточки и граф](#карточки-и-граф)
 - [6. Внешние порты](#внешние-порты)
   - [6.1. Телефония](#телефония)
-  - [6.2. СРМ](#срм)
+  - [6.2. CRM](#crm)
 - [7. Схемы](#схемы)
   - [7.1. C4 L1 — Context](#c4-l1--context)
   - [7.2. C4 L2 — Container](#c4-l2--container)
@@ -101,7 +101,7 @@
 
 **Назначение.** Система не ставит диагноз и не подбирает код МКБ по симптомам.
 
-**Поставка.** Не реализуются промышленная СРМ (в стенде — заглушка Анна / Михаил / Борис), обучение LLM и ASR, промышленная АТС (вход — микрофон, wav или транскрипт), штатный blue/green и ночная полная переиндексация.
+**Поставка.** Не реализуются промышленная CRM (в стенде — заглушка Анна / Михаил / Борис), обучение LLM и ASR, промышленная АТС (вход — микрофон, wav или транскрипт), штатный blue/green и ночная полная переиндексация.
 
 ### Принципы контура
 
@@ -140,7 +140,7 @@
 | ASR, диаризация, TTS | Whisper large-v3-turbo, WhisperX, Silero | [0009](docs/adr/0009-voice-gigaam-diarization.md) |
 
 
-**Control Plane** — API и агенты. **Data Plane** — граф, векторы, модели, заглушка СРМ.
+**Control Plane** — API и агенты. **Data Plane** — граф, векторы, модели, заглушка CRM.
 
 ## Доступ
 
@@ -158,17 +158,17 @@
 
 ### Карточки и граф
 
-Карточки пациентов в справочный граф **целиком не кладутся**: ПДн живут в СРМ и в чанках с ACL.
+Карточки пациентов в справочный граф **целиком не кладутся**: ПДн живут в CRM и в чанках с ACL.
 
 ## Внешние порты
 
-Телефония и учёт визитов — **внешние системы**. Оркестратор зависит от контракта, не от вендора АТС или СРМ.
+Телефония и учёт визитов — **внешние системы**. Оркестратор зависит от контракта, не от вендора АТС или CRM.
 
 ### Телефония
 
 Контракт: `call_id`, `caller_id` → `actor_id`, `audio` / `transcript`, `transfer_operator`. SIP/SBC — целевой адаптер. В MVP вход — микрофон, wav или транскрипт.
 
-### СРМ
+### CRM
 
 Учёт карточек и визитов. Контракт: `list_slots`, `book` / `reschedule` / `cancel`, `get_patient` **после Policy**. Заглушка — `[backend/data/crm/seed.json](backend/data/crm/seed.json)`. Конкретный вендор не выбирается.
 
@@ -191,7 +191,7 @@ flowchart LR
     end
 
     telephony[Телефония / микрофон]
-    crm[(СРМ / запись<br/>MVP-заглушка)]
+    crm[(CRM)]
     kb[Корпус документов]
     notify[SMS / почта]
     ext[OpenAI / Anthropic]
@@ -211,17 +211,14 @@ flowchart LR
 
 
 
-| Снаружи системы             | Внутри периметра             |
-| --------------------------- | ---------------------------- |
-| Пациент, персонал, оператор | Агенты, guardrails, ACL      |
-| Исходные PDF клиники        | Neo4j, Qdrant, сессии, аудит |
-| Настоящая СРМ (позже)       | vLLM, Whisper, Silero        |
-| SMS-провайдер (позже)       | секреты (Vault)              |
+**Снаружи системы:** пациент, персонал, оператор; исходные PDF клиники; промышленная CRM; SMS-провайдер; OpenAI / Anthropic (вызов не выполняется).
+
+**Внутри периметра:** агенты, guardrails, ACL; Neo4j, Qdrant, сессии, аудит; vLLM, Whisper, Silero; секреты (Vault).
 
 
 ### C4 L2 — Container
 
-Control Plane (агенты, API, ingest) и Data Plane (граф, векторы, модели, заглушка СРМ, секреты). В MVP часть контейнеров — один процесс FastAPI; на схеме они разделены как в целевом размещении.
+Control Plane (агенты, API, ingest) и Data Plane (граф, векторы, модели, заглушка CRM, секреты). В MVP часть контейнеров — один процесс FastAPI; на схеме они разделены как в целевом размещении.
 
 ```mermaid
 flowchart TB
@@ -234,7 +231,7 @@ flowchart TB
         GW --> ORCH[Orchestrator<br/>LangGraph]
         ORCH --> IG[Input Guardrails]
         ORCH --> KN[Knowledge Agent<br/>graph walk + vector]
-        ORCH --> CRM_A[CRM Agent<br/>tools + HITL]
+        ORCH --> CRM_A[CRM Agent]
         ORCH --> POL[Policy Agent<br/>ACL]
         ING[Ingest Worker<br/>PDF → чанки → узлы]
     end
@@ -243,7 +240,7 @@ flowchart TB
         NEO[(Neo4j)]
         QD[(Qdrant)]
         LLM[vLLM<br/>open-weight RU]
-        CRM[(CRM stub)]
+        CRM[(CRM)]
         VAULT[Vault / .env]
         SESS[(Сессии + audit)]
     end
@@ -280,7 +277,7 @@ flowchart TB
 | Neo4j                    | Data          | Neo4j 5                   | онтология                                      |
 | Qdrant                   | Data          | Qdrant                    | векторы с payload ACL                          |
 | vLLM                     | Data          | vLLM                      | генерация внутри периметра                     |
-| CRM stub                 | Data          | JSON                      | слоты и визиты                                 |
+| CRM                      | Data          | внешняя система; в стенде — JSON | слоты и визиты                            |
 | Vault                    | Data          | Vault; в dev — `.env`     | ключи                                          |
 | Langfuse + Prom/Grafana  | Observability | self-host                 | трейсы, latency                                |
 
@@ -319,7 +316,7 @@ flowchart TB
 | ----------------- | ----------------------------------------- | -------------------------- |
 | Memory            | окно диалога, `subject_id`, филиал/услуга | медкарту в промпте         |
 | Router            | knowledge и/или CRM; отказ на диагностику | ответ из весов модели      |
-| Tools             | контракты к графу, векторам, СРМ          | SQL в обход ACL            |
+| Tools             | контракты к графу, векторам, CRM          | SQL в обход ACL            |
 | Policy            | retrieved ∩ `acl`                         | «модель сама не расскажет» |
 | Generator         | текст / реплика для TTS                   | внешний API                |
 | Output Guardrails | нет чужого ФИО, нет диагноза, есть опора  | косметический фильтр       |
@@ -341,13 +338,13 @@ flowchart LR
     ANON --> R[Router LangGraph]
 
     R --> K[Knowledge GraphRAG]
-    R --> C[CRM tools + HITL]
+    R --> C[CRM Agent]
     R --> POL[Policy / ACL]
     R -->|N неудач| OP[Оператор]
 
     K --> G[(Neo4j)]
     K --> V[(Qdrant)]
-    C --> CRM[(CRM stub)]
+    C --> CRM[(CRM)]
     POL --> ACL[(RBAC на узлах и чанках)]
 
     K --> F[Final]
@@ -400,7 +397,7 @@ sequenceDiagram
     participant R as Router
     participant K as Knowledge
     participant P as Policy
-    participant C as CRM tools
+    participant C as CRM
     participant LLM as vLLM
     participant O as Langfuse
 
@@ -426,7 +423,7 @@ sequenceDiagram
     C-->>R: hold
     R->>A: подтвердите запись
     A->>R: да
-    C->>C: commit в CRM stub
+    C->>C: commit в CRM
     R->>IG: Output Guardrails
     R->>VA: текст
     VA->>A: TTS
@@ -467,7 +464,7 @@ flowchart TB
 
     QD --> RET
     NEO --> RET
-    CRM[(CRM stub)] --> LOOP
+    CRM[(CRM)] --> LOOP
 
     subgraph AUD["Аудит"]
         SAN -.-> L[Decision log: hash, chunk_ids, acl]
@@ -514,7 +511,8 @@ flowchart TB
     subgraph DATA["Internal — Data Plane"]
         NEO[(Neo4j)]
         QD[(Qdrant)]
-        PG[(Postgres: сессии, ACL, CRM stub)]
+        PG[(Postgres: сессии, ACL)]
+        CRM[(CRM)]
         VAULT[HashiCorp Vault]
     end
 
@@ -776,7 +774,7 @@ VRAM генерации (оценка, согласована с ADR-0004): ве
 | R13     | Запрет диагноза и подбора МКБ по симптомам   | принято                                      |
 | R14–R15 | C4, Deployment, Data Flow, Sequence, ER      | принято, схемы ниже                          |
 | R16     | Control Plane ≠ Data Plane                   | принято                                      |
-| R17     | Телефония и СРМ — порты                      | принято                                      |
+| R17     | Телефония и CRM — порты                      | принято                                      |
 | R18     | Трассировка ACL                              | принято                                      |
 | R19     | Нагрузка через текст; расчёт ёмкости и TCO   | принято                                      |
 | R20     | Карточки не в справочном графе               | принято                                      |
@@ -859,10 +857,10 @@ curl -s localhost:8080/v1/chat \
 | **chunk**         | Фрагмент документа после нарезки при ingest; несёт `acl` и `subject_id`                              |
 | **Control Plane** | Плоскость управления: API, оркестратор, агенты, ingest                                               |
 | **CPU**           | Central Processing Unit, центральный процессор. CPU-стенд держит те же контракты без GPU             |
-| **CRM**           | Customer Relationship Management, система учёта клиентов, карточек и визитов                         |
+| **CRM**           | Customer Relationship Management, система учёта клиентов, карточек и визитов. В стенде — заглушка    |
 | **CSV**           | Comma-Separated Values, текстовая таблица. Формат справочника МКБ-10                                 |
 | **Cypher**        | Язык запросов графовой СУБД Neo4j                                                                    |
-| **Data Plane**    | Плоскость данных: граф, векторы, модели, сессии, заглушка СРМ                                        |
+| **Data Plane**    | Плоскость данных: граф, векторы, модели, сессии, заглушка CRM                                        |
 | **DLP**           | Data Loss Prevention, контроль утечки данных на выходе генерации                                     |
 | **DMZ**           | Demilitarized Zone, сегмент сети между внешней сетью и внутренним периметром                         |
 | **ER**            | Entity-Relationship, схема сущностей и связей                                                        |
@@ -878,7 +876,7 @@ curl -s localhost:8080/v1/chat \
 | **HTTP**          | Hypertext Transfer Protocol. Каналы стенда: `POST /v1/chat`, `POST /v1/voice`, `GET /v1/audit/{request_id}` |
 | **ICD / IcdCode** | International Classification of Diseases, международная классификация болезней. В графе — узел справочника МКБ-10 |
 | **ingest**        | Загрузка документов клиники в граф и векторный индекс                                                |
-| **JSON**          | JavaScript Object Notation, формат обмена данными. Заглушка СРМ — `seed.json`                        |
+| **JSON**          | JavaScript Object Notation, формат обмена данными. Заглушка CRM — `seed.json`                        |
 | **KV-cache**      | Key-Value cache, кэш ключей и значений внимания трансформера. Изолирован от пика ASR на L40S         |
 | **L1 / L2 / L3**  | Уровни модели C4: Context, Container, Component                                                      |
 | **L40S**          | NVIDIA L40S, GPU с 48 ГБ видеопамяти. Речевой контур: ASR и TTS                                      |
@@ -911,7 +909,6 @@ curl -s localhost:8080/v1/chat \
 | **SIP**           | Session Initiation Protocol, протокол установления телефонной сессии                                 |
 | **SMS**           | Short Message Service, короткое текстовое сообщение. Уведомление после HITL — внешний контур         |
 | **SQL**           | Structured Query Language. Прямой SQL к карточкам в обход ACL отклонён                               |
-| **СРМ**           | Система учёта карточек и визитов клиники (в тексте документа — то же, что CRM). В стенде — заглушка  |
 | **STT**           | Speech-to-Text, преобразование речи в текст. Синоним ASR; внешние STT API не используются            |
 | **subject_id**    | Идентификатор субъекта, чья карточка запрашивается; может отличаться от `actor_id`                   |
 | **СУБД**          | Система управления базами данных                                                                     |
