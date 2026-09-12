@@ -245,6 +245,9 @@
     .matrix td { text-align: center; border-radius: 12px; padding: 8px 6px; background: var(--v-025); }
     .matrix td.yes { background: var(--sage-100); }
     .matrix td.no { background: #f6f3f8; }
+    .matrix td.part { background: var(--v-100); }
+    .matrix td.part .sign { color: var(--v-600); }
+    .matrix td.part .why { color: var(--v-700); }
     .matrix .sign { display: block; font-size: 19px; font-weight: 700; line-height: 1; }
     .matrix td.yes .sign { color: var(--sage); }
     .matrix td.no .sign { color: #9a8fae; }
@@ -306,9 +309,11 @@
     /* --- слайд «проблема → решение» --- */
     .pairs { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; align-content: stretch; }
     .pairs .head {
-      margin: 0; padding: 9px 18px; border-radius: 12px; text-align: center;
-      font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; font-weight: 700;
+      margin: 0; padding: 10px 18px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      font-size: 13px; letter-spacing: 0.09em; text-transform: uppercase; font-weight: 700;
     }
+    .pairs .head span { font-size: 16px; line-height: 1; }
     .pairs .head.pain { background: var(--v-100); color: var(--v-700); }
     .pairs .head.gain { background: var(--sage-100); color: #23524f; }
     .pairs article {
@@ -484,10 +489,10 @@
       <section class="slide" data-note="152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных». | 323-ФЗ ст. 13 — статья о врачебной тайне в законе об основах охраны здоровья граждан. | CSAT — Customer Satisfaction, короткая оценка удовлетворённости после закрытия обращения. | A/B — сравнение двух групп: контрольная остаётся у оператора, испытательная идёт к ассистенту. | ФОТ — фонд оплаты труда. | Эскалация — передача разговора живому оператору.">
         <p class="kicker">Задача</p>
         <h2>Что болит у клиники и что закрывает ассистент</h2>
-        <p class="sub">Справочная линия двух филиалов — 500 обращений в день, в пиковый час до ста. Слева то, что клиника имеет сегодня, справа — что даёт контур в периметре.</p>
+        <p class="sub">Справочная линия двух филиалов — 500 обращений в день, в пиковый час до ста.</p>
         <div class="pairs">
-          <p class="head pain">Сегодня · как сейчас</p>
-          <p class="head gain">С ассистентом · как станет</p>
+          <p class="head pain"><span>⏳</span>Сегодня</p>
+          <p class="head gain"><span>✨</span>С ассистентом</p>
 
           <article class="pain">
             <h3>📞 Линия — узкое место</h3>
@@ -728,16 +733,17 @@
       <!-- 15. Доступ -->
       <section class="slide" data-note="ACL — Access Control List, список управления доступом: метка на фрагменте, кому его можно читать. | RBAC — Role-Based Access Control, доступ по роли. | ReBAC — Relationship-Based Access Control, доступ по связи в реестре. | GUARDIAN_OF — ребро «законный представитель ребёнка». | 323-ФЗ ст. 13 — врачебная тайна. | Актор — тот, от чьего имени идёт запрос; субъект — тот, чья карта запрашивается.">
         <p class="kicker">Доступ · ADR-0002</p>
-        <h2>Правило доступа: одно из четырёх оснований</h2>
+        <h2>Правило доступа: одно из пяти оснований</h2>
         <p class="sub">Изоляция «видно только свою строку» отклонена: представитель не открыл бы карту ребёнка, и учётные данные начали бы передавать в обход. Вместо этого — роль плюс связь в реестре, проверка до вызова модели.</p>
         <div class="rule">
           <div class="rule-list">
-            <h3>Фрагмент попадает в контекст модели, если выполнено одно из условий</h3>
+            <h3>Сведения попадают в контекст модели, если выполнено одно из условий</h3>
             <ol>
               <li><b><code>acl = public</code> — открытый материал клиники</b><span>услуги и цены, врачи, филиалы, памятки по подготовке, коды справочника МКБ-10</span></li>
               <li><b><code>acl = staff</code> и роль актора — <code>staff</code></b><span>служебные материалы регистратуры: регламент стойки, внутренние тарифы</span></li>
               <li><b><code>subject_id = actor.id</code> — своя карта</b><span>направления, напоминания и визиты самого пациента</span></li>
               <li><b>Активная связь <code>GUARDIAN_OF</code> и возраст субъекта меньше 15 лет либо <code>share_with_guardian</code></b><span>карта ребёнка для законного представителя: основание берётся из реестра, а не из слов в разговоре</span></li>
+              <li><b>Роль <code>staff</code> и учётные сведения визита</b><span>слот, услуга, филиал и код направления — рабочий минимум регистратуры; медицинские документы карты роль <code>staff</code> не читает</span></li>
             </ol>
           </div>
           <div class="rule-side">
@@ -799,13 +805,13 @@
                 <th>Регистратор<small>сотрудник клиники</small></th>
                 <td class="yes"><span class="sign">✓</span><span class="why">acl = public</span></td>
                 <td class="yes"><span class="sign">✓</span><span class="why">роль staff</span></td>
-                <td class="no"><span class="sign">✕</span><span class="why">карта — не по роли</span></td>
-                <td class="no"><span class="sign">✕</span><span class="why">карта — не по роли</span></td>
-                <td class="no"><span class="sign">✕</span><span class="why">карта — не по роли</span></td>
+                <td class="part"><span class="sign">◐</span><span class="why">визит и код направления из CRM, документ карты — нет</span></td>
+                <td class="part"><span class="sign">◐</span><span class="why">визит и код направления из CRM, документ карты — нет</span></td>
+                <td class="part"><span class="sign">◐</span><span class="why">визит и код направления из CRM, документ карты — нет</span></td>
               </tr>
             </tbody>
           </table>
-          <p class="note">У пациента 2 нет учётной записи: он не спрашивает сам, за него спрашивает представитель. Отклонённый фрагмент в контекст модели не передаётся, решение по каждому запросу видно в журнале.</p>
+          <p class="note">◐ — регистратуре нужны слот, услуга и код направления, чтобы записать пациента; медицинские документы карты роль <code>staff</code> не читает. У пациента 2 учётной записи нет: за него спрашивает представитель. Отклонённое в контекст модели не передаётся, решение по каждому запросу видно в журнале.</p>
         </div>
       </section>
 
@@ -1106,7 +1112,7 @@
         <div class="grid grid-2 fill">
           <div class="card">
             <h3>Что доказал стенд без видеокарт</h3>
-            <p>Контракты /v1/chat, /v1/voice и /v1/audit работают на упрощённом генераторе и лексическом индексе. Представитель проходит по опеке, другой пациент получает отказ, диагноз отсекается до модели. Пятнадцать тестов: доступ, представительство, подтверждение записи, оба канала.</p>
+            <p>Контракты /v1/chat, /v1/voice и /v1/audit работают на упрощённом генераторе и лексическом индексе. Представитель проходит по опеке, другой пациент получает отказ, диагноз отсекается до модели. Семнадцать тестов: доступ, представительство, обязанности регистратуры, подтверждение записи, оба канала.</p>
           </div>
           <div class="card">
             <h3>Что стенд не заменяет</h3>

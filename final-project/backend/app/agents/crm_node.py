@@ -10,7 +10,7 @@ def run_crm(state: GraphState, runtime: Runtime) -> GraphState:
         state.crm_facts.append("Нужен идентификатор пациента для записи.")
         return state
 
-    access = runtime.policy.decide(state.actor, "patient", state.subject_id)
+    access = runtime.policy.decide_crm(state.actor, state.subject_id)
     if not access.allowed:
         state.acl_denied = True
         state.crm_facts.append("Запись по чужой карте недоступна.")

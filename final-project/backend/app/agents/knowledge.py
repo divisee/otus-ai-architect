@@ -35,11 +35,15 @@ def retrieve_knowledge(state: GraphState, runtime: Runtime) -> GraphState:
     denied_card = False
     if state.subject_id and state.subject_id != state.actor.id:
         card = runtime.policy.decide(state.actor, "patient", state.subject_id)
-        if not card.allowed:
+        if card.allowed:
+            state.acl_via = card.via
+        elif state.actor.role == "staff":
+            # роль staff ведёт расписание, но медицинские документы карты не читает
+            state.chunks = [chunk for chunk in state.chunks if chunk.subject_id != state.subject_id]
+            state.acl_via = "staff_duty"
+        else:
             denied_card = True
             state.chunks = [chunk for chunk in state.chunks if chunk.subject_id != state.subject_id]
-        else:
-            state.acl_via = card.via
 
     public_or_own = [chunk for chunk in state.chunks if chunk.acl in {"public", "staff"} or chunk.subject_id]
     state.chunks = public_or_own

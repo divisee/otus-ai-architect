@@ -56,3 +56,24 @@ def test_anna_reads_son_icd(orchestrator: Orchestrator, runtime):
     assert "N28.1" in state.answer
     assert "киста" in state.answer.lower()
     assert "111-00-02" not in state.answer
+
+
+def test_registrar_sees_visits_but_not_card_documents(runtime):
+    policy = PolicyGate(runtime.crm, today=date(2026, 9, 12))
+    registrar = runtime.crm.actor_from_login("staff:registrar")
+    assert policy.decide_crm(registrar, "anna").via == "staff_duty"
+    assert policy.decide(registrar, "patient", "anna").allowed is False
+
+
+def test_registrar_reads_referral_code_from_crm(orchestrator: Orchestrator, runtime):
+    registrar = runtime.crm.actor_from_login("staff:registrar")
+    state = orchestrator.run(
+        registrar,
+        "Когда УЗИ у Анны Соколовой и на какое окно её записать?",
+        session_id=None,
+        channel="text",
+    )
+    assert state.acl_denied is False
+    assert state.acl_via == "staff_duty"
+    assert "USI-01" in state.answer
+    assert "1234 5678" not in state.answer

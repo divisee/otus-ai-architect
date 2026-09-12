@@ -53,6 +53,17 @@ class PolicyGate:
             return AccessDecision(False, None, "guardian_needs_consent")
         return AccessDecision(False, None, "no_relation")
 
+    def decide_crm(self, actor: Actor, subject_id: str | None) -> AccessDecision:
+        """Учётные сведения визита: слот, услуга, филиал, код из направления.
+
+        Роль ``staff`` ведёт расписание в объёме должностных обязанностей
+        (323-ФЗ ст. 13 ч. 4 п. 1). Медицинские документы карты под это правило
+        не попадают: для чанков остаётся общий :meth:`decide`.
+        """
+        if actor.role == "staff":
+            return AccessDecision(True, "staff_duty")
+        return self.decide(actor, "patient", subject_id)
+
     def filter_chunks(self, actor: Actor, chunks: list) -> list:
         kept = []
         for chunk in chunks:
