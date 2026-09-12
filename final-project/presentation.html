@@ -147,6 +147,11 @@
     .econ > .card.mark::before { background: var(--sage); }
     .card .assume { margin-top: 9px; font-size: 12px; line-height: 1.35; color: var(--muted); }
     .card .assume b { color: var(--v-700); }
+    .contours .card { justify-content: flex-start; }
+    .contours h3 { font-size: 19px; margin-bottom: 2px; }
+    .contours .calc-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; }
+    .contours .calc-rows .row { padding: 9px 12px; }
+    .contours .calc-rows dt, .contours .calc-rows dd { font-size: 12.5px; }
     .calc-rows { flex: none; margin: 9px 0 0; border-radius: 10px; overflow: hidden; background: rgba(100, 2, 186, 0.05); }
     .calc-rows .row { display: flex; align-items: baseline; gap: 10px; padding: 4px 11px; border-top: 1px solid rgba(100, 2, 186, 0.09); }
     .calc-rows .row:first-child { border-top: 0; }
@@ -903,7 +908,7 @@
         <figure class="diagram"><img src="slides/deployment.svg" alt="Схема размещения: вход, управление, хранилища, видеокарты"></figure>
         <div class="grid grid-4" style="margin-top:12px">
           <div class="card"><h3>Вне контура</h3><p>Телефония и сайт; администратор — только по VPN.</p></div>
-          <div class="card"><h3>Вход · DMZ</h3><p>Окончание шифрования и шлюз API.</p></div>
+          <div class="card"><h3>Вход · DMZ</h3><p>Буфер перед периметром: здесь снимается шифрование канала и стоит шлюз API.</p></div>
           <div class="card"><h3>Управление и данные</h3><p>Оркестратор, граф, индекс, сессии и секреты; карточки — в CRM.</p></div>
           <div class="card mark"><h3>Сегмент ускорителей</h3><p>Речь и генерация; доступ только изнутри контура.</p></div>
         </div>
@@ -1013,22 +1018,34 @@
       <section class="slide" data-note="Онлайн-метрика — снимается на живом трафике каждый рабочий день. | Офлайн-метрика — считается до релиза на фиксированном наборе сценариев. | A/B — A/B-тест, сравнение двух групп: контрольная (A) остаётся у оператора, испытательная (B) идёт к ассистенту.">
         <p class="kicker">Метрики</p>
         <h2>Три контура измерения</h2>
-        <p class="sub">Эффект считают раздельно, и смешивать контуры нельзя: у каждого свой источник данных, своя частота и своя реакция на провал.</p>
-        <div class="grid grid-3 fill goal">
+        <p class="sub">Три контура считают раздельно: у каждого своя частота, свой источник данных и своя реакция на провал.</p>
+        <div class="grid grid-3 fill contours">
           <div class="card">
-            <h3>📡 Онлайн: живой трафик</h3>
-            <p>Каждый рабочий день на потоке обращений. Источники: журнал сессии, решение доступа, CRM и короткая оценка после закрытия цикла. Отвечает на вопрос, работает ли контур на реальных обращениях.</p>
-            <span class="meta">Контур измерений — ручки /v1/chat и /v1/voice</span>
+            <h3>📡 Онлайн</h3>
+            <dl class="calc-rows">
+              <div class="row"><dt>когда</dt><dd>каждый рабочий день</dd></div>
+              <div class="row"><dt>на чём</dt><dd>живой поток обращений</dd></div>
+              <div class="row"><dt>источник</dt><dd>журнал сессии, решение доступа, CRM, опрос</dd></div>
+              <div class="row sum"><dt>вопрос</dt><dd>работает ли контур на людях</dd></div>
+            </dl>
           </div>
           <div class="card">
-            <h3>🧪 Офлайн: до релиза</h3>
-            <p>Фиксированный набор сценариев: прогоняется перед каждым релизом и при смене графа, индекса или правила доступа. Живой трафик не нужен, результат воспроизводим.</p>
-            <span class="meta">Ворота релиза: не прошёл — релиза нет</span>
+            <h3>🧪 Офлайн</h3>
+            <dl class="calc-rows">
+              <div class="row"><dt>когда</dt><dd>перед каждым релизом</dd></div>
+              <div class="row"><dt>на чём</dt><dd>фиксированный набор сценариев</dd></div>
+              <div class="row"><dt>источник</dt><dd>автотесты стенда, отчёт качества поиска</dd></div>
+              <div class="row sum"><dt>реакция</dt><dd>не прошёл — релиза нет</dd></div>
+            </dl>
           </div>
           <div class="card mark">
-            <h3>⚖️ Правовой контур</h3>
-            <p>Не измеряется процентами и не улучшается со временем. Речь, карты и генерация не покидают периметр — это условие эксплуатации, а не целевой показатель.</p>
-            <span class="meta">152-ФЗ, 323-ФЗ ст. 13</span>
+            <h3>⚖️ Правовой</h3>
+            <dl class="calc-rows">
+              <div class="row"><dt>когда</dt><dd>постоянно, процентами не измеряется</dd></div>
+              <div class="row"><dt>на чём</dt><dd>размещение контура и проверка прав</dd></div>
+              <div class="row"><dt>источник</dt><dd>152-ФЗ, 323-ФЗ ст. 13, журнал доступа</dd></div>
+              <div class="row sum"><dt>статус</dt><dd>условие эксплуатации, не цель</dd></div>
+            </dl>
           </div>
         </div>
       </section>
