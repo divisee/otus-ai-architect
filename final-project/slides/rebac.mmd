@@ -1,9 +1,9 @@
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px','actorBkg':'#efe6fa','actorBorder':'#6402ba','actorTextColor':'#111111','signalColor':'#6402ba','signalTextColor':'#111111','noteBkgColor':'#fff4e5','noteBorderColor':'#ffab40'}}}%%
 
 flowchart LR
-    Anna[patient:anna] -->|своя карта| CardA[карта Анны]
-    Anna -->|GUARDIAN_OF до 15 лет| CardM[карта Михаила]
-    Misha[patient:misha<br/>8 лет] -.->|учётки нет| CardM
-    Boris[patient:boris] -->|своя карта| CardB[карта Бориса]
-    Boris -.->|нет ребра| CardA
-    Staff[staff:registrar] --> Pub[public + staff]
+    P1[пациент 1] -->|своя карта| C1[карта 1]
+    P1 -->|опека, до 15 лет| C2[карта 2]
+    P2[пациент 2<br/>ребёнок] -.->|учётки нет| C2
+    P3[пациент 3] -->|своя карта| C3[карта 3]
+    P3 -.->|нет опеки| C1
+    Staff[регистратор] --> Pub[открытое и служебное]

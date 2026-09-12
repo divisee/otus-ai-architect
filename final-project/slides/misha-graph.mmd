@@ -1,8 +1,8 @@
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#efe6fa','primaryTextColor':'#111111','primaryBorderColor':'#6402ba','lineColor':'#7629ba','secondaryColor':'#fff4e5','tertiaryColor':'#f4f4ff','fontFamily':'Roboto, Arial, sans-serif','fontSize':'15px'}}}%%
 flowchart LR
-    Morozova[врач Морозова] -->|оказывает| USI2[УЗИ ребёнку]
+    Doc[врач УЗИ] -->|оказывает| USI2[УЗИ ребёнку]
     USI2 -->|нужна| Prep[не есть 5 часов]
     USI2 -->|филиал| Les[Лесная]
-    Nap[направление сына] -.->|карта Михаила| USI2
+    Nap[направление] -.->|карта пациента 2| USI2
     USI2 -->|код из направления| N281[N28.1 киста почки]
     N281 -->|это справочник| Note[не диагноз модели]

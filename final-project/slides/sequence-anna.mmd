@@ -2,7 +2,7 @@
 
 sequenceDiagram
     autonumber
-    actor A as Анна
+    actor A as пациент 1
     participant VA as Voice
     participant GW as Gateway
     participant IG as Guardrails
@@ -19,7 +19,7 @@ sequenceDiagram
     K->>P: узлы и чанки
     P-->>K: только acl=public
     K->>LLM: допущенный контекст
-    LLM-->>K: подготовка, Морозова
+    LLM-->>K: подготовка, врач УЗИ
     K-->>R: grounded-ответ
     R->>C: слоты послезавтра
     C-->>R: два окна
