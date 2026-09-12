@@ -409,14 +409,16 @@
       background: rgba(255,255,255,0.75); white-space: nowrap;
     }
     .finale .pills { margin: 0 0 16px; }
-    .tags { gap: 7px 8px; }
-    .tags b {
-      font-size: 13px; font-weight: 600; padding: 6px 13px; border-radius: 999px;
-      background: var(--v-050); color: var(--v-700); border: 1px solid var(--line);
-    }
-    .finale .tags b { background: var(--v-050); color: var(--v-700); }
-    .finale .tags b.hot { background: var(--v-600); color: #fff; border-color: var(--v-600); font-weight: 700; }
-    .finale .tags b.law { background: var(--sage-100); color: #23524f; border-color: #bcdcda; font-weight: 700; }
+    .tags { gap: 8px; }
+    .tags b { font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 999px; border: 0; }
+    .tags b:nth-child(6n+1) { background: var(--v-100); color: var(--v-800); }
+    .tags b:nth-child(6n+2) { background: var(--sage-100); color: #23524f; }
+    .tags b:nth-child(6n+3) { background: #e7eaf8; color: #37468a; }
+    .tags b:nth-child(6n+4) { background: #f5e8f6; color: #6e3b79; }
+    .tags b:nth-child(6n+5) { background: #e9f2fb; color: #2f5b8a; }
+    .tags b:nth-child(6n+6) { background: #fbeee3; color: #8a5a2b; }
+    .finale .tags b.hot { background: var(--v-600); color: #fff; font-weight: 700; }
+    .finale .tags b.hot + b.hot { background: var(--v-800); }
     .finale .num { font-size: clamp(32px, 3.4vw, 44px); }
     .finale .grid .card b { color: var(--v-700); }
     .finale .grid .card p:not(.num) { font-size: 16px; }
@@ -1197,7 +1199,7 @@
         <h2>Голосовой контур клиники внутри периметра</h2>
         <p class="sub">On-premise мультиагентный ассистент с GraphRAG: врачебная тайна и требования 152-ФЗ обеспечены размещением контура и проверкой прав до вызова модели.</p>
         <div class="pills tags">
-          <b class="hot">on-premise</b><b class="hot">GraphRAG</b><b>LangGraph</b><b>vLLM</b><b>T-pro-it-2.1</b><b>Whisper</b><b>Silero</b><b>bge-m3</b><b>Neo4j</b><b>Qdrant</b><b>PostgreSQL</b><b>FastAPI</b><b>RBAC</b><b>ReBAC</b><b>HITL</b><b class="law">152-ФЗ</b><b class="law">323-ФЗ ст. 13</b>
+          <b class="hot">on-premise</b><b class="hot">GraphRAG</b><b>LangGraph</b><b>vLLM</b><b>T-pro-it-2.1</b><b>Whisper</b><b>Silero</b><b>bge-m3</b><b>Neo4j</b><b>Qdrant</b><b>PostgreSQL</b><b>FastAPI</b><b>RBAC</b><b>ReBAC</b><b>HITL</b><b>152-ФЗ</b><b>323-ФЗ ст. 13</b>
         </div>
         <div class="grid grid-4 fill">
           <div class="card"><p class="num">0</p><p>персональных данных за периметром</p></div>
