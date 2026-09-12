@@ -405,22 +405,22 @@ sequenceDiagram
     participant O as Langfuse
 
     A->>VA: речь
-    Note over VA: Whisper; диаризация при 2+ голосах<br/>actor — учётная запись, не SPEAKER_id
-    VA->>GW: транскрипт + subject_id
+    Note over VA: Whisper, диаризация при двух и более голосах. actor - учётная запись, не SPEAKER id
+    VA->>GW: транскрипт и subject_id
     GW->>IG: текст
-    IG->>IG: injection / диагноз / PII → токены
+    IG->>IG: injection / диагноз / PII, токены
     IG->>R: очищенный текст
-    R->>O: trace: intent=knowledge+crm
-    R->>K: УЗИ + филиал Лесная
-    K->>K: vector top-k + graph walk
+    R->>O: trace: intent knowledge и crm
+    R->>K: УЗИ, филиал Лесная
+    K->>K: vector top-k и graph walk
     K->>P: кандидаты: Service, Preparation, Doctor, Branch, chunks
     P-->>K: только acl=public
     K->>LLM: контекст узлов и чанков
-    LLM-->>K: подготовка + врач Морозова
+    LLM-->>K: подготовка, врач Морозова
     K-->>R: grounded-ответ по графу
     R->>C: слоты УЗИ, Лесная, послезавтра
     C-->>R: два окна
-    R->>A: озвучка: подготовка + слоты
+    R->>A: озвучка: подготовка и слоты
     A->>R: второе окно
     R->>C: book HITL
     C-->>R: hold
