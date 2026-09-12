@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>On-premise голосовой ассистент медицинского центра</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #111111;
+      --muted: #5a5a5a;
+      --paper: #ffffff;
+      --wash: #eeeeee;
+      --violet: #6402ba;
+      --violet-2: #7629ba;
+      --lilac: #8b8ee3;
+      --lilac-soft: #bfc1f0;
+      --accent: #ffab40;
+      --teal: #0097a7;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .deck, .stage {
+      height: 100%;
+      width: 100%;
+      position: relative;
+      background: var(--paper);
+    }
+    .slide {
+      display: none;
+      position: absolute;
+      inset: 0;
+      padding: clamp(32px, 8vh, 80px) clamp(28px, 8vw, 120px) 88px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .slide.cover {
+      max-width: none;
+      padding-left: clamp(28px, 10vw, 140px);
+      padding-right: clamp(28px, 10vw, 140px);
+    }
+    .slide.active { display: flex; flex-direction: column; }
+    .slide.cover {
+      background: linear-gradient(135deg, #4a028c 0%, var(--violet) 55%, var(--violet-2) 100%);
+      color: #fff;
+      justify-content: flex-end;
+    }
+    .kicker {
+      font-size: 15px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--lilac);
+      margin: 0 0 12px;
+      font-weight: 500;
+    }
+    .cover .kicker { color: var(--lilac-soft); }
+    h1 {
+      margin: 0 0 16px;
+      font-size: 34px;
+      line-height: 1.2;
+      font-weight: 700;
+      max-width: 18ch;
+    }
+    .cover h1 { font-size: 36px; max-width: 22ch; }
+    h2 {
+      margin: 0 0 28px;
+      font-size: 28px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+    .lead { font-size: 18px; line-height: 1.4; max-width: 42ch; margin: 0; }
+    .cover .lead { color: #f3e9ff; }
+    .sub { color: var(--muted); font-size: 16px; margin: 0 0 24px; }
+    ul { margin: 0; padding: 0; list-style: none; }
+    li {
+      font-size: 20px;
+      line-height: 1.35;
+      margin: 0 0 14px;
+      padding-left: 22px;
+      position: relative;
+    }
+    li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--violet);
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+    }
+    .grid { display: grid; gap: 20px; flex: 1; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .card {
+      background: var(--wash);
+      padding: 20px 22px;
+      border-radius: 8px;
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: var(--violet);
+      font-weight: 700;
+    }
+    .card p, .card li { font-size: 16px; margin: 0; }
+    .card li { margin-bottom: 8px; }
+    .num {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--violet);
+      margin: 0 0 6px;
+    }
+    .plan { counter-reset: step; }
+    .plan li { font-size: 22px; padding-left: 56px; }
+    .plan li::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--violet);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      top: 0;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 16px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e2e2e2; vertical-align: top; }
+    th { color: var(--violet); font-weight: 500; }
+    .quote {
+      margin-top: auto;
+      padding: 16px 20px;
+      background: #f6f0ff;
+      border-left: 4px solid var(--violet);
+      font-size: 16px;
+    }
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .pill {
+      background: var(--wash);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .arrow { color: var(--violet); font-weight: 700; }
+    .bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 8px;
+      background: var(--lilac-soft);
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--violet);
+      width: 0;
+    }
+    .hud {
+      position: absolute;
+      left: 64px;
+      right: 64px;
+      bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .cover .hud, .cover .kicker { color: #e6d7ff; }
+    .nav { position: absolute; inset: 0; }
+    button.hit {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 18%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    button.prev { left: 0; }
+    button.next { right: 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="stage" id="stage">
+
+      <section class="slide cover active">
+        <p class="kicker">OTUS · Архитектор искусственного интеллекта</p>
+        <h1>On-premise голосовой ассистент медицинского центра</h1>
+        <p class="lead">GraphRAG, врачебная тайна, 152-ФЗ. Контур clinic-voice-graphrag.</p>
+        <div class="hud"><span>divisee</span><span>2026-09-12</span></div>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Введение</p>
+        <h2>Тема и контур</h2>
+        <p class="sub">Голосовой ассистент типового медицинского центра.</p>
+        <ul>
+          <li>Услуги, врачи, филиалы, подготовка, запись</li>
+          <li>Ответ из графа и документов клиники</li>
+          <li>Автор контура: divisee, ведущий ML-инженер</li>
+        </ul>
+        <p class="quote">Система не ставит диагноз и не подбирает код МКБ по симптомам.</p>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">План</p>
+        <h2>Содержание доклада</h2>
+        <ol class="plan">
+          <li>Цель и задачи</li>
+          <li>Технологии и решения</li>
+          <li>Архитектура и доступ</li>
+          <li>Что реализовано</li>
+          <li>Выводы</li>
+        </ol>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Цель</p>
+        <h2>Замкнутый контур клиники</h2>
+        <p class="sub">Речь, генерация и поиск выполняются внутри периметра.</p>
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Цель</h3>
+            <p>Спроектировать и реализовать on-premise мультиагентный голосовой ассистент с GraphRAG и разграничением доступа к картам.</p>
+          </div>
+          <div class="card">
+            <h3>Основание</h3>
+            <p>152-ФЗ, 323-ФЗ ст. 13. Внешние API генерации и распознавания не используются.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Задачи</p>
+        <h2>Что нужно было закрыть</h2>
+        <ul>
+          <li>Policy до модели: RBAC и ReBAC GUARDIAN_OF</li>
+          <li>GraphRAG: онтология плюс чанки</li>
+          <li>Один граф состояний на голос и чат</li>
+          <li>HITL на запись и отмену</li>
+          <li>Расчёт нагрузки и TCO</li>
+          <li>Стенд Control Plane без GPU</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Технологии</p>
+        <h2>Принятый стек</h2>
+        <table>
+          <tr><th>Слой</th><th>Решение</th><th>ADR</th></tr>
+          <tr><td>Контур</td><td>on-premise</td><td>0001</td></tr>
+          <tr><td>Доступ</td><td>RBAC, GUARDIAN_OF</td><td>0002</td></tr>
+          <tr><td>LLM</td><td>T-pro-it-2.1, vLLM</td><td>0003, 0005</td></tr>
+          <tr><td>GPU</td><td>2× H100 FP8, 1× L40S</td><td>0004</td></tr>
+          <tr><td>GraphRAG</td><td>Neo4j, Qdrant</td><td>0007</td></tr>
+          <tr><td>Оркестрация</td><td>LangGraph</td><td>0008</td></tr>
+          <tr><td>Речь</td><td>Whisper turbo, Silero</td><td>0009</td></tr>
+        </table>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Доступ</p>
+        <h2>Policy до вызова модели</h2>
+        <ul>
+          <li>public — всем</li>
+          <li>staff — персоналу</li>
+          <li>своя карта — субъекту</li>
+          <li>карта ребёнка — по GUARDIAN_OF до 15 лет</li>
+        </ul>
+        <p class="quote">Отклонённый фрагмент в контекст модели не передаётся. Канал на права не влияет.</p>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Сценарии доступа</p>
+        <h2>Анна, Михаил, Борис</h2>
+        <div class="grid grid-3">
+          <div class="card">
+            <h3>patient:anna</h3>
+            <p>Своя карта и карта сына по ребру опеки.</p>
+          </div>
+          <div class="card">
+            <h3>patient:misha</h3>
+            <p>8 лет. Учётки нет. Запросы выполняет представитель.</p>
+          </div>
+          <div class="card">
+            <h3>patient:boris</h3>
+            <p>Только своя карта. Направление Анны закрыто.</p>
+          </div>
+        </div>
+        <p class="quote">Регистр ПДн — CRM. Справочный граф карточек не содержит.</p>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Архитектура</p>
+        <h2>Два канала, один оркестратор</h2>
+        <div class="flow">
+          <span class="pill">Речь · ASR</span>
+          <span class="arrow">→</span>
+          <span class="pill">LangGraph</span>
+          <span class="arrow">→</span>
+          <span class="pill">Policy</span>
+          <span class="arrow">→</span>
+          <span class="pill">vLLM</span>
+          <span class="arrow">→</span>
+          <span class="pill">TTS / чат</span>
+        </div>
+        <ul style="margin-top:28px">
+          <li>Голос — основной канал</li>
+          <li>Чат на сайте вызывает POST /v1/chat</li>
+          <li>Control Plane отделён от Data Plane</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">GraphRAG</p>
+        <h2>Справочный граф</h2>
+        <div class="flow">
+          <span class="pill">Doctor</span>
+          <span class="arrow">PROVIDES</span>
+          <span class="pill">Service</span>
+          <span class="arrow">REQUIRES</span>
+          <span class="pill">Preparation</span>
+        </div>
+        <div class="flow">
+          <span class="pill">Service</span>
+          <span class="arrow">AVAILABLE_AT</span>
+          <span class="pill">Branch</span>
+          <span class="arrow">OFTEN_CODED_AS</span>
+          <span class="pill">IcdCode</span>
+        </div>
+        <p class="quote">МКБ-10 — терминология. OFTEN_CODED_AS — подсказка регистратору, не диагноз.</p>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Нагрузка и TCO</p>
+        <h2>Типовой объём клиники</h2>
+        <div class="grid grid-4">
+          <div class="card"><p class="num">500</p><p>сессий в день</p></div>
+          <div class="card"><p class="num">9,25</p><p>млн ₽ CapEx, середина</p></div>
+          <div class="card"><p class="num">≈ 30 ₽</p><p>на сессию</p></div>
+          <div class="card"><p class="num">15×</p><p>запас к штатному пику</p></div>
+        </div>
+        <p class="quote">Облачный путь отклонён: данные не покидают периметр.</p>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Что получилось</p>
+        <h2>Артефакты</h2>
+        <ul>
+          <li>README: C4, Sequence, Data Flow, Deployment, ER</li>
+          <li>Девять ADR по стеку</li>
+          <li>Control Plane: FastAPI, Policy, оркестратор</li>
+          <li>Корпус клиники и справочник МКБ-10</li>
+          <li>15 автотестов ACL, ReBAC, HITL, каналы</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Локальный прогон</p>
+        <h2>macOS, без GPU</h2>
+        <p class="sub">2026-09-12. Только uvicorn на 127.0.0.1:8080. GraphRAG в памяти процесса.</p>
+        <table>
+          <tr><th>Актор</th><th>Запрос</th><th>Результат</th></tr>
+          <tr><td>Анна</td><td>УЗИ сына, код N28.1</td><td>via=guardian, USI-02</td></tr>
+          <tr><td>Борис</td><td>направление Анны</td><td>acl_denied</td></tr>
+          <tr><td>Анна</td><td>диагноз по симптомам</td><td>отказ</td></tr>
+        </table>
+        <p class="quote">Neo4j, Qdrant и vLLM на этом запуске не поднимались.</p>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Выводы</p>
+        <h2>Зафиксированные решения</h2>
+        <ul>
+          <li>Контур on-premise закрывает 152-ФЗ и врачебную тайну</li>
+          <li>Policy — узел графа, не инструмент модели</li>
+          <li>LangGraph принят; Deep Agents не подходит</li>
+          <li>Голос и чат делят один оркестратор</li>
+          <li>Стенд без GPU проверяет ACL и GraphRAG</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Ограничения</p>
+        <h2>Вне поставки</h2>
+        <ul>
+          <li>Диагноз и клинические назначения</li>
+          <li>Промышленная CRM и АТС</li>
+          <li>Обучение LLM и ASR</li>
+          <li>Штатный blue/green</li>
+        </ul>
+      </section>
+
+      <section class="slide cover">
+        <p class="kicker">Документация</p>
+        <h1>README.md и GLOSSARY.md</h1>
+        <p class="lead">Вопросы по контуру, стеку и стенду.</p>
+        <div class="hud"><span>github.com/divisee/otus-ai-architect</span><span>final-project/</span></div>
+      </section>
+
+      <div class="bar"><span id="progress"></span></div>
+      <div class="hud" id="hud"><span>← → или клик по краю</span><span id="page"></span></div>
+      <div class="nav">
+        <button class="hit prev" aria-label="Назад"></button>
+        <button class="hit next" aria-label="Вперёд"></button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    let i = 0;
+    const page = document.getElementById("page");
+    const progress = document.getElementById("progress");
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+      page.textContent = (i + 1) + " / " + slides.length;
+      progress.style.width = ((i + 1) / slides.length * 100) + "%";
+    }
+    document.querySelector(".prev").onclick = () => show(i - 1);
+    document.querySelector(".next").onclick = () => show(i + 1);
+    document.addEventListener("keydown", (e) => {
+      if (["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    });
+    show(0);
+  </script>
+</body>
+</html>
