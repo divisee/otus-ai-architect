@@ -135,6 +135,15 @@
     .fill { flex: 1; min-height: 0; align-content: stretch; }
     .fill .card { display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow: auto; }
     .num { font-size: 32px; font-weight: 700; margin: 0 0 4px; color: var(--v-600); }
+    .econ { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+    .econ > .card { grid-column: span 2; }
+    .econ > .card:nth-child(4) { grid-column: 2 / span 2; }
+    .econ > .card:nth-child(5) { grid-column: 4 / span 2; }
+    .econ > .card::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 5px; border-radius: 0 6px 6px 0; }
+    .econ > .card:nth-child(3n+1)::before { background: var(--v-400); }
+    .econ > .card:nth-child(3n+2)::before { background: var(--v-600); }
+    .econ > .card:nth-child(3n+3)::before { background: var(--v-800); }
+    .econ > .card.mark::before { background: var(--sage); }
     .card .calc {
       margin-top: 7px; padding: 6px 9px; border-radius: 8px; background: rgba(100, 2, 186, 0.06);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; line-height: 1.35; color: var(--v-700);
@@ -891,7 +900,7 @@
         <p class="kicker">Экономика</p>
         <h2>Стоимость владения и эффект для клиники</h2>
         <p class="sub">Расчёт на типовом объёме двух филиалов: 500 обращений в день, 250 рабочих дней — 125 000 сессий в год. Сверху — что клиника платит, снизу — что получает взамен.</p>
-        <div class="grid grid-3 fill">
+        <div class="grid econ fill">
           <div class="card">
             <p class="num">9,25 млн ₽</p>
             <h3>Разовая закупка</h3>
@@ -915,12 +924,6 @@
             <h3>Высвобождение линии в год</h3>
             <p>70% первого ответа ведёт ассистент, 40% из них закрываются без оператора. Чистая экономия ФОТ ≈ 2,2 млн ₽.</p>
             <p class="calc">500 × 0,70 × 0,40 = 140 обращений · 140 × 4 мин = 9,3 ч ≈ 1,2 ставки · +0,3 за ускорение цикла → 1,5 × 1,8 = 2,7</p>
-          </div>
-          <div class="card">
-            <p class="num">4–8 ₽</p>
-            <h3>Стоимость сессии в облаке</h3>
-            <p>Дешевле в несколько раз — и отклонено: речь и карточки пациентов ушли бы за периметр. 152-ФЗ и 323-ФЗ ст. 13 этого не допускают.</p>
-            <p class="calc">ориентир рынка на сессию из трёх реплик, не измерение стенда</p>
           </div>
           <div class="card">
             <p class="num">15×</p>
