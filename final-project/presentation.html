@@ -229,9 +229,16 @@
 
     /* --- слайд «проблема → решение» --- */
     .pairs { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; align-content: stretch; }
-    .pairs .head { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; margin: 0; }
-    .pairs .head.pain { color: var(--v-600); }
-    .pairs .head.gain { color: var(--sage); }
+    .pairs .head { margin: 0 0 2px; display: flex; align-items: center; gap: 10px; }
+    .pairs .head span {
+      display: inline-flex; align-items: center; padding: 5px 14px; border-radius: 999px;
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700;
+    }
+    .pairs .head::after { content: ""; flex: 1; height: 1px; }
+    .pairs .head.pain span { background: var(--v-100); color: var(--v-700); }
+    .pairs .head.pain::after { background: linear-gradient(90deg, var(--v-200), transparent); }
+    .pairs .head.gain span { background: var(--sage-100); color: #23524f; }
+    .pairs .head.gain::after { background: linear-gradient(90deg, #bcdcda, transparent); }
     .pairs article {
       margin: 0; padding: 12px 16px 12px 20px; border-radius: 14px; position: relative;
       display: flex; flex-direction: column; justify-content: center; gap: 3px; min-height: 0; box-shadow: var(--shadow);
@@ -406,15 +413,15 @@
         <h2>Что болит у клиники и что закрывает ассистент</h2>
         <p class="sub">Справочная линия двух филиалов — 500 обращений в день, в пиковый час до ста. Слева то, что клиника имеет сегодня, справа — что даёт контур в периметре.</p>
         <div class="pairs">
-          <p class="head pain">Сегодня</p>
-          <p class="head gain">С ассистентом</p>
+          <p class="head pain"><span>Сегодня</span></p>
+          <p class="head gain"><span>С ассистентом</span></p>
 
           <article class="pain">
             <h3>📞 Линия — узкое место</h3>
             <p>Справочное обращение занимает у оператора около четырёх минут. В пиковый час очередь растёт быстрее, чем регистратура успевает её разбирать.</p>
           </article>
           <article class="gain">
-            <h3>Очередь короче</h3>
+            <h3>⏱️ Очередь короче</h3>
             <p>Подготовка, филиал и свободное окно закрываются в том же обращении. Цель — до 40% обращений без оператора; человеку остаются жалоба и исключение.</p>
           </article>
 
@@ -423,7 +430,7 @@
             <p>Цена услуги, адрес филиала, подготовка к исследованию, ближайшее окно — один и тот же справочник по кругу каждый рабочий день.</p>
           </article>
           <article class="gain">
-            <h3>Ответ из знаний клиники</h3>
+            <h3>🕸️ Ответ из знаний клиники</h3>
             <p>Ответ собирается из графа услуг и документов клиники, запись и перенос — только после подтверждения пациента. Нет опоры — отказ или оператор.</p>
           </article>
 
@@ -432,7 +439,7 @@
             <p>Линия работает десять часов в день, 250 дней в году. Кто не дозвонился, записывается там, где ответили: потеря происходит на входе.</p>
           </article>
           <article class="gain">
-            <h3>Линия высвобождается</h3>
+            <h3>👩‍⚕️ Линия высвобождается</h3>
             <p>Контур отвечает без перерывов. Ориентир устойчивого режима — около 1,5 ставки регистратуры, ≈ 2,2 млн ₽ в год чистой экономии ФОТ.</p>
           </article>
 
@@ -441,7 +448,7 @@
             <p>Облачный ассистент обошёлся бы в 4–8 ₽ за сессию, но речь и карточки пациентов нельзя передавать наружу: 152-ФЗ и 323-ФЗ ст. 13.</p>
           </article>
           <article class="gain">
-            <h3>Законный контур с понятной ценой</h3>
+            <h3>⚖️ Законный контур с понятной ценой</h3>
             <p>Всё остаётся в клинике: ≈ 30 ₽ за сессию. Закон закрывается размещением и проверкой прав, а эффект — A/B против живой линии при CSAT не ниже контроля.</p>
           </article>
         </div>
