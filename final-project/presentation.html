@@ -234,8 +234,12 @@
     .layer .n { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; opacity: 0.8; margin: 0; }
     .layer strong { font-size: 22px; display: block; margin: 0; line-height: 1.25; }
     .layer .why { font-size: 15px; line-height: 1.45; margin: 0; }
-    .pills { display: flex; flex-wrap: wrap; gap: 6px; }
-    .pills b { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: rgba(255,255,255,0.75); }
+    .pills { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .pills b {
+      display: inline-flex; align-items: center; width: auto; flex: 0 0 auto;
+      font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px;
+      background: rgba(255,255,255,0.75); white-space: nowrap;
+    }
     .layer.ch { background: linear-gradient(145deg, #efe8ff 0%, #b9a4e0 100%); color: #2a1860; }
     .layer.ch strong, .layer.ch .n { color: #2a1860; }
     .layer.ch .pills b { background: rgba(255,255,255,0.55); color: #2a1860; }
@@ -328,7 +332,7 @@
         <h2>Содержание</h2>
         <ol class="plan">
           <li><strong>Рамка контура</strong><span>периметр, 152-ФЗ, что в объёме и что вне поставки</span></li>
-          <li><strong>Стек и ADR</strong><span>слои контура и принятые решения 0001–0009</span></li>
+          <li><strong>Стек и ADR</strong><span>четыре плоскости контура, затем решения 0001–0009</span></li>
           <li><strong>Архитектура C4</strong><span>периметр, плоскости, узлы; голос и чат; путь реплики</span></li>
           <li><strong>Доступ</strong><span>Policy до модели, тенант clinic, ReBAC представителя и изоляция карт</span></li>
           <li><strong>Знания и данные</strong><span>GraphRAG, онтология, ER, ingest и runtime</span></li>
@@ -371,39 +375,40 @@
 
       <section class="slide">
         <p class="kicker">Стек</p>
-        <h2>Слои контура</h2>
+        <h2>Четыре плоскости</h2>
+        <p class="sub">Где исполняется контур. Состав стека и развилки — на следующем слайде, в ADR.</p>
         <div class="layers">
           <div class="layer ch">
             <div>
-              <div class="n">01 · ADR-0009</div>
+              <div class="n">01 · вход</div>
               <strong>Канал</strong>
-              <p class="why">Голос — основной вход. Чат вызывает тот же оркестратор, не второй продукт.</p>
+              <p class="why">Голос — основной вход. Чат приходит в тот же API. Распознавание и синтез не решают, кому что можно читать.</p>
             </div>
-            <div class="pills"><b>🎙️ Whisper turbo</b><b>👥 WhisperX</b><b>🔊 синтез речи</b><b>/v1/voice</b><b>/v1/chat</b></div>
+            <div class="pills"><b>/v1/voice</b><b>/v1/chat</b></div>
           </div>
           <div class="layer cp">
             <div>
-              <div class="n">02 · ADR-0002 · 0008</div>
+              <div class="n">02 · управление</div>
               <strong>Control Plane</strong>
-              <p class="why">Маршрут, Policy до модели, HITL и ingest. Машина состояний, не линейный скрипт.</p>
+              <p class="why">Маршрут диалога, Policy до модели, подтверждение записи, загрузка корпуса. Машина состояний, не линейный скрипт.</p>
             </div>
-            <div class="pills"><b>⚡ FastAPI</b><b>🔀 LangGraph</b><b>🛡️ Policy</b><b>✅ Guardrails</b><b>📥 ingest</b></div>
+            <div class="pills"><b>маршрут</b><b>Policy</b><b>HITL</b></div>
           </div>
           <div class="layer dp">
             <div>
-              <div class="n">03 · ADR-0007</div>
+              <div class="n">03 · данные</div>
               <strong>Data Plane</strong>
-              <p class="why">Онтология, чанки с ACL, сессии, CRM по контракту. Карточки в справочный граф не входят.</p>
+              <p class="why">Справочный граф, чанки с меткой ACL, сессии. Карточки пациентов — в CRM. Секреты и трассировка — внутри периметра.</p>
             </div>
-            <div class="pills"><b>🔷 Neo4j</b><b>🔎 Qdrant</b><b>🗄️ Postgres</b><b>📋 CRM</b><b>🔐 Vault</b><b>📡 Langfuse</b></div>
+            <div class="pills"><b>граф</b><b>индекс</b><b>сессии</b></div>
           </div>
           <div class="layer gpu">
             <div>
-              <div class="n">04 · ADR-0003 · 0004 · 0005</div>
+              <div class="n">04 · ускорители</div>
               <strong>GPU VLAN</strong>
-              <p class="why">Генерация и речь разделены. Единственный движок LLM — vLLM. Без маршрута в интернет.</p>
+              <p class="why">Генерация и речь на разных картах: пик звонков не вытесняет KV-cache. Сегмент без маршрута в интернет.</p>
             </div>
-            <div class="pills"><b>🧠 T-pro-it-2.1</b><b>⚙️ vLLM</b><b>⚡ 2× H100 FP8</b><b>🎧 1× L40S</b><b>🔎 bge-m3</b></div>
+            <div class="pills"><b>генерация</b><b>речь</b><b>эмбеддинги</b></div>
           </div>
         </div>
       </section>
