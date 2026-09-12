@@ -143,6 +143,8 @@
     .econ > .card:nth-child(3n+2)::before { background: var(--v-600); }
     .econ > .card:nth-child(3n+3)::before { background: var(--v-800); }
     .econ > .card.mark::before { background: var(--sage); }
+    .card .assume { margin-top: 9px; font-size: 12px; line-height: 1.35; color: var(--muted); }
+    .card .assume b { color: var(--v-700); }
     .card .calc {
       margin-top: 7px; padding: 6px 9px; border-radius: 8px; background: rgba(100, 2, 186, 0.06);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; line-height: 1.35; color: var(--v-700);
@@ -380,11 +382,16 @@
       background: rgba(255,255,255,0.75); white-space: nowrap;
     }
     .finale .pills { margin: 0 0 16px; }
+    .tags { gap: 7px 8px; }
+    .tags b {
+      font-size: 13px; font-weight: 600; padding: 6px 13px; border-radius: 999px;
+      background: var(--v-050); color: var(--v-700); border: 1px solid var(--line);
+    }
+    .finale .tags b { background: var(--v-050); color: var(--v-700); }
+    .finale .tags b.hot { background: var(--v-600); color: #fff; border-color: var(--v-600); font-weight: 700; }
+    .finale .tags b.law { background: var(--sage-100); color: #23524f; border-color: #bcdcda; font-weight: 700; }
     .finale .num { font-size: clamp(34px, 3.6vw, 46px); }
     .finale .grid .card p:not(.num) { font-size: 16px; }
-    .finale .pills b { border: 0; color: var(--v-900); background: var(--v-100); }
-    .finale .pills b:nth-child(3n+2) { color: #fff; background: var(--v-600); }
-    .finale .pills b:nth-child(3n+3) { color: #fff; background: var(--v-800); }
     .wins { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; flex: 1; min-height: 0; }
     .wins article {
       border: 0; border-radius: 16px; padding: 16px 18px;
@@ -1043,12 +1050,13 @@
             <h3>Откуда берётся экономия</h3>
             <table>
               <tr><th>Статья</th><th>Счёт</th><th>Ориентир</th></tr>
-              <tr><td>Закрыто без оператора</td><td>500 × 0,70 × 0,40 = 140 сессий в день</td><td>140 × 4 мин ≈ 1,2 ставки</td></tr>
-              <tr><td>Короче цикл после эскалации</td><td>−20% AHT на смешанных обращениях</td><td>≈ 0,3 ставки</td></tr>
-              <tr><td>Итого линия</td><td>1,2 + 0,3</td><td>≈ 1,5 ставки ≈ 2,7 млн ₽/год</td></tr>
-              <tr><td>Сопровождение контура</td><td>0,3 ставки, уже в TCO</td><td>−0,54 млн ₽/год</td></tr>
+              <tr><td>Закрыто без оператора</td><td>500 сессий/день × 0,70 × 0,40 = 140 сессий/день</td><td>140 × 4 мин = 9,3 ч/день ≈ 1,2 ставки</td></tr>
+              <tr><td>Короче цикл после эскалации</td><td>−20% AHT на обращениях с эскалацией</td><td>≈ 0,3 ставки</td></tr>
+              <tr><td>Итого линия</td><td>1,2 + 0,3 = 1,5 ставки × 1,8 млн ₽/год</td><td>≈ 2,7 млн ₽/год</td></tr>
+              <tr><td>Сопровождение контура</td><td>0,3 ставки × 1,8 млн ₽/год, уже в TCO</td><td>−0,54 млн ₽/год</td></tr>
               <tr><td><b>Чистая экономия ФОТ</b></td><td>2,7 − 0,54</td><td><b>≈ 2,2 млн ₽/год</b></td></tr>
             </table>
+            <p class="assume"><b>Откуда взяты коэффициенты:</b> 0,70 — доля первого ответа у ассистента в устойчивом режиме; 0,40 — целевая доля таких обращений, закрытых без оператора; 4 мин — среднее справочное обращение у оператора; 1,8 млн ₽/год — ставка регистратора с налогами; −20% AHT — ускорение цикла там, где ассистент передал разговор человеку.</p>
           </div>
         </div>
         <div class="quote">Высвобождаются ставки справочной линии, а не врачи. Оператор остаётся на жалобе, исключении и всём, где нужно человеческое решение.</div>
@@ -1125,8 +1133,8 @@
         <p class="kicker">Итог</p>
         <h2>Голосовой контур клиники внутри периметра</h2>
         <p class="sub">On-premise мультиагентный ассистент с GraphRAG: врачебная тайна и требования 152-ФЗ обеспечены размещением контура и проверкой прав до вызова модели.</p>
-        <div class="pills">
-          <b>152-ФЗ</b><b>323-ФЗ ст. 13</b><b>права до модели</b><b>одна организация</b><b>опека по реестру</b><b>vLLM</b><b>граф знаний</b>
+        <div class="pills tags">
+          <b class="hot">on-premise</b><b class="hot">GraphRAG</b><b>LangGraph</b><b>vLLM</b><b>T-pro-it-2.1</b><b>Whisper</b><b>Silero</b><b>bge-m3</b><b>Neo4j</b><b>Qdrant</b><b>PostgreSQL</b><b>FastAPI</b><b>RBAC</b><b>ReBAC</b><b>HITL</b><b class="law">152-ФЗ</b><b class="law">323-ФЗ ст. 13</b>
         </div>
         <div class="grid grid-4 fill">
           <div class="card"><p class="num">9</p><p>решений ADR с отклонёнными вариантами</p></div>
