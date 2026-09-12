@@ -135,7 +135,9 @@
     .fill .card { display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow: auto; }
     .num { font-size: 32px; font-weight: 700; margin: 0 0 4px; color: var(--v-600); }
     .econ { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
-    .econ > .card { grid-column: span 2; padding: 15px 18px 15px 24px; }
+    .econ > .card { grid-column: span 2; padding: 14px 18px 14px 24px; justify-content: flex-start; }
+    .econ .num { font-size: 27px; margin-bottom: 2px; }
+    .econ h3 { margin-bottom: 4px; }
     .econ > .card:nth-child(4) { grid-column: 2 / span 2; }
     .econ > .card:nth-child(5) { grid-column: 4 / span 2; }
     .econ > .card::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 5px; border-radius: 0 6px 6px 0; }
@@ -145,11 +147,19 @@
     .econ > .card.mark::before { background: var(--sage); }
     .card .assume { margin-top: 9px; font-size: 12px; line-height: 1.35; color: var(--muted); }
     .card .assume b { color: var(--v-700); }
-    .card .calc {
-      margin-top: 7px; padding: 6px 9px; border-radius: 8px; background: rgba(100, 2, 186, 0.06);
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; line-height: 1.35; color: var(--v-700);
+    .calc-rows { flex: none; margin: 9px 0 0; border-radius: 10px; overflow: hidden; background: rgba(100, 2, 186, 0.05); }
+    .calc-rows .row { display: flex; align-items: baseline; gap: 10px; padding: 4px 11px; border-top: 1px solid rgba(100, 2, 186, 0.09); }
+    .calc-rows .row:first-child { border-top: 0; }
+    .calc-rows .row.sum { background: rgba(100, 2, 186, 0.07); }
+    .calc-rows dt { flex: 0 0 38%; margin: 0; font-size: 11.5px; line-height: 1.3; color: var(--muted); }
+    .calc-rows dd {
+      flex: 1; margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11.5px; line-height: 1.3; color: var(--v-700);
     }
-    .card.mark .calc { background: rgba(79, 138, 134, 0.12); color: #23524f; }
+    .calc-rows .row.sum dt, .calc-rows .row.sum dd { font-weight: 700; color: var(--v-800); }
+    .card.mark .calc-rows { background: rgba(79, 138, 134, 0.1); }
+    .card.mark .calc-rows .row { border-top-color: rgba(79, 138, 134, 0.16); }
+    .card.mark .calc-rows dd, .card.mark .calc-rows .row.sum dd, .card.mark .calc-rows .row.sum dt { color: #23524f; }
     .grid > .card:nth-child(3n+1) .num { color: var(--v-400); }
     .grid > .card:nth-child(3n+3) .num { color: var(--v-800); }
     .ok { color: var(--sage); font-weight: 700; }
@@ -184,6 +194,7 @@
     th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
     th { color: var(--v-600); font-weight: 700; }
     .tight { flex: 1; overflow: auto; }
+    .quote.slim { margin-top: 10px; padding: 10px 18px; font-size: 14px; }
     .quote {
       margin-top: 14px; padding: 15px 20px;
       background: linear-gradient(135deg, var(--v-500) 0%, var(--v-800) 100%);
@@ -910,17 +921,31 @@
           <div class="card">
             <h3>Сколько запросов приходит</h3>
             <p>Три реплики на сессию, два вызова модели на реплику — маршрут или инструмент и сам ответ.</p>
-            <p class="calc">500 сессий/день × 3 = 1 500 распознаваний и 3 000 вызовов модели в сутки · пик 100 сессий/ч ÷ 60 = 1,7 сессии/мин · 1,7 × 3 × 2 ÷ 60 = 0,17 RPS при бюджете 10 RPS → занято 2%</p>
+            <dl class="calc-rows">
+              <div class="row"><dt>реплик в сутки</dt><dd>500 сессий × 3 = 1 500</dd></div>
+              <div class="row"><dt>вызовов модели</dt><dd>1 500 × 2 = 3 000</dd></div>
+              <div class="row"><dt>пиковый час</dt><dd>100 сессий ÷ 60 мин = 1,7 сессии/мин</dd></div>
+              <div class="row"><dt>нагрузка на модель</dt><dd>1,7 × 3 × 2 ÷ 60 = 0,17 RPS</dd></div>
+              <div class="row sum"><dt>бюджет vLLM</dt><dd>0,17 из 10 RPS → 2%</dd></div>
+            </dl>
           </div>
           <div class="card">
             <h3>Сколько памяти нужно</h3>
             <p>Генерация упирается в видеопамять: веса плюс кэш внимания на параллельные диалоги.</p>
-            <p class="calc">T-pro 32B в FP8 ≈ 32 ГБ весов + KV-cache 10–20 ГБ (контекст 8–16k, до 8 диалогов) = 40–55 ГБ из 80 ГБ H100 · речевой узел: Whisper 6 + диаризация 2–4 + bge-m3 2–4 = 10–14 ГБ из 48 ГБ L40S</p>
+            <dl class="calc-rows">
+              <div class="row"><dt>веса T-pro 32B, FP8</dt><dd>≈ 32 ГБ</dd></div>
+              <div class="row"><dt>KV-cache, 8–16k × 8 диалогов</dt><dd>10–20 ГБ</dd></div>
+              <div class="row sum"><dt>итого на H100 80 ГБ</dt><dd>40–55 ГБ</dd></div>
+              <div class="row"><dt>речевой узел на L40S 48 ГБ</dt><dd>6 + 2–4 + 2–4 = 10–14 ГБ</dd></div>
+            </dl>
           </div>
           <div class="card mark">
             <h3>Почему 2× H100 и 1× L40S</h3>
             <p>FP8 есть только у H100 — он вдвое сокращает память под веса. Речь вынесена на отдельную карту, чтобы пик очереди звонков не вытеснял кэш генерации. Второй H100 — горячий резерв, в расчёт пропускной способности не входит.</p>
-            <p class="calc">распознавание: 5 реплик/мин × 1,0 с = 5 GPU-с/мин ≈ 8% загрузки L40S при RTF ≤ 0,2</p>
+            <dl class="calc-rows">
+              <div class="row"><dt>распознавание в пик</dt><dd>5 реплик/мин × 1,0 с = 5 GPU-с/мин</dd></div>
+              <div class="row sum"><dt>загрузка L40S при RTF ≤ 0,2</dt><dd>≈ 8%</dd></div>
+            </dl>
           </div>
           <div class="card">
             <h3>Что отклонено</h3>
@@ -938,35 +963,53 @@
           <div class="card">
             <p class="num">9,25 млн ₽</p>
             <h3>Разовая закупка</h3>
-            <p>Цены — срез Москвы, сентябрь 2026; в расчёт взята середина диапазона.</p>
-            <p class="calc">2 шт H100 5,0–8,0 млн ₽ + 1 шт L40S 0,8–1,5 млн ₽ + 2 платформы 1,2–2,0 млн ₽ = 7,0–11,5 млн ₽ → середина 9,25 млн ₽</p>
+            <dl class="calc-rows">
+              <div class="row"><dt>2 × H100 80 ГБ</dt><dd>5,0–8,0 млн ₽</dd></div>
+              <div class="row"><dt>1 × L40S 48 ГБ</dt><dd>0,8–1,5 млн ₽</dd></div>
+              <div class="row"><dt>2 платформы</dt><dd>1,2–2,0 млн ₽</dd></div>
+              <div class="row sum"><dt>диапазон → середина</dt><dd>7,0–11,5 → 9,25 млн ₽</dd></div>
+            </dl>
           </div>
           <div class="card">
             <p class="num">≈ 3,8 млн ₽</p>
             <h3>Владение в год</h3>
-            <p>Амортизация, энергия и 0,3 ставки сопровождения. Лицензий нет: модели открытые.</p>
-            <p class="calc">амортизация 9,25 млн ₽ ÷ 3 года = 3,08 млн ₽/год · энергия 1,45 кВт × 12 ₽/кВт·ч × 8 760 ч = 0,15 млн ₽/год · сопровождение 0,3 ставки × 1,8 млн ₽/год = 0,54 млн ₽/год → 3,77 млн ₽/год</p>
+            <dl class="calc-rows">
+              <div class="row"><dt>амортизация</dt><dd>9,25 млн ₽ ÷ 3 года = 3,08</dd></div>
+              <div class="row"><dt>электроэнергия</dt><dd>1,45 кВт × 12 ₽ × 8 760 ч = 0,15</dd></div>
+              <div class="row"><dt>сопровождение</dt><dd>0,3 ставки × 1,8 = 0,54</dd></div>
+              <div class="row sum"><dt>итого в год</dt><dd>3,77 млн ₽</dd></div>
+            </dl>
           </div>
           <div class="card">
             <p class="num">≈ 30 ₽</p>
             <h3>Цена одной сессии</h3>
-            <p>Годовые затраты, делённые на годовой объём. При росте объёма цена сессии падает.</p>
-            <p class="calc">3,77 млн ₽/год ÷ 125 000 сессий/год = 30,2 ₽/сессия (24,7 + 1,2 + 4,3 ₽)</p>
+            <dl class="calc-rows">
+              <div class="row"><dt>годовой объём</dt><dd>500 сессий × 250 дней = 125 000</dd></div>
+              <div class="row"><dt>затраты на сессию</dt><dd>3,77 млн ₽ ÷ 125 000 = 30,2 ₽</dd></div>
+              <div class="row sum"><dt>из них</dt><dd>24,7 + 1,2 + 4,3 ₽</dd></div>
+            </dl>
           </div>
           <div class="card mark">
             <p class="num">≈ 2,7 млн ₽</p>
-            <h3>Высвобождение линии в год</h3>
-            <p>70% первого ответа ведёт ассистент, 40% из них — без оператора. Чистая экономия ФОТ ≈ 2,2 млн ₽/год.</p>
-            <p class="calc">500 сессий/день × 0,70 × 0,40 = 140 · 140 × 4 мин = 9,3 ч/день ≈ 1,2 ставки · +0,3 за ускорение → 1,5 × 1,8 млн ₽ = 2,7 млн ₽/год</p>
+            <h3>Высвобождение линии</h3>
+            <dl class="calc-rows">
+              <div class="row"><dt>без оператора</dt><dd>500 × 0,70 × 0,40 = 140/день</dd></div>
+              <div class="row"><dt>время линии</dt><dd>140 × 4 мин = 9,3 ч ≈ 1,2 ставки</dd></div>
+              <div class="row"><dt>ускорение цикла</dt><dd>+0,3 ставки</dd></div>
+              <div class="row sum"><dt>итого</dt><dd>1,5 × 1,8 = 2,7 млн ₽/год</dd></div>
+            </dl>
           </div>
           <div class="card">
             <p class="num">15×</p>
             <h3>Запас по ёмкости</h3>
-            <p>Рост нагрузки и третий филиал не требуют новой закупки.</p>
-            <p class="calc">100 сессий/ч ÷ 60 мин = 1,7 сессии/мин · потолок 30 сессий/мин ÷ 1,7 ≈ 17 → принят ориентир 15×</p>
+            <dl class="calc-rows">
+              <div class="row"><dt>штатный пик</dt><dd>100 сессий/ч ÷ 60 = 1,7 сессии/мин</dd></div>
+              <div class="row"><dt>инженерный потолок</dt><dd>30 сессий/мин</dd></div>
+              <div class="row sum"><dt>запас</dt><dd>30 ÷ 1,7 ≈ 17 → ориентир 15×</dd></div>
+            </dl>
           </div>
         </div>
-        <div class="quote">Разница между владением и высвобождением — 3,77 − 2,7 ≈ 1,1 млн ₽ в год. Это и есть цена законного канала: клиника получает круглосуточную линию, не вынося речь и карточки за периметр.</div>
+        <div class="quote slim">Разница между владением и высвобождением — 3,77 − 2,7 ≈ 1,1 млн ₽ в год. Это и есть цена законного канала: клиника получает круглосуточную линию, не вынося речь и карточки за периметр.</div>
       </section>
 
       <!-- 24. Рамка метрик -->
