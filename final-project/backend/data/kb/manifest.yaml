@@ -1,0 +1,48 @@
+# Карта корпуса → ACL. Ingest читает это, а не «угадывает» тайну из текста.
+tenant: severnaya-liniya
+
+documents:
+  - path: public/01-uslugi-i-ceny.md
+    acl: public
+    subject_id: null
+    extract: [Service, Branch]
+  - path: public/02-vrachi.md
+    acl: public
+    subject_id: null
+    extract: [Doctor, Service, Branch]
+  - path: public/03-filialy.md
+    acl: public
+    subject_id: null
+    extract: [Branch]
+  - path: public/04-podgotovka-uzi.md
+    acl: public
+    subject_id: null
+    extract: [Preparation, Service]
+  - path: public/05-podgotovka-analizy-krovi.md
+    acl: public
+    subject_id: null
+    extract: [Preparation, Service]
+  - path: public/06-podgotovka-gastroskopiya.md
+    acl: public
+    subject_id: null
+    extract: [Preparation, Service]
+  - path: public/07-pediatria-priem.md
+    acl: public
+    subject_id: null
+    extract: [Service, Doctor, Preparation]
+  - path: staff/10-reglament-registratury.md
+    acl: staff
+    subject_id: null
+    extract: []
+  - path: patient_anna/20-napravlenie-uzi.md
+    acl: patient
+    subject_id: anna
+    extract: []
+  - path: patient_misha/30-napravlenie-uzi-rebenok.md
+    acl: patient
+    subject_id: misha
+    extract: []
+  - path: patient_boris/21-napominanie-gastroskopiya.md
+    acl: patient
+    subject_id: boris
+    extract: []

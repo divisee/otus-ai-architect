@@ -1,0 +1,82 @@
+{
+  "tenant": "severnaya-liniya",
+  "users": [
+    {
+      "id": "anna",
+      "login": "patient:anna",
+      "role": "patient",
+      "display_name": "Анна Соколова",
+      "phone": "+79160001122"
+    },
+    {
+      "id": "boris",
+      "login": "patient:boris",
+      "role": "patient",
+      "display_name": "Борис Орлов",
+      "phone": "+79250003344"
+    },
+    {
+      "id": "registrar",
+      "login": "staff:registrar",
+      "role": "staff",
+      "display_name": "Регистратор"
+    }
+  ],
+  "patients": [
+    {
+      "id": "anna",
+      "full_name": "Соколова Анна Игоревна",
+      "birth_date": "1992-03-14",
+      "share_with_guardian": false
+    },
+    {
+      "id": "misha",
+      "full_name": "Соколов Михаил Андреевич",
+      "birth_date": "2018-06-03",
+      "share_with_guardian": true
+    },
+    {
+      "id": "boris",
+      "full_name": "Орлов Борис Петрович",
+      "birth_date": "1984-11-02",
+      "share_with_guardian": false
+    }
+  ],
+  "guardian_links": [
+    {
+      "parent_user_id": "anna",
+      "child_patient_id": "misha",
+      "relation": "mother",
+      "active": true
+    }
+  ],
+  "appointments": [
+    {
+      "id": "apt-anna-usi",
+      "patient_id": "anna",
+      "service_id": "USI-01",
+      "branch_id": "lesnaya",
+      "slot": "2026-09-12T09:00:00+03:00",
+      "status": "planned",
+      "icd_on_referral": "K80.1"
+    },
+    {
+      "id": "apt-misha-usi",
+      "patient_id": "misha",
+      "service_id": "USI-02",
+      "branch_id": "lesnaya",
+      "slot": "2026-09-18T08:00:00+03:00",
+      "status": "planned",
+      "icd_on_referral": "N28.1"
+    },
+    {
+      "id": "apt-boris-egd",
+      "patient_id": "boris",
+      "service_id": "END-01",
+      "branch_id": "lesnaya",
+      "slot": "2026-09-15T09:40:00+03:00",
+      "status": "planned",
+      "icd_on_referral": "K21.0"
+    }
+  ]
+}

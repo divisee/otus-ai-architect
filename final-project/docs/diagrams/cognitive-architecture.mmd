@@ -1,0 +1,50 @@
+%% Когнитивная схема MVP. Речевой канал использует тот же оркестратор.
+
+flowchart LR
+    CALL[Звонок / wav] --> ASR[Whisper + diarization]
+    TXT[Текст /v1/chat] --> PRE
+    ASR --> PRE[Препроцессинг + идентификация]
+    PRE --> IG[Input Guardrails<br/>injection / тема / диагноз]
+    IG --> ANON[Анонимизатор ПДн]
+    ANON --> R[Router LangGraph]
+
+    R --> K[Knowledge GraphRAG]
+    R --> C[CRM tools + HITL]
+    R --> POL[Policy / ACL]
+    R -->|N неудач| OP[Оператор]
+
+    K --> G[(Neo4j)]
+    K --> V[(Qdrant)]
+    C --> CRM[(CRM stub)]
+    POL --> ACL[(RBAC на узлах и чанках)]
+
+    K --> F[Final]
+    C --> F
+    POL --> F
+    F --> OG[Output Guardrails<br/>тайна + grounding]
+    OG --> TTS[TTS Silero]
+    OG --> OUT[Текст ответа]
+    TTS --> AUDIO[Аудио]
+
+    subgraph CP[Control Plane]
+        IG
+        ANON
+        R
+        K
+        C
+        POL
+        F
+        OG
+    end
+
+    subgraph DP[Data Plane]
+        G
+        V
+        CRM
+        ACL
+        LLM[vLLM]
+    end
+
+    R -.-> LLM
+    K -.-> LLM
+    F -.-> LLM
