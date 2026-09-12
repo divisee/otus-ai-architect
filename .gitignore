@@ -81,5 +81,7 @@ final-project/**/.qdrant/
 # --- Course presentations (not submitted) ---
 hw-*/**/*.pdf
 hw-*/**/*.pptx
+final-project/**/*.pdf
+final-project/**/*.pptx
 **/_finops_imgs/
 **/_extract_*.txt
