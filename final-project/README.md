@@ -280,7 +280,7 @@ flowchart TB
 | Langfuse + Prom/Grafana  | Observability | self-host                 | Пишет трассировку вызовов и задержку                                |
 
 
-Из Data Plane нет вызова OpenAI/Anthropic. Клиент vLLM смотрит на внутренний URL.
+Контур on-premise. Клиент vLLM обращается к внутреннему URL.
 
 Контрольные потоки: ingest прайса в Qdrant и `Service` в Neo4j; сложный вопрос «УЗИ на Лесной и подготовка» — обход графа; Борис не видит направление Анны; Анна видит карту Миши; голос — тот же Orchestrator.
 
@@ -557,7 +557,7 @@ flowchart TB
 | Vault    | пароли, токены            | JIT, не env на диске прод-нод |
 
 
-Из GPU VLAN нет маршрута в интернет. Веса — внутреннее зеркало. OpenAI/Anthropic не резолвятся. Сессии LangGraph — в Postgres, чтобы реплика подхватила HITL.
+Контур on-premise: GPU VLAN без маршрута в интернет, веса — с внутреннего зеркала. Сессии LangGraph — в Postgres, чтобы реплика подхватила HITL.
 
 ### Онтология и ER
 
