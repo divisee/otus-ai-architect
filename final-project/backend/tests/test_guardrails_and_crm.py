@@ -42,3 +42,14 @@ def test_hitl_booking(orchestrator: Orchestrator, runtime):
     assert "подтверждена" in second.answer.lower()
     booked = [item for item in runtime.crm.appointments if item.id.startswith("apt-misha-") and item.status == "planned"]
     assert len(booked) >= 2
+
+
+def test_bm25_ranks_preparation_first(runtime):
+    hits = runtime.vectors.search("как готовиться к УЗИ брюшной полости", limit=5)
+    assert hits, "BM25 ничего не нашёл"
+    assert "podgotovka-uzi" in hits[0].doc_id
+
+
+def test_bm25_prefers_rare_terms(runtime):
+    hits = runtime.vectors.search("гастроскопия", limit=5)
+    assert any("gastroskopiya" in hit.doc_id or "uslugi" in hit.doc_id for hit in hits)
