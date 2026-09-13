@@ -5,7 +5,7 @@ flowchart LR
     TXT[Чат /v1/chat] --> PRE
     ASR --> PRE[Препроцессинг]
     PRE --> IG[Input Guardrails]
-    IG --> ANON[Анонимизатор ПДн]
+    IG --> ANON[Токенизация ПДн]
     ANON --> R[Router LangGraph]
     R --> K[Knowledge GraphRAG]
     R --> C[CRM Agent]

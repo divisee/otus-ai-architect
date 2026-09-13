@@ -7,7 +7,8 @@
 1. числовые факты презентации встречаются в README;
 2. число автотестов в README и презентации совпадает с фактическим числом тестов;
 3. число слайдов совпадает с картой «слайд → раздел README»;
-4. каждая упомянутая ADR существует в ``docs/adr/``.
+4. каждая упомянутая ADR существует в ``docs/adr/``;
+5. каждый термин из сносок слайда встречается на самом слайде или его схеме.
 
 Код возврата 1, если хотя бы одна проверка не прошла: скрипт годится для CI.
 """
@@ -74,12 +75,45 @@ def check_adr(problems: list[str]) -> None:
         problems.append(f"ADR-{number} упомянута, но файла в docs/adr нет")
 
 
+def slide_blocks() -> list[tuple[str, str, str]]:
+    raw = DECK.read_text(encoding="utf-8").split('<div class="stage" id="stage">')[1]
+    return re.findall(r"<!-- (\d+)\. ([^>]+?) -->\s*(<section.*?</section>)", raw, re.S)
+
+
+def _normalise(text: str) -> str:
+    text = html.unescape(re.sub(r"<[^>]+>", " ", text)).lower().replace("\u0451", "\u0435")
+    return re.sub(r"[^0-9a-z\u0430-\u044f_]+", " ", text)
+
+
+def check_glossary(problems: list[str]) -> None:
+    """Каждый термин из сноски должен встречаться на своём слайде.
+
+    Слайд — это его текст плюс подписи на схеме: внешний SVG читается с диска,
+    встроенный уже лежит в разметке. Так ловятся сноски, оставшиеся от
+    переписанного слайда, и термины, которые ввели без расшифровки.
+    """
+    for number, name, body in slide_blocks():
+        note = re.search(r'data-note="([^"]*)"', body)
+        if not note:
+            continue
+        text = _normalise(body.replace(note.group(0), ""))
+        for src in re.findall(r'src="(slides/[^"]+\.svg)"', body):
+            text += " " + _normalise((ROOT / src).read_text(encoding="utf-8"))
+        for part in html.unescape(note.group(1)).split(" | "):
+            term = part.split(" \u2014 ")[0]
+            words = _normalise(term).split()
+            probe = [word for word in words if word not in {"\u0438", "\u0438\u043b\u0438"}]
+            if probe and not all(word[:5] in text for word in probe):
+                problems.append(f"слайд {number} ({name}): «{term}» расшифрован, но на слайде не встречается")
+
+
 def main() -> int:
     problems: list[str] = []
     check_facts(problems)
     check_test_count(problems)
     check_slide_count(problems)
     check_adr(problems)
+    check_glossary(problems)
     if problems:
         print("Расхождения документации:")
         for item in problems:
