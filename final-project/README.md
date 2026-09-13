@@ -308,7 +308,7 @@ flowchart TB
 
     subgraph CP["Control Plane"]
         GW --> ORCH[Orchestrator<br/>LangGraph]
-        ORCH --> IG[Input Guardrails]
+        ORCH --> IG[🛡️ Input Guardrails]
         ORCH --> KN[Knowledge Agent<br/>graph walk + vector]
         ORCH --> CRM_A[CRM Agent]
         ORCH --> POL[Policy Agent<br/>ACL]
@@ -377,7 +377,7 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    REQ[Входящее сообщение<br/>text + subject_id + role] --> MEM[Memory<br/>сессия, последние реплики]
+    REQ[Входящее сообщение<br/>text + subject_id + role] --> MEM[🧠 Memory<br/>сессия, последние реплики]
     MEM --> PLN[Planner / Router<br/>intent: knowledge / crm / both / reject]
     PLN --> TOOLS[Tools interface]
     TOOLS --> T1[graph_search]
@@ -414,20 +414,20 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    IN[Реплика: голос или чат] --> IG[Input Guardrails<br/>инъекции, запрос диагноза, ПДн]
+    IN[🎙️ Реплика: голос или чат] --> IG[🛡️ Input Guardrails<br/>инъекции, запрос диагноза, ПДн]
 
     subgraph ORCH["Оркестратор — одна машина состояний"]
-        IG --> MEM[Memory<br/>сессия, actor_id, subject_id]
-        MEM --> RTR{Router<br/>knowledge / crm / both / reject}
-        FIN[Final<br/>сборка допущенного контекста]
-        GEN[Generator · vLLM]
-        OG[Output Guardrails<br/>чужое ФИО, диагноз, опора]
+        IG --> MEM[🧠 Memory<br/>сессия, actor_id, subject_id]
+        MEM --> RTR{🧭 Router<br/>knowledge / crm / both / reject}
+        FIN[🧩 Final<br/>сборка допущенного контекста]
+        GEN[✍️ Generator · vLLM]
+        OG[🧾 Output Guardrails<br/>чужое ФИО, диагноз, опора]
     end
 
     subgraph SUB["Субагенты — узлы того же графа"]
-        KN[Knowledge]
-        CRMA[CRM Agent]
-        POL[Policy Gate<br/>без вызова модели]
+        KN[📚 Knowledge]
+        CRMA[📅 CRM Agent]
+        POL[🔐 Policy Gate<br/>без вызова модели]
     end
 
     subgraph TOOLS["Инструменты"]
@@ -455,7 +455,7 @@ flowchart TB
     CRMA --> FIN
     FIN --> GEN
     GEN --> OG
-    OG --> OUT[Ответ: текст или синтез речи]
+    OG --> OUT[💬 Ответ: текст или синтез речи]
 ```
 
 
@@ -478,7 +478,7 @@ flowchart LR
     CALL[Звонок / wav] --> ASR[Whisper + diarization]
     TXT[Чат на сайте /v1/chat] --> PRE
     ASR --> PRE[Препроцессинг + идентификация]
-    PRE --> IG[Input Guardrails<br/>injection / тема / диагноз]
+    PRE --> IG[🛡️ Input Guardrails<br/>injection / тема / диагноз]
     IG --> ANON[Анонимизатор ПДн]
     ANON --> R[Router LangGraph]
 
@@ -495,7 +495,7 @@ flowchart LR
     K --> F[Final]
     C --> F
     POL --> F
-    F --> OG[Output Guardrails<br/>тайна + grounding]
+    F --> OG[🧾 Output Guardrails<br/>тайна + grounding]
     OG --> TTS[TTS Silero]
     OG --> OUT[Текст ответа]
     TTS --> AUDIO[Аудио]

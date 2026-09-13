@@ -1,24 +1,24 @@
 %% Мультиагентная схема: оркестратор, субагенты, инструменты (ADR-0008)
 flowchart TB
-    IN[Реплика: голос или чат] --> IG[Input Guardrails<br/>инъекции, запрос диагноза, ПДн]
+    IN[🎙️ Реплика: голос или чат] --> IG[🛡️ Input Guardrails<br/>инъекции, запрос диагноза, ПДн]
 
     subgraph ORCH["Оркестратор · LangGraph — одна машина состояний"]
-        IG --> MEM[Memory<br/>сессия, actor_id, subject_id]
-        MEM --> RTR{Router<br/>knowledge / crm / both / reject}
-        FIN[Final<br/>сборка допущенного контекста]
-        GEN[Generator · vLLM<br/>только допущенный контекст]
-        OG[Output Guardrails<br/>чужое ФИО, диагноз, опора]
+        IG --> MEM[🧠 Memory<br/>сессия, actor_id, subject_id]
+        MEM --> RTR{🧭 Router<br/>knowledge / crm / both / reject}
+        FIN[🧩 Final<br/>сборка допущенного контекста]
+        GEN[✍️ Generator · vLLM<br/>только допущенный контекст]
+        OG[🧾 Output Guardrails<br/>чужое ФИО, диагноз, опора]
     end
 
     subgraph SUB["Субагенты — узлы того же графа, не автономные агенты"]
-        KN[Knowledge<br/>поиск знаний клиники]
-        CRMA[CRM Agent<br/>слоты, запись, перенос, отмена]
-        POL[Policy Gate<br/>проверка прав, без модели]
+        KN[📚 Knowledge<br/>поиск знаний клиники]
+        CRMA[📅 CRM Agent<br/>слоты, запись, перенос, отмена]
+        POL[🔐 Policy Gate<br/>проверка прав, без модели]
     end
 
     subgraph TOOLS["Инструменты, закреплённые за субагентами"]
         T1[[graph_search · чтение]]
-        T2[[vector_search · чтение]]
+        T2[[bm25_search + vector_search<br/>слияние RRF · чтение]]
         T3[[list_slots · чтение]]
         T4[[book / reschedule / cancel · запись + HITL]]
         T5[[escalate_operator]]
@@ -41,4 +41,4 @@ flowchart TB
     CRMA --> FIN
     FIN --> GEN
     GEN --> OG
-    OG --> OUT[Ответ: текст или синтез речи]
+    OG --> OUT[💬 Ответ: текст или синтез речи]
