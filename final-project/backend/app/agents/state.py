@@ -25,6 +25,7 @@ class GraphState:
     nodes: list[GraphNode] = field(default_factory=list)
     crm_facts: list[str] = field(default_factory=list)
     acl_via: str | None = None
+    acl_vias: list[str] = field(default_factory=list)
     acl_denied: bool = False
     pending_confirm: bool = False
     escalate: bool = False

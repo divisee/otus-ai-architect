@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from app.agents.router import BOOKING_CUES
 from app.agents.state import GraphState
 from app.ingest.bootstrap import Runtime
 
@@ -40,7 +41,7 @@ def run_crm(state: GraphState, runtime: Runtime) -> GraphState:
             + "; ".join(f"{item.service_id} {item.slot} ({item.status})" for item in visits)
         )
 
-    if any(cue in state.text.lower() for cue in ("запис", "слот", "окно", "свободн")):
+    if any(cue in state.text.lower() for cue in BOOKING_CUES):
         slots = runtime.crm.list_slots(service_id, branch_id)
         if slots:
             state.session.pending = {

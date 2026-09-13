@@ -44,6 +44,26 @@ def test_hitl_booking(orchestrator: Orchestrator, runtime):
     assert len(booked) >= 2
 
 
+def test_booking_intent_survives_word_forms(orchestrator: Orchestrator, runtime):
+    """«Запишите» и «окна» — самые частые формы, а в правилах стояли «запис» и «окно»."""
+    anna = runtime.crm.actor_from_login("patient:anna")
+    state = orchestrator.run(anna, "Запишите меня на гастроскопию, какие есть окна?", "sess-forms", "text")
+
+    assert state.intent in {"crm", "both"}, "ветка записи не выбрана"
+    assert state.pending_confirm is True, "окна не предложены, подтверждать нечего"
+
+
+def test_access_ground_is_deterministic(orchestrator: Orchestrator, runtime):
+    """Основание в журнале не должно зависеть от порядка обхода множества."""
+    anna = runtime.crm.actor_from_login("patient:anna")
+    grounds = {
+        orchestrator.run(anna, "Сколько стоит УЗИ и как готовиться?", None, "text").acl_via
+        for _ in range(5)
+    }
+
+    assert len(grounds) == 1
+
+
 def test_bm25_ranks_preparation_first(runtime):
     hits = runtime.vectors.search("как готовиться к УЗИ брюшной полости", limit=5)
     assert hits, "BM25 ничего не нашёл"

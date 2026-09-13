@@ -64,6 +64,8 @@ coverage.xml
 *.cover
 
 # --- Env / secrets ---
+.streamlit/secrets.toml
+
 .env
 .env.*
 *.local

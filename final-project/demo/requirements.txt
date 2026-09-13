@@ -1,0 +1,4 @@
+# Демонстрационный стенд. Ставится поверх окружения backend:
+#   backend/.venv/bin/pip install -r demo/requirements.txt
+streamlit>=1.41          # интерфейс; st.audio_input появился в 1.41
+faster-whisper>=1.0      # распознавание речи локально, на CPU

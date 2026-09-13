@@ -12,6 +12,7 @@ class AuditEvent:
     via: str | None
     acl_denied: bool
     intent: str
+    vias: list[str] = field(default_factory=list)
     chunk_ids: list[str] = field(default_factory=list)
     node_ids: list[str] = field(default_factory=list)
     extra: dict[str, Any] = field(default_factory=dict)

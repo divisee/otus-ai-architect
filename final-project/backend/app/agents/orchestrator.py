@@ -68,6 +68,7 @@ class Orchestrator:
                 actor_id=actor.login,
                 subject_id=state.subject_id,
                 via=state.acl_via,
+                vias=state.acl_vias,
                 acl_denied=state.acl_denied,
                 intent=state.intent,
                 chunk_ids=[chunk.chunk_id for chunk in state.chunks],

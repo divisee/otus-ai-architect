@@ -9,6 +9,10 @@ from app.stores.graph import GraphNode
 
 ICD_RE = re.compile(r"\b([A-Z]\d{2}(?:\.\d+)?)\b", re.I)
 
+# От самого узкого основания к самому широкому: аудитора интересует,
+# чем открыли закрытое, а не то, что нашлось общедоступное.
+VIA_PRIORITY = ("guardian", "staff_duty", "self", "staff", "public")
+
 
 def retrieve_knowledge(state: GraphState, runtime: Runtime) -> GraphState:
     query = state.text
@@ -48,8 +52,14 @@ def retrieve_knowledge(state: GraphState, runtime: Runtime) -> GraphState:
     public_or_own = [chunk for chunk in state.chunks if chunk.acl in {"public", "staff"} or chunk.subject_id]
     state.chunks = public_or_own
     vias = {chunk.via for chunk in state.chunks if chunk.via}
-    if state.acl_via is None and vias:
-        state.acl_via = next(iter(vias))
+    if state.acl_via:
+        vias.add(state.acl_via)
+    # Журнал хранит все основания, по которым что-то было допущено, а `acl_via`
+    # называет главное — то, которым открыли закрытые сведения. Порядок задан
+    # явно: из множества основание брать нельзя, оно не упорядочено.
+    state.acl_vias = sorted(vias, key=lambda via: VIA_PRIORITY.index(via) if via in VIA_PRIORITY else 99)
+    if state.acl_vias:
+        state.acl_via = state.acl_vias[0]
     if denied_card:
         state.acl_denied = True
         if not state.acl_via:
