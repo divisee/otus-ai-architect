@@ -47,6 +47,10 @@ class CrmStub:
         ]
         self._holds: dict[str, dict[str, Any]] = {}
 
+    def known_names(self) -> list[str]:
+        """Справочник ФИО для третьего слоя обнаружения ПДн (ADR-0010)."""
+        return [patient.full_name for patient in self.patients.values()]
+
     def actor_from_login(self, login: str):
         from app.policy.acl import Actor
 

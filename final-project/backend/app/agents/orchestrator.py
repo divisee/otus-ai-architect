@@ -41,7 +41,7 @@ class Orchestrator:
         )
         self.runtime.sessions.append(session, "user", text)
 
-        state = route(state)
+        state = route(state, self.runtime.crm.known_names())
         if state.intent == "reject_diagnosis":
             state.answer = REFUSAL
         elif state.intent == "knowledge":

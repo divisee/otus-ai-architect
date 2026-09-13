@@ -32,9 +32,11 @@ ANNA_CUES = ("анна", "соколов")
 BORIS_CUES = ("борис", "орлов")
 
 
-def route(state: GraphState) -> GraphState:
-    decision = inspect_input(state.text)
+def route(state: GraphState, known_names: list[str] | None = None) -> GraphState:
+    decision = inspect_input(state.text, known_names)
     state.extra["pii_tokens"] = decision.tokens
+    state.extra["pii_entities"] = decision.entities
+    state.extra["sanitized"] = decision.sanitized
     if decision.reject_diagnosis:
         state.intent = "reject_diagnosis"
         return state
