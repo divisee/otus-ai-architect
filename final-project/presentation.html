@@ -261,17 +261,18 @@
     .layer .why { font-size: 15px; line-height: 1.4; margin: 0; }
 
     /* --- ручки API --- */
-    .api { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; min-height: 0; }
+    .api { display: grid; grid-template-columns: 1fr; gap: 10px; flex: 1; min-height: 0; }
     .api article {
-      border-radius: 16px; padding: 16px 20px; background: var(--v-050); box-shadow: var(--shadow);
-      display: flex; flex-direction: column; gap: 6px; justify-content: center; position: relative;
+      border-radius: 16px; padding: 13px 22px; background: var(--v-050); box-shadow: var(--shadow);
+      display: flex; flex-direction: row; align-items: baseline; gap: 20px; position: relative;
     }
+    .api .body { flex: 1; display: flex; flex-direction: column; gap: 3px; }
     .api article::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 5px; border-radius: 0 6px 6px 0; }
     .api article:nth-child(4n+1)::before { background: var(--v-400); }
     .api article:nth-child(4n+2)::before { background: var(--v-600); }
     .api article:nth-child(4n+3)::before { background: var(--v-800); }
     .api article:nth-child(4n+4)::before { background: var(--sage); }
-    .api .route { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 16px; font-weight: 700; color: var(--v-700); }
+    .api .route { flex: 0 0 240px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15.5px; font-weight: 700; color: var(--v-700); }
     .api p { margin: 0; font-size: 14px; line-height: 1.4; }
     .api .meta { font-size: 13px; color: var(--muted); }
 
@@ -315,6 +316,9 @@
       text-anchor: middle; font-family: Manrope, sans-serif; font-size: 11.5px; fill: #5f5875;
     }
     .agents-graph text.edge.deny { fill: var(--deny); text-anchor: end; font-weight: 700; }
+    .agents-graph .n text.t { font-size: 10.5px; font-weight: 600; fill: var(--v-600); }
+    .agents-graph .hitl rect { fill: var(--sage-100); stroke: #bcdcda; stroke-width: 1; }
+    .agents-graph .hitl text { text-anchor: middle; font-family: Manrope, sans-serif; font-size: 12.5px; font-weight: 700; fill: #23524f; }
 
     /* --- мультиагентная схема --- */
     .agents { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
@@ -764,12 +768,12 @@
       <!-- 11. Мультиагентная схема -->
       <section class="slide" data-note="Оркестратор — программа, которая ведёт диалог по графу состояний. | Субагент — узел того же графа со своим набором инструментов, а не отдельная модель. | Guardrails — guardrails, «ограждения»: фильтры на входе и выходе диалога. | HITL — Human-in-the-loop, человек в контуре решения: запись, перенос и отмена — только после подтверждения. | vLLM — движок инференса больших языковых моделей (LLM) с PagedAttention; работает внутри периметра.">
         <p class="kicker">Агенты · ADR-0008</p>
-        <h2>Оркестратор, субагенты и их инструменты</h2>
-        <p class="sub">Автономных агентов в контуре нет: субагенты — узлы одной машины состояний. Маршрут выбирает Router, права проверяет отдельный узел, инструменты закреплены за субагентом и разделены на чтение и запись.</p>
+        <h2>Мультиагентная система: оркестратор и субагенты</h2>
+        <p class="sub">Два субагента со своими инструментами, узел прав как отдельный guardrails и человек в контуре на записи. Автономных агентов нет: субагенты — узлы одной машины состояний, маршрут выбирает Router, модель не решает, проверять ли права.</p>
         <div class="agents">
           <figure class="agents-graph">
-          <svg viewBox="0 0 1280 560" xmlns="http://www.w3.org/2000/svg" role="img"
-               aria-label="Граф агентов: вход, фильтры, роутер, субагенты Knowledge и CRM, узел прав, генератор, выходные фильтры, ответ">
+          <svg viewBox="0 0 1280 548" xmlns="http://www.w3.org/2000/svg" role="img"
+               aria-label="Мультиагентная система: оркестратор, субагенты Knowledge и CRM, узел прав, подтверждение человеком, генерация и выходные фильтры">
             <defs>
               <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                 <path d="M0 0 L10 5 L0 10 z" fill="#8b6fc4"/>
@@ -777,64 +781,79 @@
               <marker id="ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                 <path d="M0 0 L10 5 L0 10 z" fill="#a8231b"/>
               </marker>
+              <marker id="ah-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#4f8a86"/>
+              </marker>
             </defs>
 
             <!-- рёбра -->
-            <path d="M885 82 C 885 112, 270 104, 270 134" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M885 82 C 885 112, 1010 104, 1010 134" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M424 171 C 474 171, 474 318, 506 322" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M856 171 C 806 171, 806 318, 774 322" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M640 402 C 640 430, 366 428, 366 452" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M496 483 H 532" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M800 483 H 836" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M975 47 H 1216 V 430 H 670 V 450" fill="none" stroke="#a8231b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ah-d)"/>
+            <path d="M885 74 C 885 100, 274 96, 274 120" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M885 74 C 885 100, 1006 96, 1006 120" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M424 156 C 470 156, 470 334, 496 338" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M856 156 C 812 156, 812 334, 786 338" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M640 424 C 640 446, 366 442, 366 456" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M496 487 H 532" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M800 487 H 836" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M975 41 H 1216 V 438 H 670 V 454" fill="none" stroke="#a8231b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ah-d)"/>
+            <path d="M1006 234 V 246" fill="none" stroke="#4f8a86" stroke-width="2" marker-end="url(#ah-s)"/>
+            <path d="M1006 268 V 280" fill="none" stroke="#4f8a86" stroke-width="2" marker-end="url(#ah-s)"/>
 
-            <text x="600" y="116" class="edge">знания</text>
-            <text x="1035" y="116" class="edge">запись</text>
-            <text x="456" y="266" class="edge">права</text>
-            <text x="826" y="266" class="edge">права</text>
-            <text x="500" y="424" class="edge">допущенный контекст</text>
-            <text x="1204" y="420" class="edge deny">отказ в диагнозе — мимо модели</text>
+            <text x="600" y="104" class="edge">справка</text>
+            <text x="1040" y="104" class="edge">запись</text>
+            <text x="452" y="250" class="edge">права</text>
+            <text x="830" y="250" class="edge">права</text>
+            <text x="498" y="430" class="edge">допущенный контекст</text>
+            <text x="1204" y="428" class="edge deny">запрос диагноза — мимо модели</text>
 
-            <!-- верхняя цепочка -->
-            <g class="n lite"><rect x="305" y="20" width="200" height="62" rx="14"/>
-              <text x="405" y="46">🎙️ Реплика</text><text x="405" y="65" class="s">голос или чат</text></g>
-            <path d="M505 51 H 531" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <g class="n lite"><rect x="535" y="20" width="230" height="62" rx="14"/>
-              <text x="650" y="46">🛡️ Входные фильтры</text><text x="650" y="65" class="s">инъекции · диагноз · ПДн</text></g>
-            <path d="M765 51 H 791" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <g class="n main"><rect x="795" y="20" width="180" height="62" rx="14"/>
-              <text x="885" y="46">🧭 Router</text><text x="885" y="65" class="s">выбор ветки</text></g>
+            <!-- оркестратор -->
+            <g class="n lite"><rect x="305" y="10" width="200" height="64" rx="14"/>
+              <text x="405" y="34">🎙️ Реплика</text><text x="405" y="52" class="s">голос или чат</text>
+              <text x="405" y="67" class="t">Whisper · веб-чат</text></g>
+            <path d="M505 42 H 531" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <g class="n lite"><rect x="535" y="10" width="230" height="64" rx="14"/>
+              <text x="650" y="34">🛡️ Input Guardrails</text><text x="650" y="52" class="s">инъекции · диагноз · ПДн</text>
+              <text x="650" y="67" class="t">правила + T-lite 8B</text></g>
+            <path d="M765 42 H 791" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <g class="n main"><rect x="795" y="10" width="180" height="64" rx="14"/>
+              <text x="885" y="34">🧭 Router</text><text x="885" y="52" class="s">выбор ветки диалога</text>
+              <text x="885" y="67" class="t">LangGraph · tool-calling</text></g>
 
             <!-- субагенты -->
-            <g class="n agent"><rect x="124" y="134" width="300" height="66" rx="14"/>
-              <text x="274" y="162">📚 Knowledge</text><text x="274" y="183" class="s">поиск в знаниях клиники</text></g>
-            <g class="n agent"><rect x="856" y="134" width="300" height="66" rx="14"/>
-              <text x="1006" y="162">📅 CRM Agent</text><text x="1006" y="183" class="s">слоты, запись, перенос, отмена</text></g>
+            <g class="n agent"><rect x="124" y="120" width="300" height="72" rx="14"/>
+              <text x="274" y="146">📚 Субагент Knowledge</text><text x="274" y="165" class="s">ищет ответ в знаниях клиники</text>
+              <text x="274" y="182" class="t">GraphRAG: Neo4j · Qdrant · BM25</text></g>
+            <g class="n agent"><rect x="856" y="120" width="300" height="72" rx="14"/>
+              <text x="1006" y="146">📅 Субагент CRM</text><text x="1006" y="165" class="s">слоты, запись, перенос, отмена</text>
+              <text x="1006" y="182" class="t">порт CRM · HITL на записи</text></g>
 
-            <g class="tool"><rect x="124" y="212" width="300" height="28" rx="9"/><text x="274" y="231">graph_search · обход графа</text></g>
-            <g class="tool"><rect x="124" y="246" width="300" height="28" rx="9"/><text x="274" y="265">bm25_search · слова и коды</text></g>
-            <g class="tool"><rect x="124" y="280" width="300" height="28" rx="9"/><text x="274" y="299">vector_search · смысл</text></g>
+            <g class="tool"><rect x="124" y="206" width="300" height="28" rx="9"/><text x="274" y="225">graph_search · обход графа</text></g>
+            <g class="tool"><rect x="124" y="240" width="300" height="28" rx="9"/><text x="274" y="259">bm25_search · слова и коды</text></g>
+            <g class="tool"><rect x="124" y="274" width="300" height="28" rx="9"/><text x="274" y="293">vector_search · смысл</text></g>
 
-            <g class="tool"><rect x="856" y="212" width="300" height="28" rx="9"/><text x="1006" y="231">list_slots · чтение</text></g>
-            <g class="tool write"><rect x="856" y="246" width="300" height="28" rx="9"/><text x="1006" y="265">book / reschedule / cancel · после «да»</text></g>
-            <g class="tool"><rect x="856" y="280" width="300" height="28" rx="9"/><text x="1006" y="299">escalate_operator</text></g>
+            <g class="tool"><rect x="856" y="206" width="300" height="28" rx="9"/><text x="1006" y="225">list_slots · чтение</text></g>
+            <g class="hitl"><rect x="856" y="246" width="300" height="34" rx="10"/><text x="1006" y="268">🙋 HITL · подтверждение пациента</text></g>
+            <g class="tool write"><rect x="856" y="292" width="300" height="28" rx="9"/><text x="1006" y="311">book / reschedule / cancel</text></g>
+            <g class="tool"><rect x="856" y="326" width="300" height="28" rx="9"/><text x="1006" y="345">escalate_operator</text></g>
 
             <!-- узел прав -->
-            <g class="n agent"><rect x="490" y="322" width="300" height="80" rx="14"/>
-              <text x="640" y="348">🔐 Policy Gate</text>
-              <text x="640" y="368" class="s">RBAC + ReBAC по реестру, правило ADR-0002</text>
-              <text x="640" y="386" class="s">код на Python, модель не вызывается</text></g>
-            <g class="tool"><rect x="806" y="330" width="160" height="28" rx="9"/><text x="886" y="349">decide</text></g>
-            <g class="tool"><rect x="806" y="364" width="160" height="28" rx="9"/><text x="886" y="383">decide_crm</text></g>
+            <g class="n agent"><rect x="490" y="338" width="300" height="86" rx="14"/>
+              <text x="640" y="364">🔐 Policy Gate · guardrails доступа</text>
+              <text x="640" y="384" class="s">RBAC + ReBAC по реестру, ADR-0002</text>
+              <text x="640" y="401" class="s">пять оснований: public, staff, своя карта,</text>
+              <text x="640" y="416" class="s">опека, обязанности регистратуры</text></g>
+            <g class="tool"><rect x="806" y="368" width="150" height="28" rx="9"/><text x="881" y="387">decide</text></g>
+            <g class="tool"><rect x="806" y="402" width="150" height="28" rx="9"/><text x="881" y="421">decide_crm</text></g>
 
             <!-- ответ -->
-            <g class="n main"><rect x="236" y="452" width="260" height="62" rx="14"/>
-              <text x="366" y="478">✍️ Generator · vLLM</text><text x="366" y="497" class="s">только по допущенному</text></g>
-            <g class="n lite"><rect x="540" y="452" width="260" height="62" rx="14"/>
-              <text x="670" y="478">🧾 Выходные фильтры</text><text x="670" y="497" class="s">чужое ФИО · диагноз · опора</text></g>
-            <g class="n lite"><rect x="844" y="452" width="200" height="62" rx="14"/>
-              <text x="944" y="478">💬 Ответ</text><text x="944" y="497" class="s">текст или синтез речи</text></g>
+            <g class="n main"><rect x="236" y="456" width="260" height="64" rx="14"/>
+              <text x="366" y="480">✍️ Generator</text><text x="366" y="498" class="s">только по допущенному</text>
+              <text x="366" y="513" class="t">vLLM · T-pro-it-2.1 32B</text></g>
+            <g class="n lite"><rect x="540" y="456" width="260" height="64" rx="14"/>
+              <text x="670" y="480">🧾 Output Guardrails</text><text x="670" y="498" class="s">чужое ФИО · диагноз · опора</text>
+              <text x="670" y="513" class="t">правила + проверка grounding</text></g>
+            <g class="n lite"><rect x="844" y="456" width="200" height="64" rx="14"/>
+              <text x="944" y="480">💬 Ответ</text><text x="944" y="498" class="s">текст или синтез речи</text>
+              <text x="944" y="513" class="t">Silero TTS</text></g>
           </svg>
         </figure>
           <p class="note"><b>Почему не автономные агенты:</b> модель не решает, вызывать ли проверку прав, — это обязательный узел маршрута; запись и отмена не выполняются без подтверждения пользователя. <b>Цена мультиагентности:</b> на реплику приходится два вызова 32B и около 1,2 вызова 8B — Policy, обход графа и BM25 модель не вызывают вовсе.</p>
@@ -857,23 +876,31 @@
         <div class="api">
           <article>
             <div class="route">POST /v1/chat</div>
-            <p>Реплика чата на сайте. На вход — текст и номер сессии, на выход — ответ, намерение, идентификаторы допущенных узлов и фрагментов.</p>
-            <p class="meta">Контур измерений: задержка и нагрузка считаются здесь.</p>
+            <div class="body">
+              <p>Реплика чата на сайте. На вход — текст и номер сессии, на выход — ответ, намерение, идентификаторы допущенных узлов и фрагментов.</p>
+              <p class="meta">Контур измерений: задержка и нагрузка считаются здесь.</p>
+            </div>
           </article>
           <article>
             <div class="route">POST /v1/voice</div>
-            <p>Реплика звонка. На вход — транскрипт и метки говорящих, дальше — тот же оркестратор и та же проверка прав.</p>
-            <p class="meta">Разметка говорящих делит реплики, но прав не даёт.</p>
+            <div class="body">
+              <p>Реплика звонка. На вход — транскрипт и метки говорящих, дальше — тот же оркестратор и та же проверка прав.</p>
+              <p class="meta">Разметка говорящих делит реплики, но прав не даёт.</p>
+            </div>
           </article>
           <article>
             <div class="route">GET /v1/audit/{request_id}</div>
-            <p>Решение доступа по конкретному запросу: кто спрашивал, чья карта, по какому основанию допущено или отказано, какие фрагменты вошли в контекст.</p>
-            <p class="meta">Доказательная запись для внутреннего аудита и проверки по 152-ФЗ.</p>
+            <div class="body">
+              <p>Решение доступа по конкретному запросу: кто спрашивал, чья карта, по какому основанию допущено или отказано, какие фрагменты вошли в контекст.</p>
+              <p class="meta">Доказательная запись для внутреннего аудита и проверки по 152-ФЗ.</p>
+            </div>
           </article>
           <article>
             <div class="route">GET /health</div>
-            <p>Проверка доступности процесса для балансировщика и мониторинга.</p>
-            <p class="meta">Без данных пациента и без обращения к модели.</p>
+            <div class="body">
+              <p>Проверка доступности процесса для балансировщика и мониторинга.</p>
+              <p class="meta">Без данных пациента и без обращения к модели.</p>
+            </div>
           </article>
         </div>
       </section>
@@ -1142,12 +1169,12 @@
 
       <!-- 24. Поставка -->
       <section class="slide" data-note="Docker — упаковка сервиса вместе с зависимостями в образ. | Kubernetes — оркестратор контейнеров: запускает образы на узлах, следит за живостью и обновлениями. | CI/CD — Continuous Integration / Continuous Delivery: автоматическая сборка, прогон тестов и доставка новой версии. | Helm — шаблон конфигурации для Kubernetes. | Terraform — описание инфраструктуры кодом. | Blue/green — выкладка на вторую копию с переключением трафика.">
-        <p class="kicker">Поставка</p>
-        <h2>Как это разворачивается</h2>
+        <p class="kicker">DevOps · MLOps</p>
+        <h2>CI/CD и выкатка в прод</h2>
         <p class="sub">Сегодня контур собирается и показывается локально. Целевое размещение — кластер в периметре клиники, тот же образ и та же конфигурация, только другой уровень оркестрации.</p>
         <div class="ship">
           <div class="col">
-            <div class="n">сейчас · защита проекта</div>
+            <div class="n">dev · защита проекта</div>
             <h3>Локальный стенд</h3>
             <ul>
               <li><code>docker compose --profile data up</code> — Neo4j, Qdrant, PostgreSQL</li>
@@ -1157,17 +1184,17 @@
             </ul>
           </div>
           <div class="col">
-            <div class="n">между ними · CI/CD</div>
+            <div class="n">CI/CD · GitHub Actions</div>
             <h3>Сборка и проверка</h3>
             <ul>
               <li>GitHub Actions: линтер, автотесты, сборка образа</li>
               <li>офлайн-ворота релиза прогоняются в пайплайне</li>
               <li>образ уходит в приватный реестр клиники</li>
-              <li>версия образа фиксируется вместе с версией корпуса и правил доступа</li>
+              <li>MLOps-версионирование: образ, веса модели, индекс и правила доступа — один релизный набор</li>
             </ul>
           </div>
           <div class="col">
-            <div class="n">цель · периметр клиники</div>
+            <div class="n">prod · периметр клиники</div>
             <h3>Kubernetes в контуре</h3>
             <ul>
               <li>Helm-чарт: шлюз, оркестратор, ingest, наблюдаемость</li>
@@ -1183,8 +1210,8 @@
 
       <!-- 25. Мониторинг -->
       <section class="slide" data-note="p50 / p95 / p99 — процентили задержки: значение, которое не превышают 50, 95 и 99 процентов ответов. | KV-cache — Key-Value cache, кэш внимания: растёт с длиной контекста и числом параллельных диалогов. | 5xx — коды ошибок сервера в протоколе HTTP. | Prometheus — сбор числовых метрик. | Grafana — дашборд для их отображения. | Langfuse — трассировка вызовов модели. | Alertmanager — рассылка алертов дежурному.">
-        <p class="kicker">Эксплуатация</p>
-        <h2>Мониторинг после выката</h2>
+        <p class="kicker">SRE · наблюдаемость</p>
+        <h2>Мониторинг прода после выкатки</h2>
         <p class="sub">Prometheus собирает метрики, Grafana показывает их дежурному, Langfuse хранит трассировку каждого вызова. Всё внутри периметра: в трассировку пишутся хэш запроса, допущенные узлы и решение доступа — не текст пациента.</p>
         <div class="grid grid-4 fill">
           <div class="card">
