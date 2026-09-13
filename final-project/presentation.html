@@ -151,12 +151,16 @@
     .econ > .card.mark::before { background: var(--sage); }
     .card .assume { margin-top: 9px; font-size: 12px; line-height: 1.35; color: var(--muted); }
     .card .assume b { color: var(--v-700); }
+    .legend { margin-top: 10px; flex: 0 0 auto; }
+    .legend .card { padding: 11px 14px; }
+    .legend .card h3 { font-size: 14px; margin-bottom: 5px; }
+    .legend .card p { font-size: 13px; line-height: 1.38; }
     .contours { margin: auto 0; }
-    .contours .card { padding: 24px 26px 24px 30px; }
-    .contours h3 { font-size: 22px; margin-bottom: 14px; }
+    .contours .card { padding: 20px 24px 20px 28px; }
+    .contours h3 { font-size: 22px; margin-bottom: 12px; }
     .contours .spec { gap: 0; }
-    .contours .spec .row { padding: 11px 0; border-bottom: 1px solid rgba(100, 2, 186, 0.09); }
-    .contours .spec .row.sum { margin-top: 12px; padding: 12px 14px; border-bottom: 0; }
+    .contours .spec .row { padding: 9px 0; border-bottom: 1px solid rgba(100, 2, 186, 0.09); }
+    .contours .spec .row.sum { margin-top: 10px; padding: 11px 14px; border-bottom: 0; }
     .contours .spec dt { flex: 0 0 88px; font-size: 13px; }
     .contours .spec dd { font-size: 15.5px; }
     .spec { margin: 0; display: flex; flex-direction: column; gap: 8px; }
@@ -357,7 +361,8 @@
     }
     .agents .tool i { font-style: normal; color: var(--muted); }
     .agents .tool.write { background: var(--v-200); color: var(--v-900); }
-    .agents .note { margin: 0; font-size: 12.5px; color: var(--muted); }
+    .agents .note { display: flex; flex-direction: column; gap: 3px; }
+    .agents .note p { margin: 0; font-size: 12.5px; line-height: 1.35; color: var(--muted); padding-left: 14px; text-indent: -14px; }
     .agents .note b { color: var(--v-700); }
 
     /* --- мультиагентная схема: конец --- */
@@ -738,11 +743,17 @@
       </section>
 
       <!-- 8. C4 L1 -->
-      <section class="slide" data-note="C4 L1 — Context, первый уровень модели C4: система целиком и всё, что её окружает. | CRM — Customer Relationship Management, система учёта карточек, визитов и расписания. | ПДн — персональные данные в смысле 152-ФЗ.">
+      <section class="slide" data-note="C4 L1 — Context, первый уровень модели C4: система целиком и всё, что её окружает. | CRM — Customer Relationship Management, система учёта карточек, визитов и расписания. | ingest — загрузка корпуса: разбор документа, нарезка на фрагменты, простановка метки доступа и индексация. | МКБ-10 — Международная классификация болезней, десятый пересмотр. | HITL — Human-in-the-loop, человек в контуре решения.">
         <p class="kicker">C4 · L1 Context</p>
-        <h2>Периметр клиники</h2>
-        <p class="sub">Слева — люди и телефония, справа — учётные системы. Персональные данные и текст запроса за периметр не выходят ни на одном плече.</p>
+        <h2>Границы контура и внешние участники</h2>
+        <p class="sub">Уровень фиксирует границу обработки: внутри контура — AI-платформа, снаружи — источники обращений, корпус документов, промышленная CRM и оператор. В публичные сети уходит только уведомление о состоявшейся записи.</p>
         <figure class="diagram"><img src="slides/c4-l1.svg" alt="C4 L1: пациент, персонал, телефония, AI-платформа, CRM"></figure>
+        <div class="grid grid-4 legend">
+          <div class="card"><h3>🙋 Источники обращений</h3><p>Пациент — звонок на номер клиники или чат на сайте; регистратор и врач — с рабочего места. Роль задаёт объём доступных данных.</p></div>
+          <div class="card"><h3>🎧 Речевой канал</h3><p>Телефония и микрофон передают аудиопоток; распознавание и синтез выполняются внутри контура.</p></div>
+          <div class="card"><h3>📄 Корпус документов</h3><p>Прайс, регламенты подготовки, расписание филиалов, справочник МКБ-10 — заданием ingest, а не вручную.</p></div>
+          <div class="card"><h3>🗂️ Смежные системы</h3><p>Чтение слотов и запись в CRM, эскалация оператору HITL, уведомление пациенту после подтверждения.</p></div>
+        </div>
       </section>
 
       <!-- 9. C4 L2 -->
@@ -848,7 +859,11 @@
               <text x="944" y="513" class="t">Silero TTS</text></g>
           </svg>
         </figure>
-          <p class="note"><b>Почему не автономные агенты:</b> модель не решает, вызывать ли проверку прав, — это обязательный узел маршрута; запись и отмена не выполняются без подтверждения пользователя. <b>Цена мультиагентности:</b> на реплику приходится два вызова 32B и около 1,2 вызова 8B — Policy, обход графа и BM25 модель не вызывают вовсе.</p>
+          <div class="note">
+            <p><b>Почему не автономные агенты:</b> модель не решает, вызывать ли проверку прав, — это обязательный узел маршрута.</p>
+            <p><b>Человек в контуре:</b> запись, перенос и отмена выполняются только после подтверждения пользователя.</p>
+            <p><b>Цена мультиагентности:</b> два вызова модели 32B и около 1,2 вызова 8B на реплику; проверка прав, обход графа и поиск BM25 выполняются кодом, без обращения к модели.</p>
+          </div>
         </div>
       </section>
 
