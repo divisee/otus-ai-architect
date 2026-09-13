@@ -314,7 +314,7 @@
     .agents-graph text.edge {
       text-anchor: middle; font-family: Manrope, sans-serif; font-size: 11.5px; fill: #5f5875;
     }
-    .agents-graph text.edge.deny { fill: var(--deny); }
+    .agents-graph text.edge.deny { fill: var(--deny); text-anchor: end; font-weight: 700; }
 
     /* --- мультиагентная схема --- */
     .agents { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
@@ -831,7 +831,7 @@
         <p class="sub">Автономных агентов в контуре нет: субагенты — узлы одной машины состояний. Маршрут выбирает Router, права проверяет отдельный узел, инструменты закреплены за субагентом и разделены на чтение и запись.</p>
         <div class="agents">
           <figure class="agents-graph">
-          <svg viewBox="0 0 1280 540" xmlns="http://www.w3.org/2000/svg" role="img"
+          <svg viewBox="0 0 1280 560" xmlns="http://www.w3.org/2000/svg" role="img"
                aria-label="Граф агентов: вход, фильтры, роутер, субагенты Knowledge и CRM, узел прав, генератор, выходные фильтры, ответ">
             <defs>
               <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -843,59 +843,61 @@
             </defs>
 
             <!-- рёбра -->
-            <path d="M885 78 C 885 110, 270 100, 270 138" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M885 78 C 885 110, 1010 100, 1010 138" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M420 171 C 470 171, 470 320, 505 322" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M860 171 C 810 171, 810 320, 775 322" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M640 384 C 640 410, 435 400, 435 428" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M565 459 H 593" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M855 459 H 883" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <path d="M975 47 H 1240 V 459 H 857" fill="none" stroke="#a8231b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ah-d)"/>
+            <path d="M885 82 C 885 112, 270 104, 270 134" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M885 82 C 885 112, 1010 104, 1010 134" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M424 171 C 474 171, 474 318, 506 322" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M856 171 C 806 171, 806 318, 774 322" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M640 402 C 640 430, 366 428, 366 452" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M496 483 H 532" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M800 483 H 836" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M975 47 H 1216 V 430 H 670 V 450" fill="none" stroke="#a8231b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ah-d)"/>
 
-            <text x="600" y="112" class="edge">знания</text>
-            <text x="1030" y="112" class="edge">запись</text>
-            <text x="455" y="262" class="edge">права</text>
-            <text x="828" y="262" class="edge">права</text>
-            <text x="560" y="410" class="edge">допущенный контекст</text>
-            <text x="1252" y="250" class="edge deny" text-anchor="end">отказ в диагнозе</text>
+            <text x="600" y="116" class="edge">знания</text>
+            <text x="1035" y="116" class="edge">запись</text>
+            <text x="456" y="266" class="edge">права</text>
+            <text x="826" y="266" class="edge">права</text>
+            <text x="500" y="424" class="edge">допущенный контекст</text>
+            <text x="1204" y="420" class="edge deny">отказ в диагнозе — мимо модели</text>
 
             <!-- верхняя цепочка -->
-            <g class="n lite"><rect x="305" y="16" width="200" height="62" rx="14"/>
-              <text x="405" y="42">🎙️ Реплика</text><text x="405" y="61" class="s">голос или чат</text></g>
-            <path d="M505 47 H 533" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <g class="n lite"><rect x="535" y="16" width="230" height="62" rx="14"/>
-              <text x="650" y="42">🛡️ Входные фильтры</text><text x="650" y="61" class="s">инъекции · диагноз · ПДн</text></g>
-            <path d="M765 47 H 793" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
-            <g class="n main"><rect x="795" y="16" width="180" height="62" rx="14"/>
-              <text x="885" y="42">🧭 Router</text><text x="885" y="61" class="s">выбор ветки</text></g>
+            <g class="n lite"><rect x="305" y="20" width="200" height="62" rx="14"/>
+              <text x="405" y="46">🎙️ Реплика</text><text x="405" y="65" class="s">голос или чат</text></g>
+            <path d="M505 51 H 531" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <g class="n lite"><rect x="535" y="20" width="230" height="62" rx="14"/>
+              <text x="650" y="46">🛡️ Входные фильтры</text><text x="650" y="65" class="s">инъекции · диагноз · ПДн</text></g>
+            <path d="M765 51 H 791" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#ah)"/>
+            <g class="n main"><rect x="795" y="20" width="180" height="62" rx="14"/>
+              <text x="885" y="46">🧭 Router</text><text x="885" y="65" class="s">выбор ветки</text></g>
 
             <!-- субагенты -->
-            <g class="n agent"><rect x="120" y="138" width="300" height="66" rx="14"/>
-              <text x="270" y="166">📚 Knowledge</text><text x="270" y="187" class="s">поиск в знаниях клиники</text></g>
-            <g class="n agent"><rect x="860" y="138" width="300" height="66" rx="14"/>
-              <text x="1010" y="166">📅 CRM Agent</text><text x="1010" y="187" class="s">слоты, запись, перенос, отмена</text></g>
+            <g class="n agent"><rect x="124" y="134" width="300" height="66" rx="14"/>
+              <text x="274" y="162">📚 Knowledge</text><text x="274" y="183" class="s">поиск в знаниях клиники</text></g>
+            <g class="n agent"><rect x="856" y="134" width="300" height="66" rx="14"/>
+              <text x="1006" y="162">📅 CRM Agent</text><text x="1006" y="183" class="s">слоты, запись, перенос, отмена</text></g>
 
-            <g class="tool"><rect x="120" y="216" width="300" height="28" rx="9"/><text x="270" y="235">graph_search · обход графа</text></g>
-            <g class="tool"><rect x="120" y="250" width="300" height="28" rx="9"/><text x="270" y="269">bm25_search · слова и коды</text></g>
-            <g class="tool"><rect x="120" y="284" width="300" height="28" rx="9"/><text x="270" y="303">vector_search · смысл</text></g>
+            <g class="tool"><rect x="124" y="212" width="300" height="28" rx="9"/><text x="274" y="231">graph_search · обход графа</text></g>
+            <g class="tool"><rect x="124" y="246" width="300" height="28" rx="9"/><text x="274" y="265">bm25_search · слова и коды</text></g>
+            <g class="tool"><rect x="124" y="280" width="300" height="28" rx="9"/><text x="274" y="299">vector_search · смысл</text></g>
 
-            <g class="tool"><rect x="860" y="216" width="300" height="28" rx="9"/><text x="1010" y="235">list_slots · чтение</text></g>
-            <g class="tool write"><rect x="860" y="250" width="300" height="28" rx="9"/><text x="1010" y="269">book / reschedule / cancel · после «да»</text></g>
-            <g class="tool"><rect x="860" y="284" width="300" height="28" rx="9"/><text x="1010" y="303">escalate_operator</text></g>
+            <g class="tool"><rect x="856" y="212" width="300" height="28" rx="9"/><text x="1006" y="231">list_slots · чтение</text></g>
+            <g class="tool write"><rect x="856" y="246" width="300" height="28" rx="9"/><text x="1006" y="265">book / reschedule / cancel · после «да»</text></g>
+            <g class="tool"><rect x="856" y="280" width="300" height="28" rx="9"/><text x="1006" y="299">escalate_operator</text></g>
 
             <!-- узел прав -->
-            <g class="n agent"><rect x="490" y="322" width="300" height="62" rx="14"/>
-              <text x="640" y="348">🔐 Policy Gate</text><text x="640" y="369" class="s">модель не вызывается</text></g>
-            <g class="tool"><rect x="810" y="322" width="150" height="28" rx="9"/><text x="885" y="341">decide</text></g>
-            <g class="tool"><rect x="810" y="356" width="150" height="28" rx="9"/><text x="885" y="375">decide_crm</text></g>
+            <g class="n agent"><rect x="490" y="322" width="300" height="80" rx="14"/>
+              <text x="640" y="348">🔐 Policy Gate</text>
+              <text x="640" y="368" class="s">RBAC + ReBAC по реестру, правило ADR-0002</text>
+              <text x="640" y="386" class="s">код на Python, модель не вызывается</text></g>
+            <g class="tool"><rect x="806" y="330" width="160" height="28" rx="9"/><text x="886" y="349">decide</text></g>
+            <g class="tool"><rect x="806" y="364" width="160" height="28" rx="9"/><text x="886" y="383">decide_crm</text></g>
 
             <!-- ответ -->
-            <g class="n main"><rect x="305" y="428" width="260" height="62" rx="14"/>
-              <text x="435" y="454">✍️ Generator · vLLM</text><text x="435" y="473" class="s">только по допущенному</text></g>
-            <g class="n lite"><rect x="595" y="428" width="260" height="62" rx="14"/>
-              <text x="725" y="454">🧾 Выходные фильтры</text><text x="725" y="473" class="s">чужое ФИО · диагноз · опора</text></g>
-            <g class="n lite"><rect x="885" y="428" width="200" height="62" rx="14"/>
-              <text x="985" y="454">💬 Ответ</text><text x="985" y="473" class="s">текст или синтез речи</text></g>
+            <g class="n main"><rect x="236" y="452" width="260" height="62" rx="14"/>
+              <text x="366" y="478">✍️ Generator · vLLM</text><text x="366" y="497" class="s">только по допущенному</text></g>
+            <g class="n lite"><rect x="540" y="452" width="260" height="62" rx="14"/>
+              <text x="670" y="478">🧾 Выходные фильтры</text><text x="670" y="497" class="s">чужое ФИО · диагноз · опора</text></g>
+            <g class="n lite"><rect x="844" y="452" width="200" height="62" rx="14"/>
+              <text x="944" y="478">💬 Ответ</text><text x="944" y="497" class="s">текст или синтез речи</text></g>
           </svg>
         </figure>
           <p class="note"><b>Почему не автономные агенты:</b> модель не решает, вызывать ли проверку прав, — это обязательный узел маршрута; запись и отмена не выполняются без подтверждения пользователя. <b>Цена мультиагентности:</b> на реплику приходится два вызова 32B и около 1,2 вызова 8B — Policy, обход графа и BM25 модель не вызывают вовсе.</p>
