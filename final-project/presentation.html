@@ -533,6 +533,19 @@
     .wins article:nth-child(3n+3) { background: linear-gradient(145deg, #a99ad6 0%, var(--v-800) 100%); color: #fff; }
 
     /* --- служебное --- */
+    /* --- отметка обязательного слайда: звезда в правом верхнем углу --- */
+    .core-mark {
+      position: absolute; top: 20px; right: 22px; z-index: 6;
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: #fff; border: 1.5px solid var(--v-200);
+      box-shadow: 0 6px 16px rgba(44, 3, 86, 0.14);
+      pointer-events: none;
+    }
+    .core-mark svg { width: 17px; height: 17px; display: block; }
+    .core-mark svg path { fill: var(--v-600); }
+    .slide.cover .core-mark { top: 18px; right: 18px; background: rgba(255, 255, 255, 0.94); border-color: transparent; }
+
     .bar { position: absolute; left: 0; right: 0; bottom: 84px; height: 4px; background: var(--v-100); z-index: 4; }
     .bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--v-400) 0%, var(--v-600) 100%); width: 0; }
     .footer {
@@ -563,7 +576,7 @@
     <div class="stage" id="stage">
 
       <!-- 1. Обложка -->
-      <section class="slide cover active">
+      <section data-core class="slide cover active">
         <div class="cover-grid">
           <div class="cover-main">
             <p class="kicker">OTUS · Архитектор искусственного интеллекта</p>
@@ -579,7 +592,7 @@
       </section>
 
       <!-- 2. Обо мне -->
-      <section class="slide">
+      <section data-core class="slide">
         <p class="kicker">Автор работы</p>
         <h2>Анастасия Распутина</h2>
         <div class="me">
@@ -602,7 +615,7 @@
       </section>
 
       <!-- 3. Содержание -->
-      <section class="slide" data-note="ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — Context, Container, Component, Code — четыре уровня архитектурных схем. | ER — Entity-Relationship, схема сущностей и связей. | API — Application Programming Interface, программный интерфейс.">
+      <section data-core class="slide" data-note="ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — Context, Container, Component, Code — четыре уровня архитектурных схем. | ER — Entity-Relationship, схема сущностей и связей. | API — Application Programming Interface, программный интерфейс.">
         <p class="kicker">План</p>
         <h2>Содержание</h2>
         <ol class="plan">
@@ -618,7 +631,7 @@
       </section>
 
       <!-- 4. Цель и задачи -->
-      <section class="slide" data-note="GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф знаний и фрагменты документов. | ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — Context, Container, Component, Code — четыре уровня архитектурных схем. | MVP — Minimum Viable Product, минимально работоспособная поставка. | A/B — A/B-тест, сравнение двух групп: контрольная (A) остаётся у оператора, испытательная (B) идёт к ассистенту.">
+      <section data-core class="slide" data-note="GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф знаний и фрагменты документов. | ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — Context, Container, Component, Code — четыре уровня архитектурных схем. | MVP — Minimum Viable Product, минимально работоспособная поставка. | A/B — A/B-тест, сравнение двух групп: контрольная (A) остаётся у оператора, испытательная (B) идёт к ассистенту.">
         <p class="kicker">Цель и задачи</p>
         <h2>Цель и задачи работы</h2>
         <p class="sub"><b>Цель:</b> спроектировать и довести до работающего стенда on-premise голосового ИИ-ассистента медицинского центра с GraphRAG — так, чтобы врачебная тайна и требования 152-ФЗ обеспечивались архитектурой, а не оговорками в инструкции модели.</p>
@@ -634,7 +647,7 @@
       </section>
 
       <!-- 5. Проблема и ценность -->
-      <section class="slide" data-note="152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных». | 323-ФЗ ст. 13 — статья 13 Федерального закона № 323-ФЗ «Об основах охраны здоровья граждан»: врачебная тайна. | CSAT — Customer Satisfaction, удовлетворённость клиента: короткая оценка после закрытия обращения. | A/B — A/B-тест, сравнение двух групп: контрольная (A) остаётся у оператора, испытательная (B) идёт к ассистенту. | ФОТ — фонд оплаты труда. | Эскалация — передача разговора живому оператору.">
+      <section data-core class="slide" data-note="152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных». | 323-ФЗ ст. 13 — статья 13 Федерального закона № 323-ФЗ «Об основах охраны здоровья граждан»: врачебная тайна. | CSAT — Customer Satisfaction, удовлетворённость клиента: короткая оценка после закрытия обращения. | A/B — A/B-тест, сравнение двух групп: контрольная (A) остаётся у оператора, испытательная (B) идёт к ассистенту. | ФОТ — фонд оплаты труда. | Эскалация — передача разговора живому оператору.">
         <p class="kicker">Задача</p>
         <h2>Нагрузка на справочную линию и вклад ассистента</h2>
         <p class="sub">Справочная линия двух филиалов — 500 обращений в день, в пиковый час до ста.</p>
@@ -743,7 +756,7 @@
       </section>
 
       <!-- 8. C4 L1 -->
-      <section class="slide" data-note="C4 L1 — Context, первый уровень модели C4: система целиком и всё, что её окружает. | CRM — Customer Relationship Management, система учёта карточек, визитов и расписания. | ingest — загрузка корпуса: разбор документа, нарезка на фрагменты, простановка метки доступа и индексация. | МКБ-10 — Международная классификация болезней, десятый пересмотр. | HITL — Human-in-the-loop, человек в контуре решения.">
+      <section data-core class="slide" data-note="C4 L1 — Context, первый уровень модели C4: система целиком и всё, что её окружает. | CRM — Customer Relationship Management, система учёта карточек, визитов и расписания. | ingest — загрузка корпуса: разбор документа, нарезка на фрагменты, простановка метки доступа и индексация. | МКБ-10 — Международная классификация болезней, десятый пересмотр. | HITL — Human-in-the-loop, человек в контуре решения.">
         <p class="kicker">C4 · L1 Context</p>
         <h2>Границы контура и внешние участники</h2>
         <p class="sub">Уровень фиксирует границу обработки: внутри контура — AI-платформа, снаружи — источники обращений, корпус документов, промышленная CRM и оператор. В публичные сети уходит только уведомление о состоявшейся записи.</p>
@@ -757,7 +770,7 @@
       </section>
 
       <!-- 9. C4 L2 -->
-      <section class="slide" data-note="C4 L2 — Container, второй уровень модели C4: из каких запускаемых частей собрана система. | Control Plane — плоскость управления: шлюз, маршрут диалога, проверка прав. | Data Plane — плоскость данных: хранилища, индексы и модели.">
+      <section data-core class="slide" data-note="C4 L2 — Container, второй уровень модели C4: из каких запускаемых частей собрана система. | Control Plane — плоскость управления: шлюз, маршрут диалога, проверка прав. | Data Plane — плоскость данных: хранилища, индексы и модели.">
         <p class="kicker">C4 · L2 Container</p>
         <h2>Управление диалогом и хранилища</h2>
         <p class="sub">Верхняя плоскость ведёт разговор: принимает звонок или чат, выбирает путь, проверяет права. Нижняя держит граф, индекс, карточки, секреты и модель. Вход в обе — через один шлюз.</p>
@@ -769,7 +782,7 @@
       </section>
 
       <!-- 10. Мультиагентная схема -->
-      <section class="slide" data-note="Оркестратор — программа, которая ведёт диалог по графу состояний. | Субагент — узел того же графа со своим набором инструментов, а не отдельная модель. | Guardrails — guardrails, «ограждения»: фильтры на входе и выходе диалога. | HITL — Human-in-the-loop, человек в контуре решения: запись, перенос и отмена — только после подтверждения. | vLLM — движок инференса больших языковых моделей (LLM) с PagedAttention; работает внутри периметра.">
+      <section data-core class="slide" data-note="Оркестратор — программа, которая ведёт диалог по графу состояний. | Субагент — узел того же графа со своим набором инструментов, а не отдельная модель. | Guardrails — guardrails, «ограждения»: фильтры на входе и выходе диалога. | HITL — Human-in-the-loop, человек в контуре решения: запись, перенос и отмена — только после подтверждения. | vLLM — движок инференса больших языковых моделей (LLM) с PagedAttention; работает внутри периметра.">
         <p class="kicker">Агенты · ADR-0008</p>
         <h2>Мультиагентная система: оркестратор и субагенты</h2>
         <p class="sub">Два субагента со своими инструментами, узел прав как отдельный guardrails и человек в контуре на записи. Это одно приложение, а не сервис на каждый шаг: субагенты — узлы одной машины состояний, маршрут выбирает Router, модель не решает, проверять ли права.</p>
@@ -1440,7 +1453,7 @@
       </section>
 
       <!-- 31. Результат -->
-      <section class="slide" data-note="ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — Context, Container, Component, Code — четыре уровня архитектурных схем. | GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф знаний и фрагменты документов. | HITL — Human-in-the-loop, человек в контуре решения: запись, перенос и отмена — только после подтверждения. | TCO — Total Cost of Ownership, полная стоимость владения: закупка, энергия, сопровождение.">
+      <section data-core class="slide" data-note="ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — Context, Container, Component, Code — четыре уровня архитектурных схем. | GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф знаний и фрагменты документов. | HITL — Human-in-the-loop, человек в контуре решения: запись, перенос и отмена — только после подтверждения. | TCO — Total Cost of Ownership, полная стоимость владения: закупка, энергия, сопровождение.">
         <p class="kicker">Результат</p>
         <h2>Результаты работы</h2>
         <p class="sub">Проект доведён до рабочего стенда.</p>
@@ -1473,7 +1486,7 @@
       </section>
 
       <!-- 32. Финал -->
-      <section class="slide finale" data-note="vLLM — движок инференса больших языковых моделей (LLM) с PagedAttention; работает внутри периметра. | GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф знаний и фрагменты документов. | ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — Context, Container, Component, Code — четыре уровня архитектурных схем.">
+      <section data-core class="slide finale" data-note="vLLM — движок инференса больших языковых моделей (LLM) с PagedAttention; работает внутри периметра. | GraphRAG — Graph Retrieval-Augmented Generation, генерация с опорой на граф знаний и фрагменты документов. | ADR — Architecture Decision Record, запись архитектурного решения: что выбрали, что отклонили и почему. | C4 — Context, Container, Component, Code — четыре уровня архитектурных схем.">
         <p class="kicker">Итог</p>
         <h2>Голосовой контур клиники внутри периметра</h2>
         <p class="sub">On-premise мультиагентный ассистент с GraphRAG: врачебная тайна и требования 152-ФЗ обеспечены размещением контура и проверкой прав до вызова модели.</p>
@@ -1490,7 +1503,7 @@
       </section>
 
       <!-- 33. Спасибо -->
-      <section class="slide close">
+      <section data-core class="slide close">
         <h2>Спасибо за внимание!</h2>
         <p class="ask">Вопросы?</p>
         <div class="qrs">
@@ -1537,11 +1550,27 @@
       note.innerHTML = renderNote(slides[i].dataset.note);
       progress.style.width = ((i + 1) / slides.length * 100) + "%";
     }
+    const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true">'
+      + '<path d="M12 1.8l3.1 6.28 6.93 1.01-5.01 4.89 1.18 6.9L12 17.62l-6.2 3.26 1.18-6.9-5.01-4.89 6.93-1.01z"/></svg>';
+    slides.forEach((s) => {
+      if (!s.hasAttribute("data-core")) return;
+      const mark = document.createElement("span");
+      mark.className = "core-mark";
+      mark.title = "Обязательный слайд: входит в пятиминутное выступление";
+      mark.innerHTML = STAR;
+      s.appendChild(mark);
+    });
+    const core = slides.map((s, idx) => (s.hasAttribute("data-core") ? idx : -1)).filter((idx) => idx >= 0);
+    function showCore(step) {
+      if (!core.length) return;
+      const next = step > 0 ? core.find((idx) => idx > i) : [...core].reverse().find((idx) => idx < i);
+      show(next === undefined ? (step > 0 ? core[0] : core[core.length - 1]) : next);
+    }
     document.querySelector(".prev").onclick = () => show(i - 1);
     document.querySelector(".next").onclick = () => show(i + 1);
     document.addEventListener("keydown", (e) => {
-      if (["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)) { e.preventDefault(); show(i + 1); }
-      if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      if (["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)) { e.preventDefault(); e.shiftKey ? showCore(1) : show(i + 1); }
+      if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); e.shiftKey ? showCore(-1) : show(i - 1); }
     });
     show(0);
   </script>
