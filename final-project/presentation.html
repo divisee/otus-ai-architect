@@ -818,14 +818,14 @@
               <text x="1006" y="146">📅 Субагент CRM</text><text x="1006" y="165" class="s">слоты, запись, перенос, отмена</text>
               <text x="1006" y="182" class="t">порт CRM · HITL на записи</text></g>
 
-            <g class="tool"><rect x="124" y="206" width="300" height="28" rx="9"/><text x="274" y="225">graph_search · обход графа</text></g>
-            <g class="tool"><rect x="124" y="240" width="300" height="28" rx="9"/><text x="274" y="259">bm25_search · слова и коды</text></g>
-            <g class="tool"><rect x="124" y="274" width="300" height="28" rx="9"/><text x="274" y="293">vector_search · смысл</text></g>
+            <g class="tool"><rect x="124" y="206" width="300" height="28" rx="9"/><text x="274" y="225">🕸️ graph_search · обход графа</text></g>
+            <g class="tool"><rect x="124" y="240" width="300" height="28" rx="9"/><text x="274" y="259">🔤 bm25_search · слова и коды</text></g>
+            <g class="tool"><rect x="124" y="274" width="300" height="28" rx="9"/><text x="274" y="293">🧲 vector_search · смысл</text></g>
 
-            <g class="tool"><rect x="856" y="206" width="300" height="28" rx="9"/><text x="1006" y="225">list_slots · чтение</text></g>
+            <g class="tool"><rect x="856" y="206" width="300" height="28" rx="9"/><text x="1006" y="225">📆 list_slots · чтение</text></g>
             <g class="hitl"><rect x="856" y="246" width="300" height="34" rx="10"/><text x="1006" y="268">🙋 HITL · подтверждение пациента</text></g>
-            <g class="tool write"><rect x="856" y="292" width="300" height="28" rx="9"/><text x="1006" y="311">book / reschedule / cancel</text></g>
-            <g class="tool"><rect x="856" y="326" width="300" height="28" rx="9"/><text x="1006" y="345">escalate_operator</text></g>
+            <g class="tool write"><rect x="856" y="292" width="300" height="28" rx="9"/><text x="1006" y="311">📝 book / reschedule / cancel</text></g>
+            <g class="tool"><rect x="856" y="326" width="300" height="28" rx="9"/><text x="1006" y="345">📞 escalate_operator</text></g>
 
             <!-- узел прав -->
             <g class="n agent"><rect x="490" y="338" width="300" height="86" rx="14"/>
@@ -833,8 +833,8 @@
               <text x="640" y="384" class="s">RBAC + ReBAC по реестру, ADR-0002</text>
               <text x="640" y="401" class="s">пять оснований: public, staff, своя карта,</text>
               <text x="640" y="416" class="s">опека, обязанности регистратуры</text></g>
-            <g class="tool"><rect x="806" y="368" width="150" height="28" rx="9"/><text x="881" y="387">decide</text></g>
-            <g class="tool"><rect x="806" y="402" width="150" height="28" rx="9"/><text x="881" y="421">decide_crm</text></g>
+            <g class="tool"><rect x="806" y="368" width="150" height="28" rx="9"/><text x="881" y="387">🔐 decide</text></g>
+            <g class="tool"><rect x="806" y="402" width="150" height="28" rx="9"/><text x="881" y="421">🔐 decide_crm</text></g>
 
             <!-- ответ -->
             <g class="n main"><rect x="236" y="456" width="260" height="64" rx="14"/>
@@ -867,28 +867,28 @@
         <p class="sub">Внешняя граница системы — четыре метода HTTP. Актор передаётся заголовком <code>X-Actor-Id</code> и берётся из учётной записи или определившегося номера, но не из тембра голоса.</p>
         <div class="api">
           <article>
-            <div class="route">POST /v1/chat</div>
+            <div class="route">💬 POST /v1/chat</div>
             <div class="body">
               <p>Реплика чата на сайте. На вход — текст и номер сессии, на выход — ответ, намерение, идентификаторы допущенных узлов и фрагментов.</p>
               <p class="meta">Контур измерений: задержка и нагрузка считаются здесь.</p>
             </div>
           </article>
           <article>
-            <div class="route">POST /v1/voice</div>
+            <div class="route">📞 POST /v1/voice</div>
             <div class="body">
               <p>Реплика звонка. На вход — транскрипт и метки говорящих, дальше — тот же оркестратор и та же проверка прав.</p>
               <p class="meta">Разметка говорящих делит реплики, но прав не даёт.</p>
             </div>
           </article>
           <article>
-            <div class="route">GET /v1/audit/{request_id}</div>
+            <div class="route">📋 GET /v1/audit/{request_id}</div>
             <div class="body">
               <p>Решение доступа по конкретному запросу: кто спрашивал, чья карта, по какому основанию допущено или отказано, какие фрагменты вошли в контекст.</p>
               <p class="meta">Доказательная запись для внутреннего аудита и проверки по 152-ФЗ.</p>
             </div>
           </article>
           <article>
-            <div class="route">GET /health</div>
+            <div class="route">💓 GET /health</div>
             <div class="body">
               <p>Проверка доступности процесса для балансировщика и мониторинга.</p>
               <p class="meta">Без данных пациента и без обращения к модели.</p>
@@ -1162,7 +1162,7 @@
       <!-- 23. Поставка -->
       <section class="slide" data-note="Docker — упаковка сервиса вместе с зависимостями в образ. | Kubernetes — оркестратор контейнеров: запускает образы на узлах, следит за живостью и обновлениями. | CI/CD — Continuous Integration / Continuous Delivery: автоматическая сборка, прогон тестов и доставка новой версии. | Helm — шаблон конфигурации для Kubernetes. | Terraform — описание инфраструктуры кодом. | Blue/green — выкладка на вторую копию с переключением трафика.">
         <p class="kicker">DevOps · MLOps</p>
-        <h2>CI/CD и выкатка в прод</h2>
+        <h2>CI/CD и ввод в эксплуатацию</h2>
         <p class="sub">Сегодня контур собирается и показывается локально. Целевое размещение — кластер в периметре клиники, тот же образ и та же конфигурация, только другой уровень оркестрации.</p>
         <div class="ship">
           <div class="col">
@@ -1203,7 +1203,7 @@
       <!-- 24. Мониторинг -->
       <section class="slide" data-note="p50 / p95 / p99 — процентили задержки: значение, которое не превышают 50, 95 и 99 процентов ответов. | KV-cache — Key-Value cache, кэш внимания: растёт с длиной контекста и числом параллельных диалогов. | 5xx — коды ошибок сервера в протоколе HTTP. | Prometheus — сбор числовых метрик. | Grafana — дашборд для их отображения. | Langfuse — трассировка вызовов модели. | Alertmanager — рассылка алертов дежурному.">
         <p class="kicker">SRE · наблюдаемость</p>
-        <h2>Мониторинг прода после выкатки</h2>
+        <h2>Мониторинг промышленного контура</h2>
         <p class="sub">Prometheus собирает метрики, Grafana показывает их дежурному, Langfuse хранит трассировку каждого вызова. Всё внутри периметра: в трассировку пишутся хэш запроса, допущенные узлы и решение доступа — не текст пациента.</p>
         <div class="grid grid-4 fill">
           <div class="card">
