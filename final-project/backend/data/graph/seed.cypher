@@ -80,8 +80,8 @@ MERGE (lab1)-[:REQUIRES]->(pLab);
 MERGE (lab2)-[:REQUIRES]->(pLab);
 MERGE (egd)-[:REQUIRES]->(pEgd);
 
-MERGE (egd)-[:OFTEN_CODED_AS]->(k21);
-MERGE (egd)-[:OFTEN_CODED_AS]->(k25);
-MERGE (egd)-[:OFTEN_CODED_AS]->(k29);
-MERGE (usi)-[:OFTEN_CODED_AS]->(k80);
-MERGE (usiK)-[:OFTEN_CODED_AS]->(n28);
+MERGE (egd)-[:INDICATED_FOR]->(k21);
+MERGE (egd)-[:INDICATED_FOR]->(k25);
+MERGE (egd)-[:INDICATED_FOR]->(k29);
+MERGE (usi)-[:INDICATED_FOR]->(k80);
+MERGE (usiK)-[:INDICATED_FOR]->(n28);

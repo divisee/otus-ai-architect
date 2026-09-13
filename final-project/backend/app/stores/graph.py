@@ -121,7 +121,7 @@ class GraphStore:
                     if other is None or other.label == "IcdCode" and edge.rel != "PARENT":
                         if other is None:
                             continue
-                        if other.label == "IcdCode" and edge.rel not in {"PARENT", "OFTEN_CODED_AS"}:
+                        if other.label == "IcdCode" and edge.rel not in {"PARENT", "INDICATED_FOR"}:
                             continue
                     seen.add(other_key)
                     nxt.append(other)

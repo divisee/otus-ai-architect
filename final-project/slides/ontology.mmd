@@ -5,5 +5,5 @@ flowchart LR
     Service -->|нужна| Preparation[подготовка]
     Service -->|где принимают| Branch[филиал]
     Doctor -->|работает| Branch
-    Service -->|обычно кодируют| IcdCode[код МКБ]
+    Service -->|показана при| IcdCode[код МКБ из направления]
     IcdCode -->|группа справочника| IcdCode
