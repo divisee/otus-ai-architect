@@ -32,6 +32,12 @@
       --deny: #a8231b;
       --deny-100: #fbeceb;
 
+      /* «как сейчас»: приглушённая терракота, не сигнальный красный */
+      --pain: #9c4a3c;
+      --pain-ink: #5e2a21;
+      --pain-050: #fdf4f1;
+      --pain-100: #f6e2dc;
+
       --shadow: 0 10px 28px rgba(44, 3, 86, 0.09);
       --shadow-deep: 0 12px 30px rgba(44, 3, 86, 0.16);
     }
@@ -138,9 +144,13 @@
     .fill { flex: 1; min-height: 0; align-content: stretch; }
     .fill .card { display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow: auto; }
     .num { font-size: 32px; font-weight: 700; margin: 0 0 4px; color: var(--v-600); }
-    .econ { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
-    .econ > .card { grid-column: span 2; padding: 14px 18px 14px 24px; justify-content: flex-start; }
-    .econ .num { font-size: 27px; margin-bottom: 2px; }
+    .econ { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .econ + .quote { margin-top: 10px; padding: 12px 18px; }
+    .econ > .card { grid-column: span 2; padding: 11px 16px 11px 22px; justify-content: flex-start; }
+    .econ .calc-rows { margin-top: 6px; }
+    .econ .calc-rows .row { padding: 3px 10px; }
+    .econ .calc-rows dt, .econ .calc-rows dd { font-size: 11px; line-height: 1.28; }
+    .econ .num { font-size: 25px; margin-bottom: 1px; }
     .econ h3 { margin-bottom: 4px; }
     .econ > .card:nth-child(4) { grid-column: 2 / span 2; }
     .econ > .card:nth-child(5) { grid-column: 4 / span 2; }
@@ -284,7 +294,7 @@
     .ship { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .ship .col {
       border-radius: 16px; padding: 15px 17px 15px 21px; background: var(--v-050); box-shadow: var(--shadow);
-      position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 0;
+      position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 0; height: 100%;
     }
     .ship .col::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 5px; border-radius: 0 6px 6px 0; background: var(--v-400); }
     .ship .col:nth-child(2)::before { background: var(--v-600); }
@@ -456,18 +466,18 @@
       font-size: 13px; letter-spacing: 0.09em; text-transform: uppercase; font-weight: 700;
     }
     .pairs .head span { font-size: 16px; line-height: 1; }
-    .pairs .head.pain { background: var(--v-100); color: var(--v-700); }
+    .pairs .head.pain { background: var(--pain-100); color: var(--pain-ink); }
     .pairs .head.gain { background: var(--sage-100); color: #23524f; }
     .pairs article {
       margin: 0; padding: 12px 16px 12px 20px; border-radius: 14px; position: relative;
       display: flex; flex-direction: column; justify-content: center; gap: 3px; min-height: 0; box-shadow: var(--shadow);
     }
     .pairs article::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 4px; border-radius: 0 6px 6px 0; }
-    .pairs .pain { background: var(--v-050); }
-    .pairs .pain::before { background: var(--v-600); }
+    .pairs .pain { background: var(--pain-050); }
+    .pairs .pain::before { background: var(--pain); }
     .pairs .gain { background: var(--sage-100); }
     .pairs .gain::before { background: var(--sage); }
-    .pairs h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--v-700); }
+    .pairs h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--pain-ink); }
     .pairs .gain h3 { color: #23524f; }
     .pairs p { margin: 0; font-size: 13.5px; line-height: 1.35; }
 
@@ -533,6 +543,35 @@
     .wins article:nth-child(3n+3) { background: linear-gradient(145deg, #a99ad6 0%, var(--v-800) 100%); color: #fff; }
 
     /* --- служебное --- */
+    /* --- слайд целей: плотная вёрстка двух таблиц --- */
+    .goals .card { padding: 13px 16px; }
+    .goals table { font-size: 12.5px; }
+    .goals th, .goals td { padding: 5px 8px; }
+    .goals .assume { margin-top: 7px; font-size: 11px; line-height: 1.32; }
+
+    /* --- слайд железа: плотнее, чтобы уместить отбор карт --- */
+    .hw .card { padding: 11px 15px; }
+    .hw .card h3 { margin-bottom: 4px; }
+    .hw .card p { font-size: 13.5px; line-height: 1.35; }
+    .hw .calc-rows { margin-top: 6px; }
+    .hw .calc-rows .row { padding: 2.5px 10px; }
+    .hw .calc-rows dt, .hw .calc-rows dd { font-size: 11px; line-height: 1.28; }
+
+    /* --- справочный граф: двуязычные подписи --- */
+    .onto-graph { flex: 1; min-height: 0; margin: 0; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(180deg, #fdfcff 0%, #f6f3fb 100%);
+      border: 1px solid var(--line); border-radius: 16px; padding: 14px 18px; }
+    .onto-graph svg { width: 100%; height: 100%; }
+    .onto-graph .n rect { fill: var(--v-100); stroke: var(--v-300); stroke-width: 1.5; }
+    .onto-graph .n.hub rect { fill: var(--v-200); stroke: var(--v-500); }
+    .onto-graph .n text { text-anchor: middle; font-family: Manrope, sans-serif; font-size: 22px; font-weight: 700; fill: var(--v-800); }
+    .onto-graph .n text.en { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 16px; font-weight: 400; fill: var(--v-600); }
+    .onto-graph .edge text {
+      text-anchor: middle; font-family: Manrope, sans-serif; font-size: 16px; font-weight: 700; fill: #4b4462;
+      paint-order: stroke; stroke: #fbfaff; stroke-width: 5px; stroke-linejoin: round;
+    }
+    .onto-graph .edge text.en { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; font-weight: 400; fill: var(--v-500); }
+
     /* --- отметка обязательного слайда: звезда в правом верхнем углу --- */
     .core-mark {
       position: absolute; top: 20px; right: 22px; z-index: 6;
@@ -973,7 +1012,7 @@
       </section>
 
       <!-- 14. ReBAC схема -->
-      <section class="slide" data-note="ACL — Access Control List, список управления доступом: метка на фрагменте, кому его можно читать. | ReBAC — Relationship-Based Access Control, управление доступом на основе связей в реестре. | GUARDIAN_OF — guardian of, «представитель кого-то»: ребро реестра «законный представитель ребёнка». | Актор — тот, от чьего имени идёт запрос: учётная запись или определившийся номер. | Субъект — тот, чья карта запрашивается.">
+      <section data-core class="slide" data-note="ACL — Access Control List, список управления доступом: метка на фрагменте, кому его можно читать. | ReBAC — Relationship-Based Access Control, управление доступом на основе связей в реестре. | GUARDIAN_OF — guardian of, «представитель кого-то»: ребро реестра «законный представитель ребёнка». | Актор — тот, от чьего имени идёт запрос: учётная запись или определившийся номер. | Субъект — тот, чья карта запрашивается.">
         <p class="kicker">Доступ · сценарии стенда</p>
         <h2>Матрица доступа к сведениям</h2>
         <p class="sub">Строки — кто спрашивает, столбцы — что запрашивают. В каждой клетке основание решения: именно его проверяет фильтр доступа до вызова модели.</p>
@@ -1054,16 +1093,50 @@
       </section>
 
       <!-- 17. Онтология -->
-      <section class="slide" data-note="Онтология — словарь сущностей и связей предметной области. | МКБ-10 — Международная классификация болезней, 10-й пересмотр — справочник кодов. | OFTEN_CODED_AS — often coded as, «обычно кодируется как»: ребро графа от услуги к коду МКБ. | PARENT — parent, «родитель»: ребро «код входит в раздел справочника».">
+      <section class="slide" data-note="Онтология — словарь сущностей и связей предметной области. | МКБ-10 — Международная классификация болезней, 10-й пересмотр — справочник кодов. | Cypher — язык запросов к графу Neo4j: обход идёт по именам связей, указанным на схеме.">
         <p class="kicker">GraphRAG</p>
         <h2>Справочный граф клиники</h2>
-        <p class="sub">Это прайс, врачи, филиалы и памятки — не карты пациентов. Ребро «обычно кодируют» подсказывает регистратуре код из бланка; вывода о болезни из него не делается.</p>
-        <figure class="diagram"><img src="slides/ontology.svg" alt="Справочный граф: врач, услуга, подготовка, филиал, код МКБ"></figure>
-        <div class="grid grid-4" style="margin-top:12px">
-          <div class="card"><h3>делает</h3><p>PROVIDES: кто ведёт приём по услуге</p></div>
-          <div class="card"><h3>нужна</h3><p>REQUIRES: как готовиться</p></div>
-          <div class="card"><h3>где принимают</h3><p>AVAILABLE_AT и WORKS_AT: куда ехать</p></div>
-          <div class="card"><h3>обычно кодируют</h3><p>OFTEN_CODED_AS: подсказка стойке, не диагноз</p></div>
+        <p class="sub">Это прайс, врачи, филиалы и памятки — не карты пациентов. На рёбрах — имя связи по-русски и её имя в графе: именно по этим именам Cypher-запрос обходит онтологию.</p>
+        <figure class="onto-graph">
+          <svg viewBox="0 0 1280 430" xmlns="http://www.w3.org/2000/svg" role="img"
+               aria-label="Справочный граф клиники: врач, услуга, подготовка, филиал, код МКБ и связи между ними">
+            <defs>
+              <marker id="oh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#8b6fc4"/>
+              </marker>
+            </defs>
+
+            <path d="M256 176 C 330 176, 330 112, 404 112" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#oh)"/>
+            <path d="M156 222 V 330 H 830 V 236" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#oh)"/>
+            <path d="M656 96 C 740 96, 740 64, 828 64" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#oh)"/>
+            <path d="M656 128 C 740 128, 740 176, 828 176" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#oh)"/>
+            <path d="M530 158 C 530 260, 700 296, 828 296" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#oh)"/>
+            <path d="M1104 276 C 1180 258, 1200 316, 1136 322" fill="none" stroke="#8b6fc4" stroke-width="2" marker-end="url(#oh)"/>
+
+            <g class="edge"><text x="330" y="128">делает</text><text x="330" y="147" class="en">PROVIDES</text></g>
+            <g class="edge"><text x="470" y="322">работает</text><text x="470" y="341" class="en">WORKS_AT</text></g>
+            <g class="edge"><text x="742" y="52">нужна</text><text x="742" y="71" class="en">REQUIRES</text></g>
+            <g class="edge"><text x="742" y="196">где принимают</text><text x="742" y="215" class="en">AVAILABLE_AT</text></g>
+            <g class="edge"><text x="660" y="268">обычно кодируют</text><text x="660" y="287" class="en">OFTEN_CODED_AS</text></g>
+            <g class="edge"><text x="1210" y="292">группа</text><text x="1210" y="311" class="en">PARENT</text></g>
+
+            <g class="n"><rect x="56" y="128" width="200" height="94" rx="16"/>
+              <text x="156" y="166">👩‍⚕️ врач</text><text x="156" y="192" class="en">Doctor</text></g>
+            <g class="n hub"><rect x="404" y="64" width="252" height="94" rx="16"/>
+              <text x="530" y="102">🩺 услуга</text><text x="530" y="128" class="en">Service</text></g>
+            <g class="n"><rect x="828" y="18" width="276" height="92" rx="16"/>
+              <text x="966" y="55">📋 подготовка</text><text x="966" y="81" class="en">Preparation</text></g>
+            <g class="n"><rect x="828" y="130" width="276" height="92" rx="16"/>
+              <text x="966" y="167">🏥 филиал</text><text x="966" y="193" class="en">Branch</text></g>
+            <g class="n"><rect x="828" y="250" width="276" height="92" rx="16"/>
+              <text x="966" y="287">🔢 код МКБ</text><text x="966" y="313" class="en">IcdCode</text></g>
+          </svg>
+        </figure>
+        <div class="grid grid-4" style="margin-top:10px">
+          <div class="card"><h3>делает</h3><p>кто ведёт приём по услуге</p></div>
+          <div class="card"><h3>нужна</h3><p>как готовиться к исследованию</p></div>
+          <div class="card"><h3>где принимают</h3><p>в каком филиале и куда ехать</p></div>
+          <div class="card"><h3>обычно кодируют</h3><p>подсказка регистратуре по коду из бланка, не диагноз</p></div>
         </div>
       </section>
 
@@ -1107,85 +1180,95 @@
       <section class="slide" data-note="GPU — Graphics Processing Unit, графический процессор: видеокарта, на которой считаются речь и генерация. | VRAM — Video Random Access Memory, видеопамять видеокарты: веса модели, кэш внимания и активации. | KV-cache — Key-Value cache, кэш ключей и значений внимания: растёт с длиной контекста и числом параллельных диалогов. | FP8 — 8-bit Floating Point, восьмибитный формат чисел: вдвое экономнее FP16 при сопоставимом качестве. | RPS — Requests Per Second, запросов в секунду. | RTF — Real-Time Factor, отношение времени распознавания к длительности аудио. | ECC — Error-Correcting Code, память с коррекцией ошибок, обязательная для круглосуточной нагрузки.">
         <p class="kicker">Железо · ADR-0004</p>
         <h2>Расчёт нагрузки и выбор видеокарт</h2>
-        <p class="sub">Состав железа выведен из двух величин: сколько запросов приходит в минуту и сколько видеопамяти занимает модель. Обе считаются из объёма клиники, а не берутся по аналогии.</p>
-        <div class="grid grid-2 fill">
+        <p class="sub">Состав выведен из двух величин: сколько запросов приходит в минуту и сколько видеопамяти занимает модель. Обе считаются из объёма клиники, а не берутся по аналогии.</p>
+        <div class="grid grid-2 fill hw">
           <div class="card">
             <h3>Сколько запросов приходит</h3>
-            <p>Три реплики на сессию. Тяжёлых вызовов два — маршрут с инструментами и ответ; вспомогательные шаги субагентов идут в малую модель.</p>
+            <p>Три реплики на сессию: два тяжёлых вызова 32B, вспомогательные шаги — в малой модели.</p>
             <dl class="calc-rows">
               <div class="row"><dt>реплик в сутки</dt><dd>500 сессий × 3 = 1 500</dd></div>
               <div class="row"><dt>вызовов 32B</dt><dd>1 500 × 2 = 3 000 в сутки</dd></div>
               <div class="row"><dt>вызовов 8B</dt><dd>1 500 × 1,2 = 1 800 в сутки</dd></div>
-              <div class="row"><dt>пиковый час</dt><dd>100 сессий ÷ 60 мин = 1,7 сессии/мин</dd></div>
+              <div class="row"><dt>пиковый час</dt><dd>100 сессий ÷ 60 = 1,7 сессии/мин</dd></div>
               <div class="row"><dt>нагрузка 32B / 8B</dt><dd>0,17 RPS / 0,10 RPS</dd></div>
               <div class="row sum"><dt>бюджет vLLM</dt><dd>0,17 из 10 RPS → 2%</dd></div>
             </dl>
           </div>
           <div class="card">
             <h3>Сколько памяти нужно</h3>
-            <p>Генерация упирается в видеопамять: веса плюс кэш внимания. Малая модель субагентов живёт рядом с речью.</p>
+            <p>H100 берут не за FP8 — он есть и у L40S, — а за 80 ГБ и полосу ≈ 2 ТБ/с против 864 ГБ/с: декодирование 32B упирается в память, а не в вычисления.</p>
             <dl class="calc-rows">
               <div class="row"><dt>веса T-pro 32B, FP8</dt><dd>≈ 32 ГБ</dd></div>
               <div class="row"><dt>KV-cache, 8–16k × 8 диалогов</dt><dd>10–20 ГБ</dd></div>
-              <div class="row sum"><dt>итого на H100 80 ГБ</dt><dd>40–55 ГБ</dd></div>
-              <div class="row"><dt>речевой узел на L40S 48 ГБ</dt><dd>6 + 2–4 + 2–4 = 10–14 ГБ</dd></div>
-              <div class="row"><dt>T-lite 8B FP8 там же</dt><dd>+ 8–10 ГБ → 18–24 из 48 ГБ</dd></div>
+              <div class="row sum"><dt>итого на H100 80 ГБ</dt><dd>40–55 ГБ — в 48 ГБ не помещается</dd></div>
+              <div class="row"><dt>речевой узел: речь, эмбеддинги, T-lite 8B</dt><dd>10–14 + 8–10 = 18–24 ГБ</dd></div>
             </dl>
           </div>
           <div class="card">
-            <h3>Почему 2× H100 и 1× L40S</h3>
-            <p>FP8 есть только у H100 — он вдвое сокращает память под веса. Речь и малая модель субагентов вынесены на отдельную карту, чтобы пик звонков не вытеснял кэш генерации. Второй H100 включён и ждёт: откажет первый — линия не встанет.</p>
+            <h3>Зачем третья карта</h3>
+            <p>Речь — короткие частые запросы, всплеск совпадает с пиком звонков: на общей карте он вытесняет кэш внимания, и p95 ответа растёт скачком.</p>
             <dl class="calc-rows">
-              <div class="row"><dt>распознавание в пик</dt><dd>5 реплик/мин × 1,0 с = 5 GPU-с/мин</dd></div>
-              <div class="row sum"><dt>загрузка L40S при RTF ≤ 0,2</dt><dd>≈ 8%</dd></div>
+              <div class="row"><dt>речь в пик</dt><dd>5 реплик/мин × 1,0 с = 5 GPU-с/мин → ≈ 8% карты</dd></div>
+              <div class="row"><dt>речь на втором H100</dt><dd>резерва больше нет: отказ первой карты остановит линию</dd></div>
+              <div class="row sum"><dt>третий H100 под эти 8%</dt><dd>2,5–4,0 млн ₽ против 0,8–1,5 млн ₽ за L40S</dd></div>
             </dl>
           </div>
           <div class="card">
-            <h3>Что отклонено</h3>
-            <p>RTX 4090: 24 ГБ, нет FP8 и ECC — не держит агентный цикл и круглосуточную нагрузку. A100 80 ГБ: FP8 не поддерживает. Одна карта на речь и генерацию: очередь звонков вытесняет кэш. Аренда видеокарт: 6,3 млн ₽/год против 3,08 млн ₽ амортизации.</p>
+            <h3>Почему именно L40S, а не карта дешевле</h3>
+            <p>Узлу нужно 18–24 ГБ: речь и малая модель работают одновременно. Отбор идёт по памяти и форм-фактору, не по вычислительной мощности.</p>
+            <dl class="calc-rows">
+              <div class="row"><dt>T4 · 16 ГБ</dt><dd>памяти не хватает; Turing без BF16 и FP8</dd></div>
+              <div class="row"><dt>L4 и A10 · 24 ГБ</dt><dd>впритык, запаса нет; у A10 нет FP8</dd></div>
+              <div class="row"><dt>RTX 4090 · 24 ГБ</dt><dd>нет ECC, охлаждение не рассчитано на стойку</dd></div>
+              <div class="row"><dt>RTX 6000 Ada · 48 ГБ</dt><dd>подходит, но активное охлаждение вне стойки</dd></div>
+              <div class="row sum"><dt>L40S · 48 ГБ</dt><dd>ECC, FP8, пассивное охлаждение, двукратный запас</dd></div>
+            </dl>
           </div>
         </div>
       </section>
 
       <!-- 22. Поставка -->
-      <section class="slide" data-note="Docker — упаковка сервиса вместе с зависимостями в образ. | Kubernetes — оркестратор контейнеров: запускает образы на узлах, следит за живостью и обновлениями. | CI/CD — Continuous Integration / Continuous Delivery: автоматическая сборка, прогон тестов и доставка новой версии. | Helm — шаблон конфигурации для Kubernetes. | Terraform — описание инфраструктуры кодом. | Blue/green — выкладка на вторую копию с переключением трафика.">
+      <section class="slide" data-note="DevOps — практика совместной разработки и эксплуатации: сборка, поставка и обновление автоматизированы. | MLOps — то же для моделей: веса, индекс и правила версионируются вместе с кодом. | CI/CD — Continuous Integration / Continuous Delivery: автоматическая сборка, прогон проверок и доставка новой версии. | Docker — упаковка сервиса вместе с зависимостями в образ. | Kubernetes — оркестратор контейнеров: запускает образы на узлах, следит за живостью и обновлениями. | Helm — шаблон конфигурации для Kubernetes. | Blue/green — новая версия поднимается рядом с текущей, трафик переключается после проверки. | Terraform — описание инфраструктуры кодом.">
         <p class="kicker">DevOps · MLOps</p>
-        <h2>CI/CD и ввод в эксплуатацию</h2>
-        <p class="sub">Сегодня контур собирается и показывается локально. Целевое размещение — кластер в периметре клиники, тот же образ и та же конфигурация, только другой уровень оркестрации.</p>
+        <h2>Сборка, поставка и обновление контура</h2>
+        <p class="sub">Один образ проходит три среды без пересборки — меняется конфигурация и уровень оркестрации. Релизным набором считается не образ, а четвёрка: образ, веса моделей, индекс корпуса и правила доступа под одной версией. Обновить что-то одно в обход набора нельзя.</p>
         <div class="ship">
           <div class="col">
-            <div class="n">dev · защита проекта</div>
-            <h3>Локальный стенд</h3>
+            <div class="n">Среда разработки</div>
+            <h3>Стенд без видеокарт</h3>
             <ul>
-              <li><code>docker compose --profile data up</code> — Neo4j, Qdrant, PostgreSQL</li>
-              <li><code>uvicorn app.main:app</code> на хосте, без видеокарт</li>
-              <li><code>pytest -q</code> — 23 автотеста доступа и сценариев</li>
-              <li>корпус и граф загружаются из репозитория при старте</li>
+              <li><code>docker compose --profile data up</code> — Neo4j, Qdrant, PostgreSQL в контейнерах</li>
+              <li><code>uvicorn app.main:app</code> — управление диалогом на хосте</li>
+              <li>корпус, граф и правила доступа загружаются из репозитория при старте</li>
+              <li>генерация и речь заменены детерминированными заглушками: контракт доступа проверяется без GPU</li>
+              <li><code>pytest -q</code> — 23 автотеста доступа, опеки, HITL, обнаружения ПДн и ранжирования</li>
             </ul>
           </div>
           <div class="col">
-            <div class="n">CI/CD · GitHub Actions</div>
+            <div class="n">Конвейер · GitHub Actions</div>
             <h3>Сборка и проверка</h3>
             <ul>
-              <li>GitHub Actions: линтер, автотесты, сборка образа</li>
-              <li>офлайн-ворота релиза прогоняются в пайплайне</li>
-              <li>образ уходит в приватный реестр клиники</li>
-              <li>MLOps-версионирование: образ, веса модели, индекс и правила доступа — один релизный набор</li>
+              <li>на каждый коммит: линтер, автотесты, сборка образа</li>
+              <li>ворота релиза прогоняются в конвейере: доступ и опека, запрет диагноза, подтверждение записи, обнаружение персональных данных</li>
+              <li>отдельная проверка согласованности: цифры презентации, карта слайдов и число тестов сверяются с документацией</li>
+              <li>образ уходит в приватный реестр клиники, наружу не публикуется</li>
+              <li>к релизу прикладывается отчёт прогона: дата, версия корпуса и правил, вердикт по каждому набору</li>
             </ul>
           </div>
           <div class="col">
-            <div class="n">prod · периметр клиники</div>
-            <h3>Kubernetes в контуре</h3>
+            <div class="n">Промышленный контур</div>
+            <h3>Kubernetes в периметре</h3>
             <ul>
-              <li>Helm-чарт: шлюз, оркестратор, ingest, наблюдаемость</li>
+              <li>Helm-чарт: шлюз, оркестратор, загрузка корпуса, наблюдаемость</li>
               <li>vLLM и речевой узел — отдельные Deployment на GPU-узлах</li>
-              <li>секреты из Vault, миграции PostgreSQL перед выкладкой</li>
-              <li>blue/green на обновлении корпуса, откат на прошлый образ</li>
-              <li>Terraform — по желанию заказчика, для частного облака</li>
+              <li>секреты выдаются из Vault, миграции PostgreSQL идут до переключения трафика</li>
+              <li>blue/green: новая версия поднимается рядом, трафик переключается после проверки на живом запросе</li>
+              <li>откат — возврат к прошлому релизному набору целиком, включая индекс и правила</li>
+              <li>Terraform — опция для заказчика с частным облаком; на bare-metal не требуется</li>
             </ul>
           </div>
         </div>
-        <p class="ship-note"><b style="color:var(--v-700)">На защите</b> показывается локальный прогон: Compose, uvicorn и автотесты. Кластер — целевое состояние, не часть MVP.</p>
+        <p class="ship-note"><b style="color:var(--v-700)">Критерий приёмки:</b> ворота релиза пройдены на данных клиники, p95 ответа укладывается в 8 секунд при целевой нагрузке, а журнал решений доступа воспроизводит основание по каждому запросу.</p>
       </section>
 
       <!-- 23. Мониторинг -->
@@ -1222,7 +1305,7 @@
       <section data-core class="slide" data-note="TCO — Total Cost of Ownership, полная стоимость владения: закупка, энергия, сопровождение. | CapEx — Capital Expenditure, капитальные затраты на оборудование. | Амортизация — разнесение стоимости закупки на срок службы, здесь 36 месяцев. | Ставка — один сотрудник на полной занятости, ориентир 1,8 млн ₽ в год с налогами. | ФОТ — фонд оплаты труда. | 152-ФЗ — Федеральный закон № 152-ФЗ «О персональных данных».">
         <p class="kicker">Экономика</p>
         <h2>Стоимость владения и эффект для клиники</h2>
-        <p class="sub">Расчёт на типовом объёме двух филиалов: 500 обращений в день, 250 рабочих дней — 125 000 сессий в год. Сверху — что клиника платит, снизу — что получает взамен.</p>
+        <p class="sub">Типовой объём двух филиалов: 500 обращений в день × 250 рабочих дней = 125 000 сессий в год.</p>
         <div class="grid econ fill">
           <div class="card">
             <p class="num">9,25 млн ₽</p>
@@ -1258,8 +1341,7 @@
             <h3>Высвобождение линии</h3>
             <dl class="calc-rows">
               <div class="row"><dt>без оператора</dt><dd>500 × 0,70 × 0,40 = 140/день</dd></div>
-              <div class="row"><dt>время линии</dt><dd>140 × 4 мин = 9,3 ч ≈ 1,2 ставки</dd></div>
-              <div class="row"><dt>ускорение цикла</dt><dd>+0,3 ставки</dd></div>
+              <div class="row"><dt>ставки линии</dt><dd>140 × 4 мин = 9,3 ч → 1,2 + 0,3 = 1,5</dd></div>
               <div class="row sum"><dt>итого</dt><dd>1,5 × 1,8 = 2,7 млн ₽/год</dd></div>
             </dl>
           </div>
@@ -1273,7 +1355,7 @@
             </dl>
           </div>
         </div>
-        <div class="quote slim">Разница между владением и высвобождением — 3,77 − 2,7 ≈ 1,1 млн ₽ в год. Это и есть цена законного канала: клиника получает круглосуточную линию, не вынося речь и карточки за периметр.</div>
+        <div class="quote slim">Разница между владением и высвобождением — 3,77 − 2,7 ≈ 1,1 млн ₽ в год: это цена законного канала. Клиника получает круглосуточную линию, не вынося речь и карточки за периметр.</div>
       </section>
 
       <!-- 25. Рамка метрик -->
@@ -1383,8 +1465,8 @@
       <section class="slide" data-note="ФОТ — фонд оплаты труда. | Ставка — один сотрудник на полной занятости, ориентир 1,8 млн ₽ в год с налогами. | CSAT — Customer Satisfaction, удовлетворённость клиента: короткая оценка после закрытия обращения. | AHT — Average Handle Time, среднее время обработки обращения на линии.">
         <p class="kicker">Метрики · горизонт</p>
         <h2>Цели первого года и расчёт экономии</h2>
-        <p class="sub">Три контрольные точки. Доля без оператора считается внутри испытательной группы, не от всего входящего потока.</p>
-        <div class="grid grid-2 fill">
+        <p class="sub">Три контрольные точки. Доля без оператора считается внутри испытательной группы, а не от всего входящего потока.</p>
+        <div class="grid grid-2 fill goals">
           <div class="card" style="display:block">
             <h3>Горизонт года</h3>
             <table>
@@ -1398,16 +1480,16 @@
             <h3>Откуда берётся экономия</h3>
             <table>
               <tr><th>Статья</th><th>Счёт</th><th>Ориентир</th></tr>
-              <tr><td>Закрыто без оператора</td><td>500 сессий/день × 0,70 × 0,40 = 140 сессий/день</td><td>140 × 4 мин = 9,3 ч/день ≈ 1,2 ставки</td></tr>
+              <tr><td>Закрыто без оператора</td><td>500 × 0,70 × 0,40 = 140 сессий/день</td><td>140 × 4 мин = 9,3 ч/день ≈ 1,2 ставки</td></tr>
               <tr><td>Короче цикл после эскалации</td><td>−20% AHT на обращениях с эскалацией</td><td>≈ 0,3 ставки</td></tr>
               <tr><td>Итого линия</td><td>1,2 + 0,3 = 1,5 ставки × 1,8 млн ₽/год</td><td>≈ 2,7 млн ₽/год</td></tr>
               <tr><td>Сопровождение контура</td><td>0,3 ставки × 1,8 млн ₽/год, уже в TCO</td><td>−0,54 млн ₽/год</td></tr>
               <tr><td><b>Чистая экономия ФОТ</b></td><td>2,7 − 0,54</td><td><b>≈ 2,2 млн ₽/год</b></td></tr>
             </table>
-            <p class="assume"><b>Откуда взяты коэффициенты:</b> 0,70 — доля первого ответа у ассистента в устойчивом режиме; 0,40 — целевая доля таких обращений, закрытых без оператора; 4 мин — среднее справочное обращение у оператора; 1,8 млн ₽/год — ставка регистратора с налогами; −20% AHT — ускорение цикла там, где ассистент передал разговор человеку.</p>
+            <p class="assume"><b>Коэффициенты:</b> 0,70 — доля первого ответа у ассистента в устойчивом режиме; 0,40 — целевая доля таких обращений без оператора; 4 мин — среднее справочное обращение; 1,8 млн ₽/год — ставка регистратора с налогами; −20% AHT — ускорение цикла после эскалации.</p>
           </div>
         </div>
-        <div class="quote">Высвобождаются ставки справочной линии, а не врачи. Оператор остаётся на жалобе, исключении и всём, где нужно человеческое решение.</div>
+        <div class="quote slim">Высвобождаются ставки справочной линии, а не врачи. Оператор остаётся на жалобе, исключении и всём, где нужно человеческое решение.</div>
       </section>
 
       <!-- 30. Результат -->
@@ -1455,7 +1537,7 @@
           <div class="card"><p class="num">0</p><p>персональных данных за периметром</p></div>
           <div class="card"><p class="num">до 40%</p><p>обращений закрывается без оператора</p></div>
           <div class="card"><p class="num">2,2 млн ₽</p><p>экономия ФОТ линии в год · ≈ 30 ₽ за сессию</p></div>
-          <div class="card"><p class="num">24 / 7</p><p>линия без перерывов · запас ёмкости 15×</p></div>
+          <div class="card"><p class="num">24 / 7</p><p>линия без перерывов; закупленного железа хватает на 15-кратный рост обращений</p></div>
         </div>
         <div class="quote" style="margin-top:16px">Ответ формируется только из допущенного контекста: открытые материалы клиники, служебные материалы персонала, своя карта и карта ребёнка по активной опеке. При отсутствии опоры — отказ или передача оператору.</div>
       </section>
