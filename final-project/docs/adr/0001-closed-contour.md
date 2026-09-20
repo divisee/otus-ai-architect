@@ -45,5 +45,5 @@ ADR: 0001
 | Эмбеддинги | [ADR-0006](0006-embeddings.md) |
 | Графовое и векторное хранилища | [ADR-0007](0007-graph-and-vectors.md) |
 | Оркестрация агентов | [ADR-0008](0008-orchestration.md) |
-| ASR, диаризация, TTS | [ADR-0009](0009-voice-gigaam-diarization.md) |
+| ASR, диаризация, TTS | [ADR-0009](0009-voice-whisper-diarization.md) |
 | Разграничение доступа | [ADR-0002](0002-acl-rebac.md) |

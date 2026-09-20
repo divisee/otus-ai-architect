@@ -14,5 +14,5 @@
 | [0006](0006-embeddings.md) | Эмбеддинги и реранкер | принято |
 | [0007](0007-graph-and-vectors.md) | Neo4j, Qdrant, PostgreSQL | принято |
 | [0008](0008-orchestration.md) | LangGraph | принято |
-| [0009](0009-voice-gigaam-diarization.md) | Whisper, диаризация, Silero | принято |
+| [0009](0009-voice-whisper-diarization.md) | Whisper, диаризация, Silero | принято |
 | [0010](0010-pii-detection.md) | Обнаружение и токенизация ПДн | принято |

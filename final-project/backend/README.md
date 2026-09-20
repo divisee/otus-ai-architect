@@ -20,11 +20,11 @@ pytest -q
 uvicorn app.main:app --port 8080
 ```
 
-Заголовок `X-Actor-Id` в сценариях: пациент 1, пациент 3, регистратор.
+Заголовок `X-Actor-Id` в сценариях: `patient:anna` (пациент 1), `patient:boris` (пациент 3), `staff:registrar` (регистратор).
 
 ```text
 curl -s localhost:8080/v1/chat \
   -H 'Content-Type: application/json' \
-  -H 'X-Actor-Id: patient:1' \
+  -H 'X-Actor-Id: patient:anna' \
   -d '{"text":"Когда УЗИ у сына и что за код N28.1?"}'
 ```
