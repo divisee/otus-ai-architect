@@ -8,7 +8,8 @@
 2. число автотестов в README и презентации совпадает с фактическим числом тестов;
 3. число слайдов совпадает с картой «слайд → раздел README»;
 4. каждая упомянутая ADR существует в ``docs/adr/``;
-5. каждый термин из сносок слайда встречается на самом слайде или его схеме.
+5. каждый термин из сносок слайда встречается на самом слайде или его схеме;
+6. промпты демонстрационного стенда приведены в его README дословно.
 
 Код возврата 1, если хотя бы одна проверка не прошла: скрипт годится для CI.
 """
@@ -25,6 +26,8 @@ README = ROOT / "README.md"
 DECK = ROOT / "presentation.html"
 TESTS = ROOT / "backend" / "tests"
 ADR = ROOT / "docs" / "adr"
+PROMPTS = ROOT / "demo" / "prompts"
+DEMO_README = ROOT / "demo" / "README.md"
 
 FACT = re.compile(
     r"(?<![\w.])(?:≈\s*)?\d{1,3}(?:\s?\d{3})*(?:[,.]\d+)?\s*"
@@ -107,6 +110,24 @@ def check_glossary(problems: list[str]) -> None:
                 problems.append(f"слайд {number} ({name}): «{term}» расшифрован, но на слайде не встречается")
 
 
+def check_prompts(problems: list[str]) -> None:
+    """Промпт показывают проверяющему в README, а не в исходнике.
+
+    Значит README обязан цитировать файл дословно: разошлись — дефект.
+    """
+    if not PROMPTS.is_dir():
+        problems.append(f"нет каталога промптов: {PROMPTS}")
+        return
+    readme = DEMO_README.read_text(encoding="utf-8")
+    files = sorted(PROMPTS.glob("*.md"))
+    if not files:
+        problems.append(f"в {PROMPTS} нет ни одного промпта")
+    for path in files:
+        text = path.read_text(encoding="utf-8").strip()
+        if text not in readme:
+            problems.append(f"промпт {path.name} не приведён дословно в demo/README.md")
+
+
 def main() -> int:
     problems: list[str] = []
     check_facts(problems)
@@ -114,6 +135,7 @@ def main() -> int:
     check_slide_count(problems)
     check_adr(problems)
     check_glossary(problems)
+    check_prompts(problems)
     if problems:
         print("Расхождения документации:")
         for item in problems:

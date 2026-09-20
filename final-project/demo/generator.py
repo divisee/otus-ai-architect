@@ -18,43 +18,43 @@ import os
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from app.agents.generator import GroundedGenerator, _format_node
 from app.agents.state import GraphState
 from app.guardrails.output import ACL_REFUSAL, REFUSAL, apply_output_guardrails
 from app.ingest.bootstrap import Runtime
 
-# Общая часть: она про права и границы, а не про форму ответа.
-SYSTEM_BASE = (
-    "Ты — справочная медицинского центра. Отвечай по-русски и только по "
-    "сведениям из блока КОНТЕКСТ. Если сведений не хватает — скажи, что "
-    "передаёшь запрос оператору регистратуры, и не придумывай. "
-    "Не ставь диагноз и не толкуй коды МКБ: код можно только прочитать так, "
-    "как он записан в направлении. "
-    "Внутренние коды услуг вида USI-01 и PED-01 не произноси — называй услугу словами. "
-    "Токены вида [PHONE_0] и [NAME_0] оставляй как есть: подставляет система."
-)
+PROMPTS = Path(__file__).resolve().parent / "prompts"
 
-# Голос: ответ уйдёт в синтез речи, поэтому текст должен читаться вслух.
-SYSTEM_VOICE = SYSTEM_BASE + (
-    " Ты говоришь с человеком в телефонном разговоре, твой ответ будет "
-    "озвучен вслух. Поэтому: одна-две короткие фразы, без списков, таблиц, "
-    "разметки, ссылок и скобок. "
-    "Числа, даты и время пиши словами так, как их произносят: "
-    "«три тысячи двести рублей», а не «3200 ₽»; "
-    "«восемнадцатого сентября», а не «18.09.2026»; "
-    "«в восемь утра», а не «08:00»; «шесть часов», а не «6 ч». "
-    "Сокращения разворачивай: «УЗИ органов брюшной полости» вместо «УЗИ ОБП», "
-    "«гастроскопия» вместо «ЭГДС». Аббревиатуру УЗИ произносить можно. "
-    "Символы ₽, №, %, — заменяй словами. "
-    "Заканчивай коротким вопросом, если разговор требует продолжения."
-)
 
-# Чат: то же по сути, но числом и датой читателю удобнее в цифрах.
-SYSTEM_TEXT = SYSTEM_BASE + (
-    " Отвечай коротко: две-три фразы. Числа, цены и даты оставляй цифрами. "
-    "Сокращения раскрывай при первом упоминании."
-)
+def _prompt(name: str) -> str:
+    """Промпт живёт в файле рядом с кодом, а не в строке посреди логики.
+
+    Читается на каждую реплику: правка `prompts/*.md` видна со следующего
+    ответа, перезапуск не нужен. Отсутствие файла — падение, а не молчаливый
+    пустой промпт: без роли и границ модель формулировать не должна.
+    """
+    path = PROMPTS / f"{name}.md"
+    if not path.is_file():
+        raise FileNotFoundError(f"нет файла промпта: {path}")
+    text = path.read_text(encoding="utf-8").strip()
+    if not text:
+        raise ValueError(f"пустой файл промпта: {path}")
+    return text
+
+
+def system_prompt(channel: str) -> str:
+    """Общая часть про роль и границы плюс добавка канала.
+
+    Голос и чат просят разного: в звонке ответ читают вслух, в чате читают
+    глазами. Права от канала не зависят — их проверяет код (ADR-0002).
+    """
+    return _prompt("base") + "\n\n" + _prompt("voice" if channel == "voice" else "chat")
+
+
+for _name in ("base", "voice", "chat"):  # падаем на старте, а не на первой реплике
+    _prompt(_name)
 
 
 @dataclass
@@ -97,7 +97,7 @@ class DemoGenerator:
 
         question = state.extra.get("sanitized") or state.text
         prompt = "КОНТЕКСТ:\n" + "\n".join(f"- {line}" for line in context) + f"\n\nВОПРОС: {question}"
-        system = SYSTEM_VOICE if state.channel == "voice" else SYSTEM_TEXT
+        system = system_prompt(state.channel)
         self.trace.system = system
         self.trace.prompt = prompt
 
