@@ -56,7 +56,7 @@
       "patient_id": "anna",
       "service_id": "USI-01",
       "branch_id": "lesnaya",
-      "slot": "2026-09-12T09:00:00+03:00",
+      "slot": "2026-11-12T09:00:00+03:00",
       "status": "planned",
       "icd_on_referral": "K80.1"
     },
@@ -65,7 +65,7 @@
       "patient_id": "misha",
       "service_id": "USI-02",
       "branch_id": "lesnaya",
-      "slot": "2026-09-18T08:00:00+03:00",
+      "slot": "2026-11-18T08:00:00+03:00",
       "status": "planned",
       "icd_on_referral": "N28.1"
     },
@@ -74,7 +74,7 @@
       "patient_id": "boris",
       "service_id": "END-01",
       "branch_id": "lesnaya",
-      "slot": "2026-09-15T09:40:00+03:00",
+      "slot": "2026-11-15T09:40:00+03:00",
       "status": "planned",
       "icd_on_referral": "K21.0"
     }
