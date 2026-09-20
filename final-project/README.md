@@ -17,6 +17,7 @@
 | [`docs/adr/`](docs/adr/README.md) | десять записей архитектурных решений: принятый вариант, отклонённые, последствия |
 | [`slides/`](slides/) | схемы: исходники Mermaid (`*.mmd`) и собранные `*.svg`, обложка, QR-коды |
 | [`presentation.html`](presentation.html) | презентация проекта, публикуется на GitHub Pages |
+| [`backend/README.md`](backend/README.md) | техническое описание Control Plane: контракт API, узлы графа состояний, порты хранилищ, инварианты, границы стенда |
 | [`backend/app/`](backend/app/) | Control Plane: шлюз, оркестратор, субагенты, Policy, guardrails, порты хранилищ |
 | [`backend/data/`](backend/data/kb/manifest.yaml) | синтетический корпус клиники с метками ACL, граф в Cypher, регистр CRM, справочник МКБ-10 |
 | [`backend/tests/`](backend/tests/) | автотесты доступа, представительства, запрета диагноза, подтверждения записи, обнаружения ПДн, обоих каналов, ранжирования |
@@ -135,7 +136,7 @@
 | Сценарий                                                      | Назначение                               |
 | ------------------------------------------------------------- | ---------------------------------------- |
 | Ответы по услугам, врачам, филиалам, подготовке               | извлечение из графа и чанков             |
-| Запись, перенос, отмена визита с подтверждением               | **HITL**                                 |
+| Запись визита с подтверждением; перенос и отмена — контракт порта CRM | **HITL**                            |
 | Изоляция карточек; законный представитель видит карту ребёнка | **RBAC и ReBAC**, ADR-0002               |
 | Загрузка документов клиники в граф и индекс BM25 + векторы    | конвейер знаний                          |
 | Речевой канал: ASR → оркестратор → TTS                        | основной канал, ADR-0009                 |
@@ -478,15 +479,17 @@ flowchart TB
 ```
 
 
-| Субагент | Инструменты | Права | Код |
-| -------- | ----------- | ----- | --- |
-| `Knowledge` | `graph_search`, `bm25_search`, `vector_search` | только чтение; выдача проходит через Policy до модели. На стенде плотный поиск отключён, работает BM25 | [app/agents/knowledge.py](backend/app/agents/knowledge.py) |
-| `CRM Agent` | `list_slots`, `book`, `reschedule`, `cancel`, `escalate_operator` | чтение расписания; запись только после подтверждения пользователя | [app/agents/crm_node.py](backend/app/agents/crm_node.py) |
-| `Policy Gate` | `decide` (документы), `decide_crm` (учётные сведения визита) | решение о доступе; модель на этом шаге не вызывается | [app/policy/acl.py](backend/app/policy/acl.py) |
-| `Generator` | vLLM | формулирует ответ только по допущенному контексту | [app/agents/generator.py](backend/app/agents/generator.py) |
+| Субагент | Инструменты контракта | На стенде вызывается | Права | Код |
+| -------- | --------------------- | -------------------- | ----- | --- |
+| `Knowledge` | `graph_search`, `bm25_search`, `vector_search` | `graph.search`, `graph.walk`, `vectors.search` (BM25); плотный вектор — целевой контур | только чтение; выдача проходит через Policy до модели | [app/agents/knowledge.py](backend/app/agents/knowledge.py) |
+| `CRM Agent` | `list_slots`, `book`, `reschedule`, `cancel`, `escalate_operator` | `crm.list_slots`, `crm.book`, `crm.appointments_for`; эскалация — флаг `state.escalate` | чтение расписания; запись только после подтверждения пользователя | [app/agents/crm_node.py](backend/app/agents/crm_node.py) |
+| `Policy Gate` | `decide`, `decide_crm` | обе, на каждом запросе | решение о доступе; модель на этом шаге не вызывается | [app/policy/acl.py](backend/app/policy/acl.py) |
+| `Generator` | vLLM | сборщик по допущенному контексту; в демо — локальная модель | формулирует ответ только по допущенному контексту | [app/agents/generator.py](backend/app/agents/generator.py) |
 
 
-Почему не автономные агенты: модель не решает, вызывать ли проверку прав — это обязательный узел маршрута; запись и отмена не выполняются без подтверждения. Исходник схемы — [slides/agents.mmd](slides/agents.mmd).
+Третий столбец назван отдельно намеренно. Имена во втором — **контракт порта**: так инструменты будут объявлены модели при tool-calling в целевом контуре (ADR-0008). На стенде оркестратор вызывает порты напрямую, поэтому имён `graph_search` или `escalate_operator` в коде нет, а `reschedule` и `cancel` объявлены контрактом CRM ([`app/stores/crm.py`](backend/app/stores/crm.py)), но из графа состояний пока не вызываются: на стенде закрыты запись и подтверждение.
+
+Почему не автономные агенты: модель не решает, вызывать ли проверку прав — это обязательный узел маршрута; запись не выполняется без подтверждения. Исходник схемы — [slides/agents.mmd](slides/agents.mmd).
 
 ### Когнитивная схема
 
@@ -1174,6 +1177,8 @@ curl -s localhost:8080/v1/chat \
 - `POST /v1/voice` — тот же оркестратор, вход — транскрипт;
 - `GET /v1/audit/{request_id}` — решение ACL;
 - `GET /health` — проверка живости процесса.
+
+Контракт каждого поля ответа, правила маршрута, порядок узлов и порты хранилищ разобраны в [backend/README.md](backend/README.md).
 
 Целевой Data Plane: `docker compose --profile data up -d` в [infra/](infra/README.md). На CPU-стенде API держит те же контракты в памяти.
 
