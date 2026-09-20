@@ -113,3 +113,15 @@ def test_policy_does_not_mark_the_shared_index(runtime):
     policy.filter_chunks(anna, raw)
 
     assert all(chunk.via is None for chunk in raw)
+
+
+def test_graph_search_survives_word_endings(runtime):
+    """«Гастроскопию» и «Гастроскопия» — одна услуга.
+
+    Точное совпадение токенов роняло запрос на запись: услуги в контексте не
+    оказывалось, и модели было нечего назвать.
+    """
+    found = {node.id for node in runtime.graph.search("Запишите меня на гастроскопию, какие есть окна?")}
+
+    assert "END-01" in found
+    assert "GAS-01" not in found  # гастроэнтеролог — другая услуга

@@ -93,11 +93,22 @@ class GraphStore:
         if parent and parent != "No" and parent in self.nodes:
             self.add_edge(code, "PARENT", parent)
 
+    @staticmethod
+    def _stems(text: str) -> set[str]:
+        """Огрубление до основы: «гастроскопию» и «Гастроскопия» должны совпасть.
+
+        Обрезка до восьми символов разводит «гастроскопия» и
+        «гастроэнтеролог», но снимает падежные окончания. На стенде этого
+        достаточно; в промышленном контуре морфологию даёт полнотекстовый
+        индекс Neo4j и плотный поиск bge-m3 (ADR-0006, ADR-0007).
+        """
+        return {token[:8] for token in tokenize(text)}
+
     def search(self, query: str, limit: int = 12) -> list[GraphNode]:
-        tokens = tokenize(query)
+        tokens = self._stems(query)
         scored: list[tuple[int, GraphNode]] = []
         for node in self.nodes.values():
-            blob = tokenize(node.text())
+            blob = self._stems(node.text())
             overlap = len(tokens & blob)
             if node.label == "IcdCode" and node.id.upper() not in query.upper():
                 continue
