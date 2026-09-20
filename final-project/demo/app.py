@@ -90,7 +90,7 @@ with st.sidebar:
     )
     model, api_key = "", ""
     if backend == "ollama":
-        model = st.text_input("Модель Ollama", value="qwen2.5:7b")
+        model = st.text_input("Модель Ollama", value="gemma3:27b")
         st.caption("Считается на этом хосте, наружу ничего не уходит. Если модель недоступна, ответ соберёт код.")
     if backend == "openrouter":
         model = st.text_input("Модель OpenRouter", value="openai/gpt-4o-mini")

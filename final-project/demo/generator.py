@@ -120,7 +120,7 @@ class DemoGenerator:
             return self._post(
                 os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434") + "/api/chat",
                 {
-                    "model": self.model or "qwen2.5:7b",
+                    "model": self.model or "gemma3:27b",
                     "stream": False,
                     "options": {"temperature": 0.2},
                     "messages": _messages(prompt, system),
