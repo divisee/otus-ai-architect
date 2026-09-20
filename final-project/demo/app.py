@@ -107,7 +107,12 @@ with st.sidebar:
     asr_size = st.selectbox("Чекпоинт распознавания", list(speech.MODELS), index=1, disabled=not voice_in)
     if voice_in:
         st.caption(speech.MODELS[asr_size])
-    voice_out = st.toggle("Озвучивать ответ", value=False, disabled=not speech.tts_available())
+    voice_out = st.toggle(
+        "Озвучивать ответ",
+        value=speech.tts_available(),
+        disabled=not speech.tts_available(),
+        help="Штатный голос macOS Milena. В целевом контуре — Silero на L40S (ADR-0009).",
+    )
 
     st.divider()
     if st.button("Начать разговор заново", use_container_width=True):
@@ -173,14 +178,17 @@ if asked:
 
 # ---------- разговор и разбор ----------
 
-for turn in st.session_state["turns"]:
+last = len(st.session_state["turns"]) - 1
+for index, turn in enumerate(st.session_state["turns"]):
     state, trace = turn["state"], turn["trace"]
     with st.chat_message("user"):
         st.write(turn["question"])
     with st.chat_message("assistant"):
         st.write(turn["answer"])
         if turn["audio"]:
-            st.audio(turn["audio"], format="audio/wav")
+            # Сам звучит только свежий ответ: иначе каждая перерисовка страницы
+            # проигрывала бы весь разговор заново.
+            st.audio(turn["audio"], format="audio/wav", autoplay=index == last)
 
         badges = [f"маршрут: **{state.intent}**"]
         if state.subject_id:

@@ -24,12 +24,36 @@ from app.agents.state import GraphState
 from app.guardrails.output import ACL_REFUSAL, REFUSAL, apply_output_guardrails
 from app.ingest.bootstrap import Runtime
 
-SYSTEM = (
-    "Ты — справочная медицинского центра. Отвечай коротко и по-русски, "
-    "только по сведениям из блока КОНТЕКСТ. Если сведений не хватает — "
-    "скажи, что передаёшь запрос оператору регистратуры. "
-    "Не ставь диагноз и не толкуй коды МКБ. "
-    "Токены вида [PHONE_0] и [NAME_0] оставляй как есть: подстановку делает система."
+# Общая часть: она про права и границы, а не про форму ответа.
+SYSTEM_BASE = (
+    "Ты — справочная медицинского центра. Отвечай по-русски и только по "
+    "сведениям из блока КОНТЕКСТ. Если сведений не хватает — скажи, что "
+    "передаёшь запрос оператору регистратуры, и не придумывай. "
+    "Не ставь диагноз и не толкуй коды МКБ: код можно только прочитать так, "
+    "как он записан в направлении. "
+    "Внутренние коды услуг вида USI-01 и PED-01 не произноси — называй услугу словами. "
+    "Токены вида [PHONE_0] и [NAME_0] оставляй как есть: подставляет система."
+)
+
+# Голос: ответ уйдёт в синтез речи, поэтому текст должен читаться вслух.
+SYSTEM_VOICE = SYSTEM_BASE + (
+    " Ты говоришь с человеком в телефонном разговоре, твой ответ будет "
+    "озвучен вслух. Поэтому: одна-две короткие фразы, без списков, таблиц, "
+    "разметки, ссылок и скобок. "
+    "Числа, даты и время пиши словами так, как их произносят: "
+    "«три тысячи двести рублей», а не «3200 ₽»; "
+    "«восемнадцатого сентября», а не «18.09.2026»; "
+    "«в восемь утра», а не «08:00»; «шесть часов», а не «6 ч». "
+    "Сокращения разворачивай: «УЗИ органов брюшной полости» вместо «УЗИ ОБП», "
+    "«гастроскопия» вместо «ЭГДС». Аббревиатуру УЗИ произносить можно. "
+    "Символы ₽, №, %, — заменяй словами. "
+    "Заканчивай коротким вопросом, если разговор требует продолжения."
+)
+
+# Чат: то же по сути, но числом и датой читателю удобнее в цифрах.
+SYSTEM_TEXT = SYSTEM_BASE + (
+    " Отвечай коротко: две-три фразы. Числа, цены и даты оставляй цифрами. "
+    "Сокращения раскрывай при первом упоминании."
 )
 
 
@@ -73,11 +97,12 @@ class DemoGenerator:
 
         question = state.extra.get("sanitized") or state.text
         prompt = "КОНТЕКСТ:\n" + "\n".join(f"- {line}" for line in context) + f"\n\nВОПРОС: {question}"
-        self.trace.system = SYSTEM
+        system = SYSTEM_VOICE if state.channel == "voice" else SYSTEM_TEXT
+        self.trace.system = system
         self.trace.prompt = prompt
 
         try:
-            answer = self._call(prompt)
+            answer = self._call(prompt, system)
         except Exception as error:  # noqa: BLE001 — на стенде показываем причину в интерфейсе
             self.trace.error = f"{type(error).__name__}: {error}"
             return self.stub.generate(state, runtime)
@@ -90,7 +115,7 @@ class DemoGenerator:
 
     # ---------- исполнители ----------
 
-    def _call(self, prompt: str) -> str:
+    def _call(self, prompt: str, system: str) -> str:
         if self.backend == "ollama":
             return self._post(
                 os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434") + "/api/chat",
@@ -98,7 +123,7 @@ class DemoGenerator:
                     "model": self.model or "qwen2.5:7b",
                     "stream": False,
                     "options": {"temperature": 0.2},
-                    "messages": _messages(prompt),
+                    "messages": _messages(prompt, system),
                 },
                 headers={},
                 pick=lambda data: data["message"]["content"],
@@ -112,7 +137,7 @@ class DemoGenerator:
                     "model": self.model or "openai/gpt-4o-mini",
                     "temperature": 0.2,
                     "max_tokens": 400,
-                    "messages": _messages(prompt),
+                    "messages": _messages(prompt, system),
                 },
                 headers={"Authorization": f"Bearer {self.api_key}"},
                 pick=lambda data: data["choices"][0]["message"]["content"],
@@ -141,8 +166,8 @@ class DemoGenerator:
         return ""
 
 
-def _messages(prompt: str) -> list[dict[str, str]]:
-    return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}]
+def _messages(prompt: str, system: str) -> list[dict[str, str]]:
+    return [{"role": "system", "content": system}, {"role": "user", "content": prompt}]
 
 
 def _context_lines(state: GraphState) -> list[str]:
