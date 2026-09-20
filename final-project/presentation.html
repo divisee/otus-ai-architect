@@ -546,6 +546,11 @@
     /* --- слайд целей: плотная вёрстка двух таблиц --- */
     .goals .card { padding: 13px 16px; }
     .goals table { font-size: 12.5px; }
+    /* слайд MVP: две таблицы по шесть строк рядом — нужна своя плотность */
+    .mvp table { font-size: 12px; }
+    .mvp table td, .mvp table th { padding: 3px 0; }
+    .mvp .card h3 { font-size: 15px; }
+    .mvp .assume { margin-top: 8px; }
     .goals th, .goals td { padding: 5px 8px; }
     .goals .assume { margin-top: 7px; font-size: 11px; line-height: 1.32; }
 
@@ -1162,27 +1167,31 @@
       <section data-core class="slide" data-note="MVP — Minimum Viable Product, минимально работоспособная поставка. | vLLM — движок инференса больших языковых моделей (LLM) с PagedAttention; работает внутри периметра. | BM25 — формула разрежённого поиска по словам: частота термина, его редкость и длина фрагмента. | bge-m3 — многоязычная модель векторных представлений; ловит перефразировки пациента. | RRF — Reciprocal Rank Fusion, слияние списков выдачи по позициям. | HITL — Human-in-the-loop, человек в контуре: запись, перенос и отмена только после подтверждения.">
         <p class="kicker">MVP</p>
         <h2>Что проверено на стенде и что будет в промышленном контуре</h2>
-        <p class="sub">Control Plane в обоих столбцах один — меняются порты Data Plane. Проверено на MacBook Pro M5 Pro, 48 ГБ: видеокарт нет, vLLM не поднимался.</p>
-        <div class="grid grid-2 fill">
+        <p class="sub">Слева — то, на чём проект собран и прогнан; справа — то, на чём он поедет у клиники. Control Plane один и тот же, меняются порты Data Plane.</p>
+        <div class="grid grid-2 fill mvp">
           <div class="card" style="display:block">
-            <h3>💻 Стенд: MacBook Pro M5 Pro, 48 ГБ</h3>
+            <h3>💻 Стенд: MacBook Pro M5 Pro, 48 ГБ, без видеокарт</h3>
             <table>
-              <tr><th>Слой</th><th>Чем закрыт на стенде</th></tr>
-              <tr><td>Генерация</td><td>сборщик по допущенному контексту; в демо — локальная модель через Ollama</td></tr>
+              <tr><th>Слой</th><th>Чем закрыт</th></tr>
+              <tr><td>Оркестратор</td><td>FastAPI и uvicorn, Python 3.14; тот же граф состояний</td></tr>
+              <tr><td>Генерация</td><td>в автотестах — сборщик по допущенному контексту, без модели; в демо — Ollama, <code>qwen2.5:7b</code>, 4,7 ГБ</td></tr>
               <tr><td>Поиск</td><td>BM25, k1 = 1,2, b = 0,75; тот же payload ACL</td></tr>
-              <tr><td>Граф, векторы, сессии</td><td>Compose либо порты в памяти</td></tr>
-              <tr><td>Речь</td><td>вход — транскрипт; в демо — faster-whisper на CPU</td></tr>
+              <tr><td>Граф, векторы, сессии</td><td>Cypher-seed и порты в памяти либо те же СУБД через Compose</td></tr>
+              <tr><td>Распознавание</td><td>faster-whisper на CPU, <code>int8</code>, чекпоинт <code>base</code> — RTF 0,06</td></tr>
+              <tr><td>Синтез</td><td>штатный голос macOS Milena, ответ звучит в браузере</td></tr>
             </table>
             <p class="assume"><b>Доказано:</b> 28 автотестов — доступ и опека, обязанности регистратуры, отказ в диагнозе до модели, HITL на записи, обнаружение ПДн, равенство каналов, ранжирование. Ни одна проверка не обращается к модели.</p>
           </div>
           <div class="card" style="display:block">
-            <h3>🏭 Промышленный контур: 2× H100 + L40S</h3>
+            <h3>🏭 Промышленный контур: 2× H100 и L40S в сегменте GPU</h3>
             <table>
               <tr><th>Слой</th><th>Целевой порт</th></tr>
-              <tr><td>Генерация</td><td>vLLM, T-pro-it-2.1 32B FP8 на H100</td></tr>
+              <tr><td>Оркестратор</td><td>тот же код в Kubernetes в периметре клиники</td></tr>
+              <tr><td>Генерация</td><td>vLLM, T-pro-it-2.1 32B FP8 на H100; шаги субагентов — T-lite 8B на L40S</td></tr>
               <tr><td>Поиск</td><td>BM25 + bge-m3, слияние RRF, reranker-v2-m3</td></tr>
               <tr><td>Граф, векторы, сессии</td><td>Neo4j, Qdrant, PostgreSQL в периметре</td></tr>
-              <tr><td>Речь</td><td>Whisper large-v3-turbo, WhisperX, Silero на L40S</td></tr>
+              <tr><td>Распознавание</td><td>Whisper large-v3-turbo и WhisperX на L40S</td></tr>
+              <tr><td>Синтез</td><td>Silero на L40S</td></tr>
             </table>
             <p class="assume"><b>Остаётся измерить:</b> p95 ответа ≤ 8 с при 10 RPS, p95 распознавания ≤ 1,0 с на реплике 5 с, Recall@10 и nDCG на плотном поиске. Это критерии приёмки фазы GPU, а не открытые вопросы.</p>
           </div>
