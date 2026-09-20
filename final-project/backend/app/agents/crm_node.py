@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from app.agents.knowledge import VIA_PRIORITY
 from app.agents.router import BOOKING_CUES
 from app.agents.state import GraphState
 from app.ingest.bootstrap import Runtime
@@ -16,7 +17,14 @@ def run_crm(state: GraphState, runtime: Runtime) -> GraphState:
         state.acl_denied = True
         state.crm_facts.append("Запись по чужой карте недоступна.")
         return state
+    # Основание доступа к CRM — такая же запись журнала, как и основание
+    # по фрагментам: главное называет `acl_via`, полный список — `acl_vias`.
     state.acl_via = access.via
+    if access.via and access.via not in state.acl_vias:
+        state.acl_vias = sorted(
+            {*state.acl_vias, access.via},
+            key=lambda via: VIA_PRIORITY.index(via) if via in VIA_PRIORITY else 99,
+        )
 
     if state.session.pending and _confirm(state.text):
         pending = state.session.pending

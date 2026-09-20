@@ -48,6 +48,19 @@ VIA = {
 st.set_page_config(page_title="Ассистент медицинского центра — стенд", page_icon="🩺", layout="wide")
 
 
+@st.cache_data(ttl=30, show_spinner=False)
+def _ollama_up() -> bool:
+    """Поднята ли локальная модель. Если да — она и формулирует по умолчанию:
+    сборщик остаётся запасным ходом и включается сам при любой ошибке."""
+    import urllib.request
+
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:11434", timeout=1):
+            return True
+    except Exception:  # noqa: BLE001 — недоступна, значит работает сборщик
+        return False
+
+
 @st.cache_resource(show_spinner="Загружаю граф, корпус и реестр…")
 def boot():
     runtime = load_runtime()
@@ -64,9 +77,11 @@ with st.sidebar:
     st.caption(ACTORS[login][1])
 
     st.divider()
+    backends = ["stub", "ollama", "openrouter"]
     backend = st.radio(
         "Кто формулирует ответ",
-        ["stub", "ollama", "openrouter"],
+        backends,
+        index=backends.index("ollama") if _ollama_up() else 0,
         format_func=lambda key: {
             "stub": "Сборщик из репозитория — без сети",
             "ollama": "Локальная модель — Ollama",
@@ -76,7 +91,7 @@ with st.sidebar:
     model, api_key = "", ""
     if backend == "ollama":
         model = st.text_input("Модель Ollama", value="qwen2.5:7b")
-        st.caption("Нужен запущенный `ollama serve`. Всё считается на этом MacBook.")
+        st.caption("Считается на этом хосте, наружу ничего не уходит. Если модель недоступна, ответ соберёт код.")
     if backend == "openrouter":
         model = st.text_input("Модель OpenRouter", value="openai/gpt-4o-mini")
         api_key = st.text_input("Ключ OpenRouter", type="password")

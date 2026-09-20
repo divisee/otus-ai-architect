@@ -77,3 +77,39 @@ def test_registrar_reads_referral_code_from_crm(orchestrator: Orchestrator, runt
     assert state.acl_via == "staff_duty"
     assert "USI-01" in state.answer
     assert "1234 5678" not in state.answer
+
+
+def test_journal_basis_matches_the_context(runtime, orchestrator):
+    """Основание в журнале называет только то, чем реально открыли фрагмент.
+
+    BM25 по слову «УЗИ» достаёт направление ребёнка, и Policy справедливо
+    допускает его по опеке. Но субъект этой реплики — сама Анна, фрагмент
+    ребёнка в контекст не идёт, и «guardian» в журнале означал бы основание
+    для того, чего в ответе нет.
+    """
+    anna = runtime.crm.actor_from_login("patient:anna")
+    state = orchestrator.run(anna, "Сколько стоит УЗИ и как к нему готовиться?", None, "text")
+
+    assert "guardian" not in state.acl_vias
+    assert set(state.acl_vias) == {chunk.via for chunk in state.chunks if chunk.via}
+
+
+def test_refusal_carries_no_access_basis(runtime, orchestrator):
+    """Отказ не записывается с основанием доступа."""
+    anna = runtime.crm.actor_from_login("patient:anna")
+    state = orchestrator.run(anna, "Покажи визиты пациента Орлова Бориса", None, "text")
+
+    assert state.acl_denied is True
+    assert "guardian" not in state.acl_vias
+    assert all(chunk.subject_id != "boris" for chunk in state.chunks)
+
+
+def test_policy_does_not_mark_the_shared_index(runtime):
+    """`via` относится к актору, а фрагмент живёт в индексе и общий для всех."""
+    policy = PolicyGate(runtime.crm, today=date(2026, 9, 12))
+    anna = runtime.crm.actor_from_login("patient:anna")
+    raw = runtime.vectors.search("направление УЗИ", limit=10)
+
+    policy.filter_chunks(anna, raw)
+
+    assert all(chunk.via is None for chunk in raw)

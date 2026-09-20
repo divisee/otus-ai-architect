@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 
 
@@ -65,12 +65,13 @@ class PolicyGate:
         return self.decide(actor, "patient", subject_id)
 
     def filter_chunks(self, actor: Actor, chunks: list) -> list:
+        """Основание пишется в копию: объект фрагмента живёт в индексе и общий
+        для всех запросов, а ``via`` относится к конкретному актору."""
         kept = []
         for chunk in chunks:
             decision = self.decide(actor, chunk.acl, chunk.subject_id)
             if decision.allowed:
-                chunk.via = decision.via
-                kept.append(chunk)
+                kept.append(replace(chunk, via=decision.via))
         return kept
 
     def filter_nodes(self, actor: Actor, nodes: list) -> list:

@@ -46,14 +46,12 @@ class Orchestrator:
             state.answer = REFUSAL
         elif state.intent == "knowledge":
             state = retrieve_knowledge(state, self.runtime)
-            _scope_patient_chunks(state)
             state.answer = self.generator.generate(state, self.runtime)
         elif state.intent == "crm":
             state = run_crm(state, self.runtime)
             state.answer = self.generator.generate(state, self.runtime)
         elif state.intent == "both":
             state = retrieve_knowledge(state, self.runtime)
-            _scope_patient_chunks(state)
             state = run_crm(state, self.runtime)
             state.answer = self.generator.generate(state, self.runtime)
         else:
@@ -76,13 +74,3 @@ class Orchestrator:
             )
         )
         return state
-
-
-def _scope_patient_chunks(state: GraphState) -> None:
-    if not state.subject_id:
-        return
-    state.chunks = [
-        chunk
-        for chunk in state.chunks
-        if chunk.acl != "patient" or chunk.subject_id == state.subject_id
-    ]

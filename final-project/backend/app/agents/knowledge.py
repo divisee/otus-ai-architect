@@ -51,6 +51,9 @@ def retrieve_knowledge(state: GraphState, runtime: Runtime) -> GraphState:
 
     public_or_own = [chunk for chunk in state.chunks if chunk.acl in {"public", "staff"} or chunk.subject_id]
     state.chunks = public_or_own
+    # Сузить по субъекту запроса нужно ДО расчёта оснований: иначе в журнал
+    # попадёт основание фрагмента, который в контекст модели не вошёл.
+    _scope_patient_chunks(state)
     vias = {chunk.via for chunk in state.chunks if chunk.via}
     if state.acl_via:
         vias.add(state.acl_via)
@@ -65,6 +68,17 @@ def retrieve_knowledge(state: GraphState, runtime: Runtime) -> GraphState:
         if not state.acl_via:
             state.acl_via = None
     return state
+
+
+def _scope_patient_chunks(state: GraphState) -> None:
+    """Документы карты — только того субъекта, о ком идёт речь в реплике."""
+    if not state.subject_id:
+        return
+    state.chunks = [
+        chunk
+        for chunk in state.chunks
+        if chunk.acl != "patient" or chunk.subject_id == state.subject_id
+    ]
 
 
 def _unique_nodes(nodes: list[GraphNode]) -> list[GraphNode]:
