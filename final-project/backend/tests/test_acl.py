@@ -125,3 +125,27 @@ def test_graph_search_survives_word_endings(runtime):
 
     assert "END-01" in found
     assert "GAS-01" not in found  # гастроэнтеролог — другая услуга
+
+
+def test_registrar_gets_the_referral_code(runtime, orchestrator):
+    """Регистратура вправе видеть код направления: 323-ФЗ ст. 13 ч. 4 п. 1.
+
+    Код МКБ и так попадал в контекст узлом справочника, но без связи с
+    визитом субъекта, и ответить на прямой вопрос было нечем.
+    """
+    registrar = runtime.crm.actor_from_login("staff:registrar")
+    state = orchestrator.run(registrar, "Какой код направления у пациента Орлова Бориса?", None, "text")
+
+    assert state.acl_via == "staff_duty"
+    assert any("K21.0" in fact for fact in state.crm_facts)
+    assert all(chunk.subject_id != "boris" for chunk in state.chunks)
+
+
+def test_refused_card_leaks_no_referral(runtime, orchestrator):
+    """На отказе учётные сведения чужого визита в контекст не идут."""
+    boris = runtime.crm.actor_from_login("patient:boris")
+    state = orchestrator.run(boris, "Какое направление у Соколовой Анны?", None, "text")
+
+    assert state.acl_denied is True
+    assert not any("K80.1" in fact for fact in state.crm_facts)
+    assert all("Соколова" not in fact for fact in state.crm_facts)

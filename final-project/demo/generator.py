@@ -171,10 +171,15 @@ def _messages(prompt: str, system: str) -> list[dict[str, str]]:
 
 
 def _context_lines(state: GraphState) -> list[str]:
-    """Только то, что прошло проверку прав: узлы графа, фрагменты, факты CRM."""
-    lines = [line for line in (_format_node(node) for node in state.nodes[:10]) if line]
+    """Только то, что прошло проверку прав: факты CRM, узлы графа, фрагменты.
+
+    Учётные сведения идут первыми: это прямой ответ на вопрос о визите или
+    направлении, а обход графа приносит десяток соседних кодов МКБ, за
+    которыми одна нужная строка теряется.
+    """
+    lines = list(state.crm_facts)
+    lines += [line for line in (_format_node(node) for node in state.nodes[:10]) if line]
     for chunk in state.chunks[:4]:
         excerpt = " ".join(chunk.text.split())
         lines.append(excerpt[:280] + "…" if len(excerpt) > 280 else excerpt)
-    lines.extend(state.crm_facts)
     return lines

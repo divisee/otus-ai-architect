@@ -37,17 +37,24 @@ def retrieve_knowledge(state: GraphState, runtime: Runtime) -> GraphState:
     state.chunks = runtime.policy.filter_chunks(state.actor, raw_chunks)
 
     denied_card = False
+    # Своя карта открыта без отдельного решения: правило 3 раздела «Доступ».
+    visit_allowed = bool(state.subject_id) and state.subject_id == state.actor.id
     if state.subject_id and state.subject_id != state.actor.id:
         card = runtime.policy.decide(state.actor, "patient", state.subject_id)
         if card.allowed:
             state.acl_via = card.via
+            visit_allowed = True
         elif state.actor.role == "staff":
             # роль staff ведёт расписание, но медицинские документы карты не читает
             state.chunks = [chunk for chunk in state.chunks if chunk.subject_id != state.subject_id]
             state.acl_via = "staff_duty"
+            visit_allowed = True
         else:
             denied_card = True
             state.chunks = [chunk for chunk in state.chunks if chunk.subject_id != state.subject_id]
+
+    if visit_allowed:
+        _referral_facts(state, runtime)
 
     public_or_own = [chunk for chunk in state.chunks if chunk.acl in {"public", "staff"} or chunk.subject_id]
     state.chunks = public_or_own
@@ -68,6 +75,30 @@ def retrieve_knowledge(state: GraphState, runtime: Runtime) -> GraphState:
         if not state.acl_via:
             state.acl_via = None
     return state
+
+
+def _referral_facts(state: GraphState, runtime: Runtime) -> None:
+    """Назвать направление субъекта, а не только код в справочнике.
+
+    Код МКБ попадает в контекст узлом классификатора — «K21.0:
+    гастроэзофагеальный рефлюкс». По такой строке не видно, что это код из
+    направления Бориса, и на вопрос регистратуры ответить нечем. Слот, услуга
+    и код направления — учётные сведения визита: роль ``staff`` вправе их
+    видеть в объёме должностных обязанностей (323-ФЗ ст. 13 ч. 4 п. 1,
+    :meth:`PolicyGate.decide_crm`), пациент — по своей карте, представитель —
+    по опеке. Медицинских документов карты здесь нет.
+    """
+    for appointment in runtime.crm.appointments_for(state.subject_id):
+        if not appointment.icd_on_referral:
+            continue
+        service = runtime.graph.get(appointment.service_id)
+        service_name = service.props.get("name") if service else appointment.service_id
+        code = runtime.graph.get(appointment.icd_on_referral)
+        code_name = f" — {code.props.get('name')}" if code else ""
+        state.crm_facts.append(
+            f"В направлении: {service_name}, {appointment.slot}, филиал {appointment.branch_id}, "
+            f"код {appointment.icd_on_referral}{code_name}."
+        )
 
 
 def _scope_patient_chunks(state: GraphState) -> None:
