@@ -243,6 +243,11 @@
       border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; overflow: hidden;
     }
     .diagram img { width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; object-position: center; }
+    /* пять зон сети — один ряд под схемой, иначе схему давит перенос */
+    .zones { grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .zones .card { padding: 12px 14px 12px 18px; }
+    .zones .card h3 { font-size: 14px; margin-bottom: 5px; }
+    .zones .card p { font-size: 13px; line-height: 1.35; }
 
     /* --- плашки-градиенты: три оттенка фиолетового + шалфей --- */
     .stack { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; flex: 1; min-height: 0; }
@@ -1104,11 +1109,12 @@
         <h2>Размещение контура в сети клиники</h2>
         <p class="sub">Звонок и чат не попадают сразу в базу и на видеокарты; из сегмента видеокарт маршрута в интернет нет.</p>
         <figure class="diagram"><img src="slides/deployment.svg" alt="Схема размещения: вход, управление, хранилища, видеокарты"></figure>
-        <div class="grid grid-4" style="margin-top:12px">
+        <div class="grid zones" style="margin-top:12px">
           <div class="card"><h3>Вне контура</h3><p>Телефония и сайт; администратор — только по VPN.</p></div>
-          <div class="card"><h3>Вход · DMZ</h3><p>Буфер перед периметром: здесь снимается шифрование канала и стоит шлюз API.</p></div>
-          <div class="card"><h3>Управление и данные</h3><p>Оркестратор, Neo4j, Qdrant, PostgreSQL (сессии и аудит), MinIO как S3 в периметре, ClickHouse под трассировки Langfuse; карточки — в CRM.</p></div>
-          <div class="card"><h3>Сегмент видеокарт · GPU</h3><p>Речь и генерация; доступ только изнутри контура.</p></div>
+          <div class="card"><h3>Вход · DMZ</h3><p>Буфер перед периметром: снимается шифрование канала, стоит шлюз API.</p></div>
+          <div class="card"><h3>Управление диалогом</h3><p>Оркестратор, загрузка корпуса, трассировка: здесь решается, что ответить и кому что можно.</p></div>
+          <div class="card"><h3>Хранилища</h3><p>Граф, индекс, сессии и аудит, объектное хранилище; карточки — в CRM, секреты — в Vault.</p></div>
+          <div class="card"><h3>Видеокарты · отдельный VLAN</h3><p>Речь и генерация; доступ только изнутри, маршрута в интернет нет.</p></div>
         </div>
       </section>
 
