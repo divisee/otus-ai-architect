@@ -552,7 +552,11 @@
     .goals .card { padding: 13px 16px; }
     .goals table { font-size: 12.5px; }
     /* слайд MVP: две таблицы по шесть строк рядом — нужна своя плотность */
-    .mvp table, .sla table { font-size: 11.5px; }
+    .mvp table, .sla table, .gpuleft table { font-size: 11.5px; }
+    .gpuleft table td, .gpuleft table th { padding: 2px 0; }
+    .gpuleft h3 { font-size: 14px; }
+    .gpuleft .assume { margin-top: 6px; font-size: 11.5px; }
+    .gpuleft { padding: 12px 16px 12px 20px; }
     .mvp table td, .mvp table th, .sla table td, .sla table th { padding: 2px 0; }
     .mvp .card h3, .sla h3 { font-size: 14px; }
     .mvp .assume, .sla .assume { margin-top: 6px; font-size: 11.5px; line-height: 1.35; }
@@ -563,7 +567,8 @@
     /* --- слайд железа: плотнее, чтобы уместить отбор карт --- */
     .hw .card { padding: 11px 15px; }
     .hw .card h3 { margin-bottom: 4px; }
-    .hw .card p { font-size: 13.5px; line-height: 1.35; }
+    .hw .card p { font-size: 12.5px; line-height: 1.3; }
+    .hw .calc-rows { font-size: 12px; }
     .hw .calc-rows { margin-top: 6px; }
     .hw .calc-rows .row { padding: 2.5px 10px; }
     .hw .calc-rows dt, .hw .calc-rows dd { font-size: 11px; line-height: 1.28; }
@@ -1101,8 +1106,8 @@
       <section class="slide" data-note="GPU — Graphics Processing Unit, графический процессор: видеокарта, на которой считаются речь и генерация. | KV-cache — Key-Value cache, кэш ключей и значений внимания: растёт с длиной контекста и числом параллельных диалогов. | FP8 — 8-bit Floating Point, восьмибитный формат чисел: вдвое экономнее FP16 при сопоставимом качестве. | RPS — Requests Per Second, запросов в секунду. | ECC — Error-Correcting Code, память с коррекцией ошибок, обязательная для круглосуточной нагрузки. | p95 — значение задержки, которое не превышают 95 процентов ответов.">
         <p class="kicker">Оборудование · ADR-0004</p>
         <h2>Расчёт нагрузки и выбор видеокарт</h2>
-        <p class="sub">Состав выведен из двух величин: сколько запросов приходит в минуту и сколько видеопамяти занимает модель. Обе рассчитаны из объёма клиники.</p>
-        <div class="grid grid-2 fill hw">
+        <p class="sub">Состав выведен из двух величин: сколько запросов приходит в минуту и сколько видеопамяти занимает модель.</p>
+        <div class="grid grid-2 hw">
           <div class="card">
             <h3>Сколько запросов приходит</h3>
             <p>Три реплики на сессию, на каждую — два вызова 32B; вспомогательные шаги субагентов идут в малую модель.</p>
@@ -1135,17 +1140,17 @@
             </dl>
           </div>
           <div class="card">
-            <h3>Почему именно L40S, а не карта дешевле</h3>
-            <p>Узлу нужно 18–24 ГБ: речь и T-lite 8B работают одновременно. Отбор идёт по памяти и форм-фактору, не по вычислительной мощности.</p>
+            <h3>Почему именно L40S</h3>
+            <p>Узлу нужно 18–24 ГБ: речь и малая модель работают одновременно. Отбор по памяти и форм-фактору, не по мощности.</p>
             <dl class="calc-rows">
-              <div class="row"><dt>T4 · 16 ГБ</dt><dd>памяти не хватает; Turing без BF16 и FP8</dd></div>
-              <div class="row"><dt>L4 и A10 · 24 ГБ</dt><dd>запаса не остаётся; у A10 нет FP8</dd></div>
-              <div class="row"><dt>RTX 4090 · 24 ГБ</dt><dd>нет ECC, охлаждение не рассчитано на стойку</dd></div>
-              <div class="row"><dt>RTX 6000 Ada · 48 ГБ</dt><dd>подходит, но активное охлаждение вне стойки</dd></div>
+              <div class="row"><dt>T4 · 16 ГБ</dt><dd>памяти не хватает</dd></div>
+              <div class="row"><dt>L4 и A10 · 24 ГБ</dt><dd>запаса нет; у A10 нет FP8</dd></div>
+              <div class="row"><dt>RTX 4090 · 24 ГБ</dt><dd>нет ECC, охлаждение не под стойку</dd></div>
               <div class="row sum"><dt>L40S · 48 ГБ</dt><dd>ECC, FP8, пассивное охлаждение, двукратный запас</dd></div>
             </dl>
           </div>
         </div>
+        <div class="quote slim"><b>Запас по видеокартам сейчас:</b> H100 под генерацией занята на 2% и на 40–55 ГБ из 80 — свободно 25–40 ГБ; L40S под речью на 8% и на 18–24 ГБ из 48; второй H100 свободен целиком как горячий резерв. По сессиям запас пятнадцатикратный: 1,7 в минуту против потолка 30.</div>
       </section>
 
       <!-- 16. MVP -->
@@ -1238,7 +1243,7 @@
       </section>
 
       <!-- 18. Мониторинг -->
-      <section class="slide" data-note="p50 / p95 / p99 — процентили задержки: значение, которое не превышают 50, 95 и 99 процентов ответов. | KV-cache — Key-Value cache, кэш внимания: растёт с длиной контекста и числом параллельных диалогов. | 5xx — коды ошибок сервера в протоколе HTTP. | Prometheus — сбор числовых метрик. | Grafana — дашборд для их отображения. | Langfuse — трассировка вызовов модели. | Alertmanager — рассылка алертов дежурному.">
+      <section data-core class="slide" data-note="p50 / p95 / p99 — процентили задержки: значение, которое не превышают 50, 95 и 99 процентов ответов. | KV-cache — Key-Value cache, кэш внимания: растёт с длиной контекста и числом параллельных диалогов. | 5xx — коды ошибок сервера в протоколе HTTP. | Prometheus — сбор числовых метрик. | Grafana — дашборд для их отображения. | Langfuse — трассировка вызовов модели. | Alertmanager — рассылка алертов дежурному.">
         <p class="kicker">Наблюдаемость</p>
         <h2>Мониторинг промышленного контура</h2>
         <p class="sub">Prometheus собирает метрики, Grafana показывает их дежурному, Langfuse хранит трассировку каждого вызова. Всё внутри периметра: в трассировку пишутся хэш запроса, допущенные узлы и решение доступа — не текст пациента.</p>
